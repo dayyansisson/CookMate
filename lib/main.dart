@@ -11,6 +11,10 @@ class CookMate extends StatelessWidget {
     SystemChrome.setEnabledSystemUIOverlays([]);
     return MaterialApp(
       title: 'CookMate',
+      home: Scaffold(
+        body: null,
+        bottomNavigationBar: null,
+      )
     );
   }
 }
