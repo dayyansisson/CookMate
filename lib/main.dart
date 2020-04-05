@@ -1,3 +1,4 @@
+import 'package:CookMate/playground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,10 +12,7 @@ class CookMate extends StatelessWidget {
     SystemChrome.setEnabledSystemUIOverlays([]);
     return MaterialApp(
       title: 'CookMate',
-      home: Scaffold(
-        body: null,
-        bottomNavigationBar: null,
-      )
+      home: Playground()
     );
   }
 }
