@@ -37,7 +37,7 @@ class CatalogController {
       currentRecipeList = backend.getFavoriteRecipes();
     }
     else if(currentTab == 2){
-      currentRecipeList == backend.getTodayRecipes();
+      currentRecipeList = backend.getTodayRecipes();
     }
     return currentRecipeList;
   }
