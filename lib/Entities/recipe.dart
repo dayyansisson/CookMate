@@ -15,6 +15,9 @@ class Recipe {
   int servings;
   int prepTime;
   int cookTime;
+  int category;
+  String imageURL;
+  String title;
 
   //Everything from the server below
 
