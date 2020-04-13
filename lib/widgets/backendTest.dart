@@ -121,10 +121,58 @@ class _BackendTestState extends State<BackendTest> {
               color: Colors.blue,
               textColor: Colors.white,
               onPressed: () {
-                print("Test here");
+                DB.addRecipesFromFile();
               },
               child: Text(
                 "None",
+              ),
+            )
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                List<Map<String, dynamic>> _results = await DB.getTags();
+                _results.forEach((tag) {
+                  print("${tag['id']} : ${tag['name']}");
+                });
+              },
+              child: Text(
+                "Get All Tags",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                var test = await DB.getTagID('Corn');
+                print("Corn has an id of: $test");
+              },
+              child: Text(
+                "Get TagID for Corn",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                List<Map<String, dynamic>> _results = await DB.getRecipeTags();
+                _results.forEach((tag) async {
+                  var recipe_name = await DB.queryBy(
+                      'recipe', 'id', tag['recipe_id'].toString());
+                  var recipe_title = recipe_name[0]['title'];
+                  var tag_name =
+                      await DB.queryBy('tag', 'id', tag['tag_id'].toString());
+                  print(
+                      "${tag['id']} : RecipeID:${tag['recipe_id']} RecTitle: $recipe_name TagID:${tag['tag_id']} TagName: $tag_name");
+                });
+              },
+              child: Text(
+                "Show recipe_tag",
               ),
             )
           ],

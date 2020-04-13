@@ -15,5 +15,9 @@ enum Category {
 
 // returns the string value for db lookup
 String catToString(Category cat) {
-  return cat.toString().split('.').last;
+  String val = cat.toString().split('.').last;
+  if (val == "appetizers") {
+    return "appetizers-sides";
+  }
+  return val;
 }

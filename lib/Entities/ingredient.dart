@@ -7,10 +7,12 @@ import 'package:flutter/services.dart';
 */
 
 class Ingredient {
+  static String table = 'ingredient';
+
   String name;
   int quantity;
   String units;
-  List<Recipe> associatedRecipes; 
+  List<Recipe> associatedRecipes;
   bool query;
 
   //Everything from the server below
