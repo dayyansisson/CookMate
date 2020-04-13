@@ -62,7 +62,7 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
                 ),
                 Column(
                   children: <Widget> [
-                    _header(model.currentTab),
+                    _header(),
                     _bodyWidgets(model.currentTab, model.previousTab)
                   ]
                 ),
@@ -75,7 +75,7 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
   }
 
   /* Getter for the header segment of the sheet */
-  Widget _header(int tab) {
+  Widget _header() {
     
     return Stack(
       alignment: Alignment.topCenter,
