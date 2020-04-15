@@ -1,5 +1,6 @@
 import 'package:CookMate/Entities/entity.dart';
 import 'package:CookMate/Entities/ingredient.dart';
+import 'package:CookMate/backend/backend.dart';
 
 /*
   This file lays out the recipe class. 
@@ -13,15 +14,15 @@ class Recipe extends Entity {
   String title;
   String description;
   String image;
-  String category; //should be an enum
-  String prepTime;
+  String category;
+  String prepTime; //prepTime is not in data yet
   String cookTime;
   String servings;
   String url;
-  List<String> tags = [];
-  List<String> ingredients = [];
+  List<String> tags;
+  List<String> ingredients;
+  List<String> steps;
   // List<Ingredient> ingredients = [];
-  List<String> steps = [];
 
   // Recipe Constructor
   Recipe({
@@ -34,10 +35,39 @@ class Recipe extends Entity {
     this.cookTime,
     this.servings,
     this.url,
-    this.tags,
-    this.ingredients,
-    this.steps,
   });
+
+  Future<void> addToFavorites() async {
+    DB.favoriteRecipe("$id");
+  }
+
+  Future<void> removeFromFavorites() async {
+    DB.unfavoriteRecipe("$id");
+  }
+
+  Future<List<String>> getIngredients() async {
+    if (ingredients != null) {
+      return ingredients;
+    }
+    ingredients = await DB.getIngredientsForRecipe("$id");
+    return ingredients;
+  }
+
+  Future<List<String>> getSteps() async {
+    if (steps != null) {
+      return steps;
+    }
+    steps = await DB.getStepsForRecipe("$id");
+    return steps;
+  }
+
+  Future<List<String>> getTags() async {
+    if (tags != null) {
+      return tags;
+    }
+    tags = await DB.getTagsForRecipe("$id");
+    return tags;
+  }
 
   // Returns a JSON version
   Map<String, dynamic> toMap() {
@@ -50,9 +80,6 @@ class Recipe extends Entity {
       'cookTime': cookTime,
       'servings': servings,
       'url': url,
-      // 'tags': tags,
-      // 'ingredients': ingredients,
-      // 'steps': steps,
     };
 
     if (id != null) {
@@ -61,31 +88,10 @@ class Recipe extends Entity {
     return map;
   }
 
-  // Returns an object
-  // static Recipe fromMap(Map<String, dynamic> map) {
-  //   return Recipe(
-  //     id: map['id'],
-  //     title: map['title'],
-  //     description: map['description'],
-  //     imageURL: map['imageURL'],
-  //     category: map['category'],
-  //     prepTime: map['prepTime'],
-  //     cookTime: map['cookTime'],
-  //     servings: map['servings'],
-  //     tags: map['tags'],
-  //     ingredients: map['ingredients'],
-  //     steps: map['steps'],
-  //   );
-  // }
+  // Returns a Recipe object from a map
   static Recipe fromMap(Map<String, dynamic> map) {
-    // List<String> allTags;
-    // allTags.addAll(map['tags']);
-
-    // List<String> allIng;
-    // allIng.addAll(map['ingredients']);
-
     return Recipe(
-      // id: map['id'],
+      id: map['id'],
       title: map['title'],
       description: map['description'],
       image: map['image'],
@@ -94,9 +100,6 @@ class Recipe extends Entity {
       cookTime: map['cook_time'],
       servings: map['serves'],
       url: map['url'],
-      // tags: allTags,
-      // ingredients: allIng,
-      // steps: map['steps'],
     );
   }
 }

@@ -5,18 +5,16 @@ import 'package:CookMate/Enums/category.dart';
 import 'package:CookMate/Entities/entity.dart';
 import 'package:CookMate/Entities/recipe.dart';
 import 'package:sqflite/sqflite.dart';
-
 import 'package:flutter/services.dart' show rootBundle;
 
 /*
 TODOs:
   - Need to populate recipe_ingredient table
   - Need to populate ingredient table
-  - Need to handle favorites recipes
+  - Need to handle favorite recipes
   - Need to handle featured recipes
   - Need to implement shopping cart
   - 
-
 */
 
 abstract class DB {
@@ -54,12 +52,11 @@ abstract class DB {
     )
     """);
 
-    // TODO: need to add from json
     await db.execute("""
     CREATE TABLE "ingredient" (
       "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
       "name"	TEXT NOT NULL UNIQUE,
-      "barcode"	TEXT UNIQUE
+      "barcode"	TEXT
     )
     """);
 
@@ -70,12 +67,12 @@ abstract class DB {
     )
     """);
 
-    // TODO: need to add from json
     await db.execute("""
     CREATE TABLE "recipe_ingredient" (
       "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
       "recipe_id"	INTEGER NOT NULL,
       "ingredient_id"	INTEGER NOT NULL,
+      "ingredient_name"	TEXT,
       "qty"	INTEGER,
       "measurement"	TEXT,
       FOREIGN KEY("recipe_id") REFERENCES "recipe"("id") ON DELETE CASCADE,
@@ -88,6 +85,7 @@ abstract class DB {
       "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
       "recipe_id"	INTEGER NOT NULL,
       "tag_id"	INTEGER NOT NULL,
+      "tag_name"	TEXT,
       FOREIGN KEY("recipe_id") REFERENCES "recipe"("id") ON DELETE CASCADE,
       FOREIGN KEY("tag_id") REFERENCES "tag"("id") ON DELETE CASCADE
     )
@@ -148,6 +146,25 @@ abstract class DB {
             insertWithMap('recipe_step', mapStep);
           });
 
+          // Populate ingredient table and recipe_ingredient
+          var ing = v['ingredients'];
+          ing.forEach((ingKey, ingredient) {
+            ingredient = ingredient.toString();
+            Map<String, dynamic> newIng = {"name": ingredient, 'barcode': null};
+            insertWithMap('ingredient', newIng);
+
+            getIngredientID(ingredient).then((id) {
+              Map<String, dynamic> mapIngredient = {
+                "recipe_id": recipeID,
+                "ingredient_id": id,
+                "ingredient_name": ingredient,
+                "qty": null,
+                "measurement": null,
+              };
+              insertWithMap('recipe_ingredient', mapIngredient);
+            });
+          });
+
           // Adding the tags per recipe:
           var tags = v['tags'];
           tags.forEach((tagKey, tag) {
@@ -160,6 +177,7 @@ abstract class DB {
               Map<String, dynamic> mapTag = {
                 "recipe_id": recipeID,
                 "tag_id": id,
+                "tag_name": tag
               };
               insertWithMap('recipe_tag', mapTag);
             });
@@ -195,29 +213,30 @@ abstract class DB {
   static Future<int> delete(String table, Entity entity) async =>
       await _db.delete(table, where: 'id = ?', whereArgs: [entity.id]);
 
-  static List<Recipe> getAppetizerRecipes() {}
+  static List<Recipe> getFeaturedRecipes() {
+    // for now just return random from each category
+  }
 
-  static List<Recipe> getBeverageRecipes() {}
+  static Future<List<Map<String, dynamic>>> getFavoriteRecipes() async {
+    return _db.query('favorite');
+  }
 
-  static List<Recipe> getBreakfastRecipes() {}
+  static void favoriteRecipe(String id) {
+    Map<String, dynamic> mapFav = {"recipe_id": id};
+    insertWithMap('favorite', mapFav);
+  }
 
-  static List<Recipe> getLunchRecipes() {}
-
-  static List<Recipe> getDinnerRecipes() {}
-
-  static List<Recipe> getFeaturedRecipes() {}
-
-  static List<Recipe> getFavoriteRecipes() {}
+  static void unfavoriteRecipe(String id) {
+    _db.delete('favorite', where: 'recipe_id = ?', whereArgs: [id]);
+  }
 
   static List<Recipe> getTodayRecipes() {}
 
   // Returns recipes by category
-  static Future<List<Map<String, dynamic>>> getRecipesByCategory(
-      Category category) {
-    // TODO: return a list not a future? I think gabe wanted this:
-    // _results.map((recipe) => Recipe.fromMap(recipe)).toList();
-    print("Looking for recipes by category: $category");
-    return queryBy(Recipe.table, "category", catToString(category));
+  static Future<List<Recipe>> getRecipesByCategory(Category category) async {
+    List<Map<String, dynamic>> _results;
+    _results = await queryBy(Recipe.table, "category", catToString(category));
+    return _results.map((recipe) => Recipe.fromMap(recipe)).toList();
   }
 
   // Returns all recipes
@@ -228,6 +247,41 @@ abstract class DB {
   // Returns all ingredients
   static Future<List<Map<String, dynamic>>> getIngredients() {
     return _db.query(Ingredient.table);
+  }
+
+  // Returns all ingredients for a given recipe
+  static Future<Recipe> getRecipe(String id) async {
+    var _result = await queryBy('recipe', 'id', id);
+    return Recipe.fromMap(_result.first);
+  }
+
+  // Returns all ingredients for a given recipe
+  static Future<List<String>> getIngredientsForRecipe(String id) async {
+    List<Map<String, dynamic>> _results;
+    _results = await queryBy('recipe_ingredient', 'recipe_id', id);
+    return _results
+        .map((ingredient) => ingredient['ingredient_name'])
+        .toList()
+        .cast<String>();
+  }
+
+  // Returns all tags for a given recipe
+  static Future<List<String>> getTagsForRecipe(String id) async {
+    List<Map<String, dynamic>> _results;
+    _results = await queryBy('recipe_tag', 'recipe_id', id);
+    return _results.map((tag) => tag['tag_name']).toList().cast<String>();
+  }
+
+  // Returns all steps for a given recipe id in order
+  static Future<List<String>> getStepsForRecipe(String id) async {
+    List<Map<String, dynamic>> _results;
+    _results = await _db.rawQuery("""
+    SELECT *
+    FROM recipe_step
+    WHERE recipe_id = $id
+    ORDER BY 'recipe_step.order'
+    """);
+    return _results.map((step) => step['step']).toList().cast<String>();
   }
 
   // Returns all tags
@@ -245,5 +299,12 @@ abstract class DB {
     Future<List<Map<String, dynamic>>> tagMap =
         queryBy('tag', 'name', '$tagName');
     return tagMap.then((tag) => tag[0]['id']);
+  }
+
+  // Returns ingredient ID by ingredient name
+  static Future<int> getIngredientID(String ingredient) {
+    Future<List<Map<String, dynamic>>> ingMap =
+        queryBy('ingredient', 'name', '$ingredient');
+    return ingMap.then((ing) => ing[0]['id']);
   }
 }
