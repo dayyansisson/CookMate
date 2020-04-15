@@ -21,30 +21,28 @@ class _BackendTestState extends State<BackendTest> {
             FlatButton(
               color: Colors.blue,
               textColor: Colors.white,
-              onPressed: () async {
-                List<Map<String, dynamic>> _results =
-                    await DB.getRecipesByCategory(Category.breakfast);
-                var _recipes =
-                    _results.map((recipe) => Recipe.fromMap(recipe)).toList();
-                for (var rec in _recipes) {
-                  print(rec.title);
-                }
+              onPressed: () {
+                var recipes = DB.getRecipesByCategory(Category.beverages);
+                recipes.then((allRecipes) {
+                  allRecipes.forEach((recipe) {
+                    print("${recipe.title}: ${recipe.category}");
+                  });
+                });
               },
               child: Text(
-                "Breakfast",
+                "beverages",
               ),
             ),
             FlatButton(
               color: Colors.blue,
               textColor: Colors.white,
-              onPressed: () async {
-                List<Map<String, dynamic>> _results =
-                    await DB.getRecipesByCategory(Category.lunch);
-                var _recipes =
-                    _results.map((recipe) => Recipe.fromMap(recipe)).toList();
-                for (var rec in _recipes) {
-                  print(rec.title);
-                }
+              onPressed: () {
+                var recipes = DB.getRecipesByCategory(Category.lunch);
+                recipes.then((allRecipes) {
+                  allRecipes.forEach((recipe) {
+                    print("${recipe.title}: ${recipe.category}");
+                  });
+                });
               },
               child: Text(
                 "Lunch",
@@ -177,6 +175,96 @@ class _BackendTestState extends State<BackendTest> {
             )
           ],
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                List<Map<String, dynamic>> _results = await DB.getRecipes();
+                var _recipes =
+                    _results.map((recipe) => Recipe.fromMap(recipe)).toList();
+                _recipes.forEach((rec) {
+                  // print("${rec.id}: ${rec.title}");
+                  if (rec.id == 213) {
+                    print("Recipe:\n${rec.id}: ${rec.title}");
+
+                    var ings = rec.getIngredients();
+                    ings.then((onValue) {
+                      print("Ingredients:");
+                      print(onValue);
+                    });
+
+                    var steps = rec.getSteps();
+                    steps.then((onValue) {
+                      print("Steps:");
+                      print(onValue);
+                    });
+
+                    var tags = rec.getTags();
+                    tags.then((onValue) {
+                      print("Tags:");
+                      print(onValue);
+                    });
+                  }
+                });
+              },
+              child: Text(
+                "Recipe with id 213",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                var rec = await DB.getRecipe("213");
+                print("${rec.id}: ${rec.title}");
+                if (rec.id == 213) {
+                  print("Recipe:\n${rec.id}: ${rec.title}");
+
+                  var ings = rec.getIngredients();
+                  ings.then((onValue) {
+                    print("Ingredients:");
+                    print(onValue);
+                  });
+
+                  var steps = rec.getSteps();
+                  steps.then((onValue) {
+                    print("Steps:");
+                    print(onValue);
+                  });
+
+                  var tags = rec.getTags();
+                  tags.then((onValue) {
+                    print("Tags:");
+                    print(onValue);
+                  });
+                }
+              },
+              child: Text(
+                "Only Recipe 213",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                DB.favoriteRecipe("213");
+                DB.favoriteRecipe("214");
+                DB.favoriteRecipe("2");
+                DB.unfavoriteRecipe("214");
+                var _results = await DB.getFavoriteRecipes();
+                _results.forEach((fav) {
+                  print(fav);
+                });
+              },
+              child: Text(
+                "All Favorites",
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
