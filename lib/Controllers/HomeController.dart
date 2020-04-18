@@ -29,7 +29,7 @@ class CatalogController {
   /*
     This method returns the displayed recipes 
   */
-  List<Recipe> getRecipe(int currentTab){
+  Future<List<Recipe>> getRecipe(int currentTab){
     if(currentTab == 0){
       currentRecipeList = backend.getFeaturedRecipes();
     }
@@ -45,7 +45,7 @@ class CatalogController {
   /*
     This method returns the correct header based on the current tab the user is on
   */
-  String getHeader(int currentTab){
+  Future<String> getHeader(int currentTab){
     if(currentTab == 0){
       headLine = 'Featured Meals of the Week';
     }
@@ -61,7 +61,7 @@ class CatalogController {
   /*
     This method returns the correct header based on the current tab the user is on
   */
-  String getBody(int currentTab){
+  Future<String> getBody(int currentTab){
     if(currentTab == 0){
       //checks to make sure there are at least two elements in the recipe list
       if(currentRecipeList.length >= 2){

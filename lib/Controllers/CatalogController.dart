@@ -1,5 +1,6 @@
 import 'dart:math';
-
+import 'package:CookMate/Enums/category.dart';
+import 'package:CookMate/backend/backend.dart';
 import 'package:CookMate/Entities/query.dart';
 import 'package:CookMate/Entities/recipe.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/services.dart';
   2 - The breakfast tab
   3 - The Lunch Tab
   4 - The Dinner Tab
+  5 - The desserts tab
 */
 
 class CatalogController {
@@ -21,25 +23,29 @@ class CatalogController {
   String imageURL; //Comes from Server Format: JSON
   //int currentTab; //Internal provided to the controller by the view
   List<Recipe> currentRecipeList; //Local DB/Server Format: JSON
+  //DB _backend;
 
   //Get recipe method
   //Call this method when the view updates, this updates the displayed recipes and the image that is displayed
-  List<Recipe> getRecipes(int currentTab){
+  Future<List<Recipe> getRecipes>(int currentTab){
   //Based on current tab make call 
   if(currentTab == 0){
-    currentRecipeList = backend.getAppetizerRecipes();
+    currentRecipeList = DB.getRecipesByCategory(Category.appetizers);
   }
   else if (currentTab == 1){
-    currentRecipeList = backend.getBeverageRecipes();
+    currentRecipeList = DB.getRecipesByCategory(Category.beverages);
   }
   else if(currentTab == 2){
-    currentRecipeList = backend.getBreakfastRecipes();
+    currentRecipeList = DB.getRecipesByCategory(Category.breakfast);
   }
   else if(currentTab == 3){
-    currentRecipeList = backend.getLunchRecipes();
+    currentRecipeList = DB.getRecipesByCategory(Category.lunch);
   }
   else if(currentTab == 4){
-    currentRecipeList = backend.getDinnerRecipes();
+    currentRecipeList = DB.getRecipesByCategory(Category.dinner);
+  }
+  else if(currentTab == 5){
+    currentRecipeList = DB.getRecipesByCategory(Category.desserts);
   }
   return currentRecipeList;
   }
