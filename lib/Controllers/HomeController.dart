@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:CookMate/Entities/query.dart';
 import 'package:CookMate/Entities/recipe.dart';
+import 'package:CookMate/backend/backend.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -14,43 +15,70 @@ import 'package:flutter/services.dart';
   2 - The Today Tab
 */
 
-class CatalogController {
+class HomeController {
+  
+  //Singleton constuctor
+  static final HomeController _homeController = HomeController._internal();
 
+  factory HomeController(){
+    return _homeController;
+  }
+
+  HomeController._internal();
+  
+  //Class Variables
   String imageURL; //Comes from Server Format: JSON This is for the background image
   //int currentTab; //Internal provided to the controller by the view
   List<Recipe> currentRecipeList;
   String headLine; //Server Format: JSON, This is the header for the home page
   String body; //Server Format: JSON
+  String title;
 
   String getImageURL(){
-    return currentRecipeList[0].imageURL;
+    return currentRecipeList[0].image;
   }
 
   /*
     This method returns the displayed recipes 
   */
-  Future<List<Recipe>> getRecipe(int currentTab){
+  Future<List<Recipe>> getRecipe(int currentTab) async{
     if(currentTab == 0){
-      currentRecipeList = backend.getFeaturedRecipes();
+      currentRecipeList = DB.getFeaturedRecipes();
     }
     else if(currentTab == 1){
-      currentRecipeList = backend.getFavoriteRecipes();
+      //currentRecipeList = await DB.getFavoriteRecipes(); //Change to List<Recipes> brian 
     }
     else if(currentTab == 2){
-      currentRecipeList = backend.getTodayRecipes();
+      currentRecipeList = DB.getTodayRecipes();
     }
     return currentRecipeList;
   }
 
   /*
-    This method returns the correct header based on the current tab the user is on
+    This method returns the correct title of the tab on the home page
   */
-  Future<String> getHeader(int currentTab){
+  String getTitle(int currentTab){
     if(currentTab == 0){
-      headLine = 'Featured Meals of the Week';
+      title = "Featured";
     }
     else if(currentTab == 1){
-      headLine = 'Your Favorite Recipes';
+      title = "Favorites";
+    }
+    else if(currentTab == 2){
+      title = "Today";
+    }
+    return headLine;
+  }
+
+  /*
+    This method returns the correct header based on the current tab the user is on
+  */
+  String getHeader(int currentTab){
+    if(currentTab == 0){
+      headLine = "Featured Meals\nof the Week";
+    }
+    else if(currentTab == 1){
+      headLine = "Your Favorites\nRecipes";
     }
     else if(currentTab == 2){
       headLine = "Today's Meals";
@@ -61,7 +89,7 @@ class CatalogController {
   /*
     This method returns the correct header based on the current tab the user is on
   */
-  Future<String> getBody(int currentTab){
+  String getBody(int currentTab){
     if(currentTab == 0){
       //checks to make sure there are at least two elements in the recipe list
       if(currentRecipeList.length >= 2){
