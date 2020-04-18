@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class Background extends StatelessWidget {
 
   final String _imageURL;
-  Background(this._imageURL);
+  Background(this._imageURL) : super(key: ValueKey<String>(_imageURL));
 
   @override
   Widget build(BuildContext context) {

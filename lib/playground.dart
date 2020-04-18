@@ -36,7 +36,11 @@ class Playground extends StatelessWidget {
             name: "Favorites",
             title: "Your Favorites\nRecipes",
             backgroundImage: "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/easy-bolognesey-recipe.jpg",
+<<<<<<< HEAD
             subtitle: "All the recipes that you've bookmarked for safekeeping.",
+=======
+            subtitle: "All the recipes that you’ve bookmarked for safekeeping.",
+>>>>>>> 90767d85e5f08ad0e8d1d32b454785e75c860338
             canExpandSheet: true,
             bodyContent: Column(
               children: <Widget>[
