@@ -27,14 +27,17 @@ class HomeController {
   HomeController._internal();
   
   //Class Variables
-  String imageURL; //Comes from Server Format: JSON This is for the background image
+  Future<String> imageURL; //Comes from Server Format: JSON This is for the background image
   //int currentTab; //Internal provided to the controller by the view
   List<Recipe> currentRecipeList;
   String headLine; //Server Format: JSON, This is the header for the home page
   String body; //Server Format: JSON
   String title;
 
-  String getImageURL(){
+  Future<String> getImageURL() async {
+    if(currentRecipeList == null){
+      return "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/easy-bolognesey-recipe.jpg";
+    }
     return currentRecipeList[0].image;
   }
 
@@ -67,7 +70,7 @@ class HomeController {
     else if(currentTab == 2){
       title = "Today";
     }
-    return headLine;
+    return title;
   }
 
   /*
@@ -92,18 +95,7 @@ class HomeController {
   String getBody(int currentTab){
     if(currentTab == 0){
       //checks to make sure there are at least two elements in the recipe list
-      if(currentRecipeList.length >= 2){
-        String title_1 = currentRecipeList[0].title;
-        String title_2 = currentRecipeList[1].title;
-        body = "$title_1, $title_2, plus more!";
-      }
-      else if(currentRecipeList.length == 1){
-        String title_1 = currentRecipeList[0].title;
-        body = "$title_1";
-      }
-      else{
-        body = '';
-      }
+      body = "Trader Joes' Featured Recipes!";
         
     }
     else if(currentTab == 1){

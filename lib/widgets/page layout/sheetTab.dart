@@ -8,7 +8,8 @@ class SheetTab {
   final Widget _bodyContent;
   Widget get bodyContent => Container(decoration: BoxDecoration(gradient: bodyGradient), child: _bodyContent);
 
-  final String backgroundImage;
+  String backgroundImage;
+  final Future<String> futureBackground;
   final String title;
   final String subtitle;
   final Gradient bodyGradient;
@@ -18,9 +19,14 @@ class SheetTab {
     @required this.name, 
     @required Widget bodyContent,
     this.backgroundImage,
+    this.futureBackground,
     this.title,
     this.subtitle,
     this.bodyGradient = StyleSheet.VERTICAL_GRADIENT_LIGHT,
     this.canExpandSheet = false
-  }) : _bodyContent = bodyContent;
+  }) : _bodyContent = bodyContent {
+    loadBackground();
+  }
+
+  void loadBackground() async => backgroundImage = await futureBackground;
 }

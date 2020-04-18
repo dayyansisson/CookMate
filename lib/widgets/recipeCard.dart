@@ -1,10 +1,16 @@
 import 'dart:ui';
+import 'package:CookMate/Entities/recipe.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:flutter/material.dart';
 
 class RecipeCard extends StatefulWidget {
+  //Class Variables
+  Recipe recipe;
 
   // TODO take in recipe entity
+  RecipeCard(Recipe recipe){
+    this.recipe = recipe;
+  }
   // TODO implement multiple layouts
   // TODO implement general scaling
   // TODO implement button functionality
@@ -31,7 +37,7 @@ class _RecipeCardState extends State<RecipeCard> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 image: DecorationImage(
-                  image: NetworkImage("https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/baked-honey-feta.jpg"),
+                  image: NetworkImage(widget.recipe.image),
                   fit: BoxFit.cover
                 )
               ),
@@ -53,7 +59,7 @@ class _RecipeCardState extends State<RecipeCard> {
                     ),
                     child: Center(
                       child: Text(
-                        "APPETIZER",
+                        widget.recipe.category.toUpperCase(),
                         style: TextStyle(
                           color: StyleSheet.BLACK.withOpacity(0.3),
                           fontSize: 12
@@ -73,7 +79,7 @@ class _RecipeCardState extends State<RecipeCard> {
                 Transform.translate(
                   offset: Offset(0, -8),
                   child: Text(
-                    'Tofu Fries',
+                    widget.recipe.title,
                     style: TextStyle(
                       fontFamily: 'Hoefler',
                       fontSize: 26,
@@ -89,7 +95,8 @@ class _RecipeCardState extends State<RecipeCard> {
                     ),
                     Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
                     Text(
-                      "8 MIN",
+                      //'2-3',
+                      widget.recipe.cookTime == null ? '' : widget.recipe.cookTime,
                       style: TextStyle(
                         color: StyleSheet.GREY,
                         fontWeight: FontWeight.w300
@@ -102,7 +109,8 @@ class _RecipeCardState extends State<RecipeCard> {
                     ),
                     Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
                     Text(
-                      "2-3",
+                      //'2-3',
+                      widget.recipe.servings == null ? '' : widget.recipe.servings,
                       style: TextStyle(
                         color: StyleSheet.GREY,
                         fontWeight: FontWeight.w300
