@@ -1,6 +1,6 @@
 import 'package:CookMate/Entities/entity.dart';
 import 'package:CookMate/Entities/ingredient.dart';
-import 'package:CookMate/Entities/tag.dart';
+import 'package:CookMate/backend/backend.dart';
 
 /*
   This file lays out the recipe class. 
@@ -13,43 +13,73 @@ class Recipe extends Entity {
   int id;
   String title;
   String description;
-  String imageURL;
-  String category; //should be an enum
-  String prepTime;
+  String image;
+  String category;
+  String prepTime; //prepTime is not in data yet
   String cookTime;
   String servings;
-  List<Tag> tags = [];
-  List<Ingredient> ingredients = [];
-  List<String> steps = [];
+  String url;
+  List<String> tags;
+  List<String> ingredients;
+  List<String> steps;
+  // List<Ingredient> ingredients = [];
 
   // Recipe Constructor
   Recipe({
     this.id,
     this.title,
     this.description,
-    this.imageURL,
+    this.image,
     this.category,
     this.prepTime,
     this.cookTime,
     this.servings,
-    this.tags,
-    this.ingredients,
-    this.steps,
+    this.url,
   });
+
+  Future<void> addToFavorites() async {
+    DB.favoriteRecipe("$id");
+  }
+
+  Future<void> removeFromFavorites() async {
+    DB.unfavoriteRecipe("$id");
+  }
+
+  Future<List<String>> getIngredients() async {
+    if (ingredients != null) {
+      return ingredients;
+    }
+    ingredients = await DB.getIngredientsForRecipe("$id");
+    return ingredients;
+  }
+
+  Future<List<String>> getSteps() async {
+    if (steps != null) {
+      return steps;
+    }
+    steps = await DB.getStepsForRecipe("$id");
+    return steps;
+  }
+
+  Future<List<String>> getTags() async {
+    if (tags != null) {
+      return tags;
+    }
+    tags = await DB.getTagsForRecipe("$id");
+    return tags;
+  }
 
   // Returns a JSON version
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
       'title': title,
       'description': description,
-      'imageURL': imageURL,
+      'image': image,
       'category': category,
       'prepTime': prepTime,
       'cookTime': cookTime,
       'servings': servings,
-      'tags': tags,
-      'ingredients': ingredients,
-      'steps': steps,
+      'url': url,
     };
 
     if (id != null) {
@@ -58,20 +88,18 @@ class Recipe extends Entity {
     return map;
   }
 
-  // Returns an object
+  // Returns a Recipe object from a map
   static Recipe fromMap(Map<String, dynamic> map) {
     return Recipe(
       id: map['id'],
       title: map['title'],
       description: map['description'],
-      imageURL: map['imageURL'],
+      image: map['image'],
       category: map['category'],
-      prepTime: map['prepTime'],
-      cookTime: map['cookTime'],
-      servings: map['servings'],
-      tags: map['tags'],
-      ingredients: map['ingredients'],
-      steps: map['steps'],
+      prepTime: map['cook_time'],
+      cookTime: map['cook_time'],
+      servings: map['serves'],
+      url: map['url'],
     );
   }
 }
