@@ -32,7 +32,7 @@ class Playground extends StatelessWidget {
                     padding:
                         const EdgeInsets.only(left: 25, right: 25, top: 10),
                     child: FutureBuilder(
-                      future: CatalogController().getRecipes(0),
+                      future: CatalogController().getRecipes(4),
                       builder: (context, AsyncSnapshot<List<Recipe>> snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -98,7 +98,7 @@ class Playground extends StatelessWidget {
                     child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25),
                         child: FutureBuilder(
-                          future: CatalogController().getRecipes(1),
+                          future: CatalogController().getRecipes(5),
                           builder:
                               (context, AsyncSnapshot<List<Recipe>> snapshot) {
                             if (snapshot.connectionState ==
