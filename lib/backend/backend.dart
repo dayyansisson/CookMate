@@ -223,7 +223,7 @@ abstract class DB {
       await _db.delete(table, where: 'id = ?', whereArgs: [entity.id]);
 
   static List<Recipe> getFeaturedRecipes() {
-    // for now just return random from each category
+    //TODO: for now just return random from each category
   }
 
   static Future<List<Map<String, dynamic>>> getFavoriteRecipes() async {
