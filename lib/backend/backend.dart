@@ -40,15 +40,15 @@ abstract class DB {
 
     await db.execute("""
     CREATE TABLE "recipe" (
-      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-      "title"	TEXT NOT NULL UNIQUE,
-      "image"	TEXT,
-      "category"	TEXT,
-      "description"	TEXT,
-      "url"	TEXT,
-      "cookTime"	TEXT,
-      "prepTime"	TEXT,
-      "servings"	INTEGER
+      "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+      "title" TEXT NOT NULL UNIQUE,
+      "description" TEXT,
+      "image" TEXT,
+      "category" TEXT,
+      "prepTime" TEXT,
+      "cookTime" TEXT,
+      "servings" TEXT,
+      "url" TEXT
     )
     """);
 
@@ -131,7 +131,16 @@ abstract class DB {
     String jsonRecipes = await rootBundle.loadString('assets/recipes.json');
     Map<String, dynamic> data = json.decode(jsonRecipes);
     data.forEach((k, v) {
-      Recipe newRecipe = Recipe.fromMap(v);
+      var newRecipe = Recipe(
+        title: v['title'],
+        description: v['description'],
+        image: v['image'],
+        category: v['category'],
+        prepTime: null,
+        cookTime: v['cook_time'],
+        servings: v['serves'],
+        url: v['url'],
+      );
       Future<int> success = insert(Recipe.table, newRecipe);
       success.then((recipeID) {
         if (recipeID != null) {
@@ -214,7 +223,7 @@ abstract class DB {
       await _db.delete(table, where: 'id = ?', whereArgs: [entity.id]);
 
   static List<Recipe> getFeaturedRecipes() {
-    // for now just return random from each category
+    //TODO: for now just return random from each category
   }
 
   static Future<List<Map<String, dynamic>>> getFavoriteRecipes() async {

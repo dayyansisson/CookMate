@@ -1,6 +1,6 @@
 import 'package:CookMate/Entities/entity.dart';
-import 'package:CookMate/Entities/ingredient.dart';
 import 'package:CookMate/backend/backend.dart';
+// import 'package:CookMate/Entities/ingredient.dart';
 
 /*
   This file lays out the recipe class. 
@@ -20,9 +20,8 @@ class Recipe extends Entity {
   String servings;
   String url;
   List<String> tags;
-  List<String> ingredients;
+  List<String> ingredients; // List<Ingredient> ingredients;
   List<String> steps;
-  // List<Ingredient> ingredients = [];
 
   // Recipe Constructor
   Recipe({
@@ -96,9 +95,9 @@ class Recipe extends Entity {
       description: map['description'],
       image: map['image'],
       category: map['category'],
-      prepTime: map['cook_time'],
-      cookTime: map['cook_time'],
-      servings: map['serves'],
+      prepTime: null,
+      cookTime: map['cookTime'],
+      servings: map['servings'],
       url: map['url'],
     );
   }
