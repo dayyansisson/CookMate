@@ -221,7 +221,8 @@ class _BackendTestState extends State<BackendTest> {
                 var rec = await DB.getRecipe("213");
                 print("${rec.id}: ${rec.title}");
                 if (rec.id == 213) {
-                  print("Recipe:\n${rec.id}: ${rec.title}");
+                  print(
+                      "Recipe:\n${rec.id}: ${rec.title} servs:${rec.servings} cookTime:${rec.cookTime}");
 
                   var ings = rec.getIngredients();
                   ings.then((onValue) {
