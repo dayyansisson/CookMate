@@ -32,14 +32,18 @@ class Playground extends StatelessWidget {
                     padding:
                         const EdgeInsets.only(left: 25, right: 25, top: 10),
                     child: FutureBuilder(
-                      future: CatalogController().getRecipes(4),
+                      future: CatalogController().getRecipes(0),
                       builder: (context, AsyncSnapshot<List<Recipe>> snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return CircularProgressIndicator();
                         }
-                        //print(snapshot.data);
+                        if(snapshot.data == null){
+                          print(snapshot.data.length);
+                          print('bad return');
+                        }
                         return ListView.builder(
+                          itemCount: snapshot.data.length,
                           itemBuilder: (context, index) {
                             return RecipeCard(snapshot.data[index]);
                           },
@@ -98,7 +102,7 @@ class Playground extends StatelessWidget {
                     child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25),
                         child: FutureBuilder(
-                          future: CatalogController().getRecipes(5),
+                          future: CatalogController().getRecipes(1),
                           builder:
                               (context, AsyncSnapshot<List<Recipe>> snapshot) {
                             if (snapshot.connectionState ==
@@ -107,6 +111,7 @@ class Playground extends StatelessWidget {
                             }
 
                             return ListView.builder(
+                              itemCount: snapshot.data.length,
                               itemBuilder: (context, index) {
                                 return RecipeCard(snapshot.data[index]);
                               },
