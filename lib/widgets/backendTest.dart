@@ -309,33 +309,24 @@ class _BackendTestState extends State<BackendTest> {
               color: Colors.blue,
               textColor: Colors.white,
               onPressed: () async {
-                var rec = await DB.getRecipe("213");
-                print("${rec.id}: ${rec.title}");
-                if (rec.id == 213) {
-                  print(
-                      "Recipe:\n${rec.id}: ${rec.title} servs:${rec.servings} cookTime:${rec.cookTime}");
-
-                  var ings = rec.getIngredients();
-                  ings.then((onValue) {
-                    print("Ingredients:");
-                    print(onValue);
-                  });
-
-                  var steps = rec.getSteps();
-                  steps.then((onValue) {
-                    print("Steps:");
-                    print(onValue);
-                  });
-
-                  var tags = rec.getTags();
-                  tags.then((onValue) {
-                    print("Tags:");
-                    print(onValue);
-                  });
-                }
+                List<String> ingredients = [
+                  "Buns",
+                  "Fresh",
+                  "man",
+                  "Sea",
+                  "Quin",
+                  "ed Onion",
+                ];
+                var _results =
+                    await DB.findIngredients(ingredients.elementAt(2));
+                // print(_results);
+                print("Searched for: ${ingredients.elementAt(2)}");
+                _results.forEach((ing) {
+                  print(ing);
+                });
               },
               child: Text(
-                "Only Recipe 213",
+                "Find ing",
               ),
             ),
             FlatButton(

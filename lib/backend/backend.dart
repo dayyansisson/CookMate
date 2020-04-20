@@ -258,6 +258,17 @@ abstract class DB {
     return _db.query(Ingredient.table);
   }
 
+  // Find ingredient
+  static Future<List<String>> findIngredients(String ingredient) async {
+    List<Map<String, dynamic>> _results;
+    _results = await _db.rawQuery("""
+      SELECT *
+      FROM ingredient
+      WHERE name LIKE '%$ingredient%'
+    """);
+    return _results.map((ing) => ing['name']).toList().cast<String>();
+  }
+
   // Returns all ingredients for a given recipe
   static Future<Recipe> getRecipe(String id) async {
     var _result = await queryBy('recipe', 'id', id);
