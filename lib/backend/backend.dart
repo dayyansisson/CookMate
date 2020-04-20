@@ -274,6 +274,26 @@ abstract class DB {
         .cast<String>();
   }
 
+  // Returns all recipes that have given ingredients
+  static Future<List<int>> getRecipeWithIngredients(List<String> ing) async {
+    List<Map<String, dynamic>> _results;
+    String conditions = """""";
+    for (var i = 0; i < ing.length; i++) {
+      conditions += """ingredient_name = "${ing.elementAt(i)}" OR """;
+    }
+    conditions =
+        conditions.substring(0, conditions.length - 4); //get rid of last OR
+
+    _results = await _db.rawQuery("""
+      SELECT *
+      FROM recipe_ingredient
+      WHERE $conditions
+    """);
+    // print("Query Conditions: $conditions");
+    // print(_results);
+    return _results.map((recipe) => recipe['recipe_id']).toList().cast<int>();
+  }
+
   // Returns all tags for a given recipe
   static Future<List<String>> getTagsForRecipe(String id) async {
     List<Map<String, dynamic>> _results;

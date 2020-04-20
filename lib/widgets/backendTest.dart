@@ -265,6 +265,102 @@ class _BackendTestState extends State<BackendTest> {
               ),
             ),
           ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                List<Map<String, dynamic>> _results = await DB.getRecipes();
+                var _recipes =
+                    _results.map((recipe) => Recipe.fromMap(recipe)).toList();
+                _recipes.forEach((rec) {
+                  // print("${rec.id}: ${rec.title}");
+                  if (rec.id == 213) {
+                    print("Recipe:\n${rec.id}: ${rec.title}");
+
+                    var ings = rec.getIngredients();
+                    ings.then((onValue) {
+                      print("Ingredients:");
+                      print(onValue);
+                    });
+
+                    var steps = rec.getSteps();
+                    steps.then((onValue) {
+                      print("Steps:");
+                      print(onValue);
+                    });
+
+                    var tags = rec.getTags();
+                    tags.then((onValue) {
+                      print("Tags:");
+                      print(onValue);
+                    });
+                  }
+                });
+              },
+              child: Text(
+                "Recipe with id 213",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                var rec = await DB.getRecipe("213");
+                print("${rec.id}: ${rec.title}");
+                if (rec.id == 213) {
+                  print(
+                      "Recipe:\n${rec.id}: ${rec.title} servs:${rec.servings} cookTime:${rec.cookTime}");
+
+                  var ings = rec.getIngredients();
+                  ings.then((onValue) {
+                    print("Ingredients:");
+                    print(onValue);
+                  });
+
+                  var steps = rec.getSteps();
+                  steps.then((onValue) {
+                    print("Steps:");
+                    print(onValue);
+                  });
+
+                  var tags = rec.getTags();
+                  tags.then((onValue) {
+                    print("Tags:");
+                    print(onValue);
+                  });
+                }
+              },
+              child: Text(
+                "Only Recipe 213",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                List<String> ingredients = [
+                  "4 TJ's Whole Wheat Hamburger Buns",
+                  "TJ's Fresh Cilantro, chopped",
+                  "TJ's Amba Mango Sauce",
+                  "TJ's Sea Salt",
+                  "1 package TJ's Quinoa Cowboy Veggie Burgers",
+                  "1/2 TJ's Red Onion, diced"
+                ];
+                // recipe 22, 23
+                var _results = await DB.getRecipeWithIngredients(ingredients);
+                _results.forEach((recipe) {
+                  print(recipe);
+                });
+              },
+              child: Text(
+                "Recipes with ing.",
+              ),
+            ),
+          ],
         )
       ],
     );
