@@ -222,8 +222,21 @@ abstract class DB {
   static Future<int> delete(String table, Entity entity) async =>
       await _db.delete(table, where: 'id = ?', whereArgs: [entity.id]);
 
-  static List<Recipe> getFeaturedRecipes() {
-    //TODO: for now just return random from each category
+  // Currently returns the first recipe of each category
+  static Future<List<Recipe>> getFeaturedRecipes() async {
+    List<Recipe> recipes = List<Recipe>();
+    for (var cat in Category.values) {
+      if (cat != Category.none) {
+        List<Map<String, dynamic>> _firstCategoryRecipe = await _db.rawQuery("""
+          SELECT *
+          FROM recipe
+          WHERE category = "${catToString(cat)}"
+          LIMIT 1
+        """);
+        recipes.add(Recipe.fromMap(_firstCategoryRecipe.first));
+      }
+    }
+    return recipes;
   }
 
   static Future<List<Map<String, dynamic>>> getFavoriteRecipes() async {

@@ -273,36 +273,15 @@ class _BackendTestState extends State<BackendTest> {
               color: Colors.blue,
               textColor: Colors.white,
               onPressed: () async {
-                List<Map<String, dynamic>> _results = await DB.getRecipes();
-                var _recipes =
-                    _results.map((recipe) => Recipe.fromMap(recipe)).toList();
-                _recipes.forEach((rec) {
-                  // print("${rec.id}: ${rec.title}");
-                  if (rec.id == 213) {
-                    print("Recipe:\n${rec.id}: ${rec.title}");
-
-                    var ings = rec.getIngredients();
-                    ings.then((onValue) {
-                      print("Ingredients:");
-                      print(onValue);
-                    });
-
-                    var steps = rec.getSteps();
-                    steps.then((onValue) {
-                      print("Steps:");
-                      print(onValue);
-                    });
-
-                    var tags = rec.getTags();
-                    tags.then((onValue) {
-                      print("Tags:");
-                      print(onValue);
-                    });
-                  }
+                var _results = await DB.getFeaturedRecipes();
+                // print(_results);
+                // print("Searched for: ${ingredients.elementAt(2)}");
+                _results.forEach((recipe) {
+                  print("${recipe.category}, ${recipe.title}");
                 });
               },
               child: Text(
-                "Recipe with id 213",
+                "Featured",
               ),
             ),
             FlatButton(
