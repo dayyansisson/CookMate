@@ -265,6 +265,72 @@ class _BackendTestState extends State<BackendTest> {
               ),
             ),
           ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                var _results = await DB.getFeaturedRecipes();
+                // print(_results);
+                // print("Searched for: ${ingredients.elementAt(2)}");
+                _results.forEach((recipe) {
+                  print("${recipe.category}, ${recipe.title}");
+                });
+              },
+              child: Text(
+                "Featured",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                List<String> ingredients = [
+                  "Buns",
+                  "Fresh",
+                  "man",
+                  "Sea",
+                  "Quin",
+                  "ed Onion",
+                ];
+                var _results =
+                    await DB.findIngredients(ingredients.elementAt(2));
+                // print(_results);
+                print("Searched for: ${ingredients.elementAt(2)}");
+                _results.forEach((ing) {
+                  print(ing);
+                });
+              },
+              child: Text(
+                "Find ing",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                List<String> ingredients = [
+                  "4 TJ's Whole Wheat Hamburger Buns",
+                  "TJ's Fresh Cilantro, chopped",
+                  "TJ's Amba Mango Sauce",
+                  "TJ's Sea Salt",
+                  "1 package TJ's Quinoa Cowboy Veggie Burgers",
+                  "1/2 TJ's Red Onion, diced"
+                ];
+                // recipe 22, 23
+                var _results = await DB.getRecipeWithIngredients(ingredients);
+                _results.forEach((recipe) {
+                  print(recipe);
+                });
+              },
+              child: Text(
+                "Recipes with ing.",
+              ),
+            ),
+          ],
         )
       ],
     );
