@@ -46,7 +46,7 @@ class HomeController {
   */
   Future<List<Recipe>> getRecipe(int currentTab) async{
     if(currentTab == 0){
-      currentRecipeList = DB.getFeaturedRecipes();
+      currentRecipeList = await DB.getFeaturedRecipes();
     }
     else if(currentTab == 1){
       //currentRecipeList = await DB.getFavoriteRecipes(); //Change to List<Recipes> brian 
