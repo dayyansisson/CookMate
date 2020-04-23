@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
+import 'package:CookMate/widgets/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -70,10 +71,10 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                     color: Colors.white12,
                     child: Column(
                       children: <Widget> [
-                        _header,
-                        SizedBox(
-                          height: 60 - 60 * (1 - dragPosition.value),
-                        ),
+                        header,
+                        SizedBox(height: 35 - 30 * (1 - dragPosition.value)),
+                        tagRow,
+                        SizedBox(height: 85 - 60 * (1 - dragPosition.value)),
                         Expanded(child: tabBody),
                       ]
                     ),
@@ -87,7 +88,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     );
   }
 
-  Widget get _header {
+  Widget get header {
     return GestureDetector(
       onVerticalDragUpdate: (details) {
         setState(() {
@@ -211,6 +212,31 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     );
   }
 
+  Widget get tagRow {
+
+    List<String> tags = [
+      "rice",
+      "appetizers",
+      "light"
+    ];
+
+    return Container(
+      height: Tag.DEFAULT_SIZE * 2,
+      child: ListView.builder(
+        itemCount: tags.length,
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Tag(tags[index]),
+          );
+        }
+      ),
+    );
+
+  }
+
   Widget get tabBody {
 
     return Consumer<TabNavigationModel> (
@@ -257,6 +283,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   }
 
   Widget get ingredientsList {
+
     return Text(
       '– 3 large brown eggs\n– 1 cup of Wild Rice\n– 2 ½ cups of Kale\n– 1 sweet potato',
       style: TextStyle(
@@ -269,6 +296,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   }
 
   Widget get directionsList {
+
     return Text(
       '– 1 of something\n– 2 cups of something else\n– 3 tbsp of the last thing',
       style: TextStyle(

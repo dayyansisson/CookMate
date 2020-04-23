@@ -46,7 +46,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     
     return ChangeNotifierProvider(
-      create: (_) => TabNavigationModel(tabCount: widget.pageSheet.tabs.length),
+      create: (_) => TabNavigationModel(tabCount: widget.pageSheet.tabs.length), 
       child: Stack(
         children: <Widget>[
           Consumer<TabNavigationModel> (  // Background
