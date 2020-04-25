@@ -11,10 +11,7 @@ import 'package:flutter/services.dart' show rootBundle;
 TODOs:
   - Need to populate recipe_ingredient table
   - Need to populate ingredient table
-  - Need to handle favorite recipes
-  - Need to handle featured recipes
   - Need to implement shopping cart
-  - Find recipe by substring
 */
 
 abstract class DB {
