@@ -264,14 +264,14 @@ abstract class DB {
   }
 
   // Find recipe by substring
-  static Future<List<String>> findRecipe(String recipe) async {
+  static Future<List<int>> findRecipe(String recipe) async {
     List<Map<String, dynamic>> _results;
     _results = await _db.rawQuery("""
       SELECT *
       FROM recipe
       WHERE title LIKE '%$recipe%'
     """);
-    return _results.map((rec) => rec['title']).toList().cast<String>();
+    return _results.map((rec) => rec['id']).toList().cast<int>();
   }
 
   // Returns all ingredients
