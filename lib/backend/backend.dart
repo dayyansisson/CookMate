@@ -11,10 +11,7 @@ import 'package:flutter/services.dart' show rootBundle;
 TODOs:
   - Need to populate recipe_ingredient table
   - Need to populate ingredient table
-  - Need to handle favorite recipes
-  - Need to handle featured recipes
   - Need to implement shopping cart
-  - 
 */
 
 abstract class DB {
@@ -264,6 +261,17 @@ abstract class DB {
   // Returns all recipes
   static Future<List<Map<String, dynamic>>> getRecipes() {
     return _db.query(Recipe.table);
+  }
+
+  // Find recipe by substring
+  static Future<List<String>> findRecipe(String recipe) async {
+    List<Map<String, dynamic>> _results;
+    _results = await _db.rawQuery("""
+      SELECT *
+      FROM recipe
+      WHERE title LIKE '%$recipe%'
+    """);
+    return _results.map((rec) => rec['title']).toList().cast<String>();
   }
 
   // Returns all ingredients
