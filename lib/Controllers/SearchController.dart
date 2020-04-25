@@ -16,7 +16,7 @@ class SearchController {
   String imageURL; //Comes from Server Format: JSON
   int currentTab; //Internal 
   List<Query> queries; //Internal 
-  List<Recipe> searchResults; //Internal
+  //List<Recipe> searchResults; //Internal
   List<String> ingredients;
   List<int> ingredientSearch;
 
@@ -37,6 +37,9 @@ Future<List<String>> findIngredients(String substring) async {
 }
 
   Future<List<Recipe>> getRecipesFromIngredients(List<String> ing) async {
+    //List of recipes that will be returned
+    List<Recipe> searchResults;
+    
     //Call to backend to get the recipe IDs that match the list of ingredients
     ingredientSearch = await DB.getRecipeWithIngredients(ing);
 
