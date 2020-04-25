@@ -331,6 +331,33 @@ class _BackendTestState extends State<BackendTest> {
               ),
             ),
           ],
+        ),
+        Row(
+          children: <Widget>[
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                List<String> recipes = [
+                  "Buns",
+                  "Fresh",
+                  "man",
+                  "Sea",
+                  "Quin",
+                  "ed Onion",
+                ];
+                var _results = await DB.findRecipe(recipes.elementAt(2));
+                // print(_results);
+                print("Searched for: ${recipes.elementAt(2)}");
+                _results.forEach((rec) {
+                  print(rec);
+                });
+              },
+              child: Text(
+                "Find recipe substring",
+              ),
+            ),
+          ],
         )
       ],
     );
