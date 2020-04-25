@@ -34,12 +34,15 @@ class RecipePage extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    "BACK",
-                    style: TextStyle(
-                      color: StyleSheet.WHITE,
-                      fontWeight: FontWeight.bold,
-                      fontSize: _PAGE_NAME_FONT_SIZE
+                  Button(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      "BACK",
+                      style: TextStyle(
+                        color: StyleSheet.WHITE,
+                        fontWeight: FontWeight.bold,
+                        fontSize: _PAGE_NAME_FONT_SIZE
+                      ),
                     ),
                   ),
                   Spacer(),
