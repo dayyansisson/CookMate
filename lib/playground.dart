@@ -1,3 +1,4 @@
+import 'package:CookMate/Controllers/SearchController.dart';
 import 'package:CookMate/Entities/recipe.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/page%20layout/mainPage.dart';
@@ -13,6 +14,8 @@ import 'Controllers/CatalogController.dart';
    without affecting each other's work.
 */
 class Playground extends StatelessWidget {
+  List<String> ingredientTest = ["1 pound package TJ's Pasta", "Your favorite TJ's Olive Oil", "Juice of 1 TJ's Lemon", "1 tub TJ's Mediterranean Hummus"];
+  String recipeTest = "chicken";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,14 +35,14 @@ class Playground extends StatelessWidget {
                     padding:
                         const EdgeInsets.only(left: 25, right: 25, top: 10),
                     child: FutureBuilder(
-                      future: CatalogController().getRecipes(0),
+                      future: SearchController().getRecipesFromIngredients(ingredientTest),
                       builder: (context, AsyncSnapshot<List<Recipe>> snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return CircularProgressIndicator();
                         }
                         if(snapshot.data == null){
-                          print(snapshot.data.length);
+                          //print(snapshot.data.length);
                           print('bad return');
                         }
                         return ListView.builder(
@@ -102,7 +105,7 @@ class Playground extends StatelessWidget {
                     child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25),
                         child: FutureBuilder(
-                          future: CatalogController().getRecipes(1),
+                          future: SearchController().getRecipesBySubstring(recipeTest),
                           builder:
                               (context, AsyncSnapshot<List<Recipe>> snapshot) {
                             if (snapshot.connectionState ==

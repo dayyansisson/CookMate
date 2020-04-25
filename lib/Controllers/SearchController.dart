@@ -12,13 +12,15 @@ import 'package:quiver/core.dart';
 */
 
 class SearchController {
+  //Singleton constuctor
+  static final SearchController _searchController = SearchController._internal();
 
-  String imageURL; //Comes from Server Format: JSON
-  int currentTab; //Internal 
-  List<Query> queries; //Internal 
-  //List<Recipe> searchResults; //Internal
-  List<String> ingredients;
-  List<int> ingredientSearch;
+  factory SearchController(){
+    return _searchController;
+  }
+
+  SearchController._internal();
+
 
 /* 
   This method takes a substring from the view and makes a backend call to find the ingredients
@@ -28,7 +30,7 @@ class SearchController {
 */
 Future<List<String>> findIngredients(String substring) async {
   //Call to the backend to get a list of strings which are the ingredients that match the substring
-  ingredients = await DB.findIngredients(substring);
+  List<String> ingredients = await DB.findIngredients(substring);
 
   if(ingredients == null){
     // TODO something about finding null
@@ -38,26 +40,30 @@ Future<List<String>> findIngredients(String substring) async {
 
   Future<List<Recipe>> getRecipesFromIngredients(List<String> ing) async {
     //List of recipes that will be returned
-    List<Recipe> searchResults;
+    List<Recipe> searchResults = List<Recipe>();
     
     //Call to backend to get the recipe IDs that match the list of ingredients
-    ingredientSearch = await DB.getRecipeWithIngredients(ing);
-
-    if(ingredientSearch == null){
+    List<int> ingredientSearch = await DB.getRecipeWithIngredients(ing);
+    
+    if(ingredientSearch == null || ingredientSearch.length == 0){
       //TODO handle null
+      print('null return');
     }
 
     //Sorts the returned list by id frequency
     ingredientSearch = _sortList(ingredientSearch);
-
     //Takes the list of recipe ids and returns a list of recipes from them
-    searchResults = await _idToObject(ingredientSearch);
-
+    for(int i = 0; i < ingredientSearch.length; i++){
+      Recipe rec = await DB.getRecipe(ingredientSearch[i].toString());
+      searchResults.add(rec);
+    }
+    //searchResults = await _idToObject(ingredientSearch);
+    
     return searchResults;
   }
 
   Future<List<Recipe>> getRecipesBySubstring(String rec) async {
-    List<Recipe> searchResults;
+    List<Recipe> recipeResults = List<Recipe>();
 
     //Call to the backend with the substring which returns a list of recipe titles that match
     List<int> initialSearch = await DB.findRecipe(rec);
@@ -68,32 +74,23 @@ Future<List<String>> findIngredients(String substring) async {
     }
 
     //Takes the list of recipe ids and returns a list of recipes from them
-    searchResults = await _idToObject(initialSearch);
-
-    return searchResults;
-  }
-
-  //This private method takes a list of recipe ID's and returns the recipe objects for them
-  Future<List<Recipe>> _idToObject(List<int> id) async {
-    List<Recipe> convert;
-    for(int i = 0; i < ingredientSearch.length; i++){
-      Recipe rec = await DB.getRecipe(ingredientSearch[i].toString());
-      convert.add(rec);
+    for(int i = 0; i < initialSearch.length; i++){
+      Recipe rec = await DB.getRecipe(initialSearch[i].toString());
+      recipeResults.add(rec);
     }
-    return convert;
+    return recipeResults;
   }
 
   //This private method takes a list of ints with multiple same entries and returns them 
   //Sorted based on the id frequency
   List<int> _sortList (List<int> ing){
-    List<_recipeResult> queue;
-
+    List<_RecipeResult> queue = List<_RecipeResult>();
     for(int i = 0; i < ing.length; i++){
-      _recipeResult id = _recipeResult(ing[i]);
-
+      _RecipeResult id = _RecipeResult(ing[i]);
+      
       if(queue.contains(id)){
         int index = queue.indexOf(id);
-        queue[index].rank++;
+        queue[index].incrementRank();
       }
       else{
         queue.add(id);
@@ -102,14 +99,14 @@ Future<List<String>> findIngredients(String substring) async {
 
     //Sorts the list in ascending order
     queue.sort((b,a) => a.rank.compareTo(b.rank));
-
+    
     //returns the sorted list of ints
     return _resultToList(queue);
   }
 
   //This private method returns a list of ints from a list of _recipeResult objects
-  List<int> _resultToList(List<_recipeResult> lst){
-    List<int> toReturn;
+  List<int> _resultToList(List<_RecipeResult> lst){
+    List<int> toReturn = List<int>();
 
     for(int i = 0; i < lst.length; i++){
       toReturn.add(lst[i].recipeID);
@@ -119,27 +116,29 @@ Future<List<String>> findIngredients(String substring) async {
   }
 }
 //This private class is used to sort the returned recipes
-class _recipeResult extends Object{
+class _RecipeResult {
   //Variables
   int recipeID;
   int rank = 1;
 
-  _recipeResult(int recipeID){
+  _RecipeResult(int recipeID){
     this.recipeID = recipeID;
   }
 
-
+  //Increments the ranking
+  void incrementRank(){
+    this.rank = this.rank+1;
+  }
 
   //Overloads the comparator operation for the priority queue
-  bool operator <(_recipeResult other){
+  bool operator <(_RecipeResult other){
     return (this.rank < other.rank);
   }
 
   //Overloads the == and hashcode methods for the priority queue
-  bool operator ==(other){
-    return (this.recipeID == other.recipeID);
-  }
+  bool operator ==(Object other) => other is _RecipeResult && other.recipeID == this.recipeID;
 
-  int get hashCode => hash2(recipeID.hashCode, rank.hashCode);
+  int get hashCode => recipeID.hashCode;
+  //int get hashCode => hash2(recipeID.hashCode, rank.hashCode);
 
 }
