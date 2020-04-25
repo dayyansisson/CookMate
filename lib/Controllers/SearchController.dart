@@ -51,12 +51,36 @@ Future<List<String>> findIngredients(String substring) async {
     ingredientSearch = _sortList(ingredientSearch);
 
     //Takes the list of recipe ids and returns a list of recipes from them
-    for(int i = 0; i < ingredientSearch.length; i++){
-      Recipe rec = await DB.getRecipe(ingredientSearch[i].toString());
-      searchResults.add(rec);
-    }
+    searchResults = await _idToObject(ingredientSearch);
 
     return searchResults;
+  }
+
+  Future<List<Recipe>> getRecipesBySubstring(String rec) async {
+    List<Recipe> searchResults;
+
+    //Call to the backend with the substring which returns a list of recipe titles that match
+    List<int> initialSearch = await DB.findRecipe(rec);
+
+    //Handle null
+    if(initialSearch == null){
+      //TODO 
+    }
+
+    //Takes the list of recipe ids and returns a list of recipes from them
+    searchResults = await _idToObject(initialSearch);
+
+    return searchResults;
+  }
+
+  //This private method takes a list of recipe ID's and returns the recipe objects for them
+  Future<List<Recipe>> _idToObject(List<int> id) async {
+    List<Recipe> convert;
+    for(int i = 0; i < ingredientSearch.length; i++){
+      Recipe rec = await DB.getRecipe(ingredientSearch[i].toString());
+      convert.add(rec);
+    }
+    return convert;
   }
 
   //This private method takes a list of ints with multiple same entries and returns them 
