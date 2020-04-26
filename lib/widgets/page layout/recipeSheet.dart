@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/tag.dart';
@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class RecipeSheet extends StatefulWidget {
+
+  final Recipe recipe;
+  RecipeSheet(this.recipe);
 
   @override
   _RecipeSheetState createState() => _RecipeSheetState();
@@ -28,10 +31,15 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   AnimationController dragController;
   Animation<double> dragPosition;
 
+  /* Referenced variables */
+  Recipe recipe;
+
   @override
   void initState() { 
 
     super.initState();
+
+    recipe = widget.recipe;
     
     dragController = AnimationController(
       vsync: this, 
@@ -72,9 +80,6 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                     child: Column(
                       children: <Widget> [
                         header,
-                        SizedBox(height: 35 - 30 * (1 - dragPosition.value)),
-                        tagRow,
-                        SizedBox(height: 85 - 60 * (1 - dragPosition.value)),
                         Expanded(child: tabBody),
                       ]
                     ),
@@ -89,6 +94,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   }
 
   Widget get header {
+
     return GestureDetector(
       onVerticalDragUpdate: (details) {
         setState(() {
@@ -98,6 +104,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
       onVerticalDragEnd: (details) {
         if(dragController.value > 0.5) {
           dragController.forward(from: dragController.value);
+          Provider.of<TabNavigationModel>(context, listen: false).expandSheet = true;
         } else {
           dragController.reverse(from: dragController.value);
         }
@@ -105,13 +112,22 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
       child: Button(
         onPressed: null,
         child: Column(
-          children: <Widget> [
+          children: <Widget>[
             _title,
             SizedBox(height: 14),
-            _description,
-            _horizontalInfoBar
-          ]
-        ),
+            _ExpandableWidget(
+              duration: Duration(milliseconds: 400),
+              curve: Curves.fastOutSlowIn,
+              children: <Widget>[
+                _description,     // TODO fix overflow
+                _horizontalInfoBar,
+                SizedBox(height: 35 - 30 * (1 - dragPosition.value)),
+                tagRow,
+                SizedBox(height: 85 - 60 * (1 - dragPosition.value)),
+              ],
+            )
+          ],
+        )
       ),
     );
   }
@@ -145,12 +161,39 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
         Positioned(
           top: _SHEET_BORDER_RADIUS,
           left: _SHEET_BORDER_RADIUS,
-          child: Text(
-            "Wild Rice & Egg",
-            style: TextStyle(
-              fontSize: _TITLE_SIZE,
-              fontFamily: 'Hoefler',
-              color: StyleSheet.WHITE,
+          child: Container(
+            width: MediaQuery.of(context).size.width - (2 * _SHEET_BORDER_RADIUS),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    recipe.title,   // TODO fix low letters like "g" cut off at bottom
+                    maxLines: 1,    // TODO fix overflow
+                    style: TextStyle(
+                      fontSize: _TITLE_SIZE,
+                      fontFamily: 'Hoefler',
+                      color: StyleSheet.WHITE,
+                    ),
+                  ),
+                ),
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 400),
+                  switchInCurve: Curves.easeInOut,
+                  switchOutCurve: Curves.easeInOut,
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(
+                      scale: animation,
+                      child: child,
+                    );
+                  },
+                  child: _ExpandIcon(
+                    Provider.of<TabNavigationModel>(context, listen: true).expandSheet
+                    ? Icons.arrow_drop_down : Icons.arrow_right,
+                    1 - dragController.value
+                  ),
+                )
+              ],
             ),
           )
         ),
@@ -163,7 +206,9 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: _SHEET_BORDER_RADIUS),
       child: Text(
-        "Wild rice’s nutty and earthy flavors elevate an otherwise boring dish instantly.",
+        recipe.description,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: _DESCRIPTION_SIZE,
           height: _LINE_SPACING,
@@ -181,9 +226,9 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          _basicInfo("Prep", "15 min"),
-          _basicInfo("Cook", "10 min"),
-          _basicInfo("Serves", "4-6")
+          _basicInfo("Prep", recipe.prepTime),
+          _basicInfo("Cook", recipe.cookTime),
+          _basicInfo("Serves", recipe.servings)
         ],
       ),
     );
@@ -214,22 +259,23 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   Widget get tagRow {
 
-    List<String> tags = [
-      "rice",
-      "appetizers",
-      "light"
-    ];
+    List<String> tags = List<String>();
+    tags.add(recipe.category);
+    for(String tag in recipe.tags) {
+      tags.add(tag);
+    }
 
     return Container(
       height: Tag.DEFAULT_SIZE * 2,
+      alignment: Alignment.center,
       child: ListView.builder(
         itemCount: tags.length,
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: Tag(tags[index]),
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Tag(content: tags[index]),
           );
         }
       ),
@@ -238,6 +284,8 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   }
 
   Widget get tabBody {
+
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Consumer<TabNavigationModel> (
       builder: (context, model, _) {
@@ -248,32 +296,45 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
         return GestureDetector(
           onHorizontalDragEnd: (DragEndDetails details) => onHorizontalSwipe(details, model),
           child: ClipPath(
-            clipper: TabClipper(),
+            clipper: _TabClipper(),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-              child: Stack(
-                children: <Widget> [
-                  Container(color: Colors.white12),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      TabBox(title: "Ingredients", index: 0),
-                      TabBox(title: "Directions", index: 1),
-                    ],
-                  ),
-                  Positioned(
-                    top: TabClipper.TAB_HEIGHT,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        top: 20,
-                        left: TabClipper.tabSpacing(MediaQuery.of(context).size.width),
-                        right: TabClipper.tabSpacing(MediaQuery.of(context).size.width),
-                      ),
-                      child: contents,
+              child: Container(
+                color: Colors.white12,
+                child: Column(
+                  children: <Widget> [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _TabBox(title: "Ingredients", index: 0),
+                        _TabBox(title: "Directions", index: 1),
+                      ],
                     ),
-                  )
-                ]
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          top: 20,
+                          left: _TabClipper.tabSpacing(screenWidth),
+                        ),
+                        child: Container(
+                          width: screenWidth -  (2 * _TabClipper.tabSpacing(screenWidth)),
+                          child: ShaderMask(
+                            shaderCallback: (rect) {
+                              return const LinearGradient(
+                                begin: Alignment(0, -1),
+                                end: Alignment(0, -0.98),
+                                colors: [Colors.transparent, Colors.black],
+                              ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+                            },
+                            blendMode: BlendMode.dstIn,
+                            child: contents
+                          )
+                        ),
+                      ),
+                    ),
+                  ]
+                ),
               )
             ),
           ),
@@ -285,7 +346,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   Widget get ingredientsList {
 
     return Text(
-      '– 3 large brown eggs\n– 1 cup of Wild Rice\n– 2 ½ cups of Kale\n– 1 sweet potato',
+      '– 3 large brown egsqwertfyudhkdfgh\n– 1 cup of Wild Rice\n– 2 ½ cups of Kale\n– 1 sweet potato',
       style: TextStyle(
         color: StyleSheet.WHITE,
         fontWeight: FontWeight.w300,
@@ -297,14 +358,51 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   Widget get directionsList {
 
-    return Text(
-      '– 1 of something\n– 2 cups of something else\n– 3 tbsp of the last thing',
-      style: TextStyle(
-        color: StyleSheet.WHITE,
-        fontWeight: FontWeight.w300,
-        fontSize: 20,
-        height: 1.5
-      ),
+    final double textWidth = MediaQuery.of(context).size.width - (_TabClipper.TAB_RADIUS * 10/3);
+
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: ListView.builder(
+            itemCount: recipe.steps.length,
+            itemBuilder: (_, index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      width: _TabClipper.TAB_RADIUS,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "${(index + 1).toString()}.",
+                        style: TextStyle(
+                        color: StyleSheet.WHITE,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 18,
+                      ),
+                      )
+                    ),
+                    Container(width: _TabClipper.TAB_RADIUS / 3),
+                    Container(
+                      width: textWidth,
+                      child: Text(
+                        recipe.steps[index],
+                        style: TextStyle(
+                          color: StyleSheet.WHITE,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 20,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }
+          ),
+        ),
+        Container(height: _HEAD_SPACE)
+      ],
     );
   }
 
@@ -318,12 +416,12 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   }
 }
 
-class TabBox extends StatelessWidget {
+class _TabBox extends StatelessWidget {
 
   final String title;
   final int index;
 
-  TabBox({@required this.title, @required this.index});
+  _TabBox({@required this.title, @required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -340,8 +438,8 @@ class TabBox extends StatelessWidget {
           child:
           Container(
             alignment: Alignment.center,
-            width: TabClipper.tabSize(screenWidth) / 2,
-            height: TabClipper.TAB_HEIGHT,
+            width: _TabClipper.tabSize(screenWidth) / 2,
+            height: _TabClipper.TAB_HEIGHT,
             child: Stack(
               alignment: Alignment.center,
               children: <Widget>[
@@ -350,7 +448,7 @@ class TabBox extends StatelessWidget {
                   duration: Duration(milliseconds: 200),
                   child: Container(  // Tab indicator
                     color: Colors.black,
-                    height: TabClipper.TAB_HEIGHT,
+                    height: _TabClipper.TAB_HEIGHT,
                     width: screenWidth / 2,
                   ),
                 ),
@@ -380,7 +478,7 @@ class TabBox extends StatelessWidget {
   }
 }
 
-class TabClipper extends CustomClipper<Path> {
+class _TabClipper extends CustomClipper<Path> {
 
   static const double TAB_HEIGHT = 50;
   static const double TAB_RADIUS = 30;
@@ -405,5 +503,99 @@ class TabClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(TabClipper oldClipper) => false;
+  bool shouldReclip(_TabClipper oldClipper) => false;
+}
+
+class _ExpandIcon extends StatelessWidget {
+
+  final IconData icon;
+  final double iconOpacity;
+  _ExpandIcon(this.icon, this.iconOpacity) : super(key: ValueKey<IconData>(icon));
+
+  @override
+  Widget build(BuildContext context) {
+    TabNavigationModel model = Provider.of<TabNavigationModel>(context);
+    return IconButton(
+      onPressed: () { 
+        if(iconOpacity == 1) {
+          model.expandSheet = !model.expandSheet;
+        }
+      },
+      splashColor: Colors.transparent,
+      icon: Icon(
+        icon,
+        color: StyleSheet.WHITE.withOpacity(0.3 * iconOpacity),
+        size: 30,
+      ),
+    );
+  }
+}
+
+class _ExpandableWidget extends StatefulWidget {
+
+  final List<Widget> children;
+  final Duration duration;
+  final Curve curve;
+
+  _ExpandableWidget({ @required this.children, @required this.duration, @required this.curve});
+
+  @override
+  __ExpandableWidgetState createState() => __ExpandableWidgetState();
+}
+
+class __ExpandableWidgetState extends State<_ExpandableWidget> with TickerProviderStateMixin {
+
+  AnimationController _controller;
+  Animation<double> _heightFactor;
+  bool _expanded;
+
+  @override
+  void initState() { 
+    super.initState();
+    
+    _expanded = true;
+    _controller = AnimationController(vsync: this, duration: widget.duration)..addListener(() => setState(() {}));
+    _controller.value = 1;
+  }
+
+  void animate(bool setExpand) {
+
+    if(setExpand == _expanded) {
+      return;
+    }
+
+    _expanded = setExpand;
+
+    Animation animation = CurvedAnimation(parent: _controller, curve: widget.curve);
+    _heightFactor = Tween<double>(begin: 0, end: 1).animate(animation)..addListener(() => setState(() {}));
+    if(setExpand) {
+      _controller.forward(from: _controller.value);
+    } else {
+      _controller.reverse(from: _controller.value);
+    }
+  }
+
+ @override
+ void didChangeDependencies() {
+   super.didChangeDependencies();
+   animate(Provider.of<TabNavigationModel>(context).expandSheet);
+ }
+  
+  @override
+  Widget build(BuildContext context) {
+
+    return Consumer<TabNavigationModel> (
+      builder: (context, model, _) {
+        return ClipRect(
+          child: Align(
+            heightFactor: _heightFactor == null ? 1 : _heightFactor.value,
+            child: Opacity(
+              opacity: _heightFactor == null ? 1 : _heightFactor.value,
+              child: Column(children: widget.children)
+            ),
+          ),
+        );
+      }
+    );
+  }
 }

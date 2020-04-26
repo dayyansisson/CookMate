@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 /*
   This file lays out the query class. 
 */
@@ -11,6 +8,7 @@ class Query {
    String ingredient;
    int resultCount;
 
-  //Everything from the server below
+   Query({this.ingredient, this.resultCount});
 
+  //Everything from the server below
 }

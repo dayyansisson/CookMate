@@ -11,10 +11,7 @@ import 'package:flutter/services.dart' show rootBundle;
 TODOs:
   - Need to populate recipe_ingredient table
   - Need to populate ingredient table
-  - Need to handle favorite recipes
-  - Need to handle featured recipes
   - Need to implement shopping cart
-  - 
 */
 
 abstract class DB {
@@ -222,8 +219,21 @@ abstract class DB {
   static Future<int> delete(String table, Entity entity) async =>
       await _db.delete(table, where: 'id = ?', whereArgs: [entity.id]);
 
-  static List<Recipe> getFeaturedRecipes() {
-    // for now just return random from each category
+  // Currently returns the first recipe of each category
+  static Future<List<Recipe>> getFeaturedRecipes() async {
+    List<Recipe> recipes = List<Recipe>();
+    for (var cat in Category.values) {
+      if (cat != Category.none) {
+        List<Map<String, dynamic>> _firstCategoryRecipe = await _db.rawQuery("""
+          SELECT *
+          FROM recipe
+          WHERE category = "${catToString(cat)}"
+          LIMIT 1
+        """);
+        recipes.add(Recipe.fromMap(_firstCategoryRecipe.first));
+      }
+    }
+    return recipes;
   }
 
   static Future<List<Map<String, dynamic>>> getFavoriteRecipes() async {
@@ -253,9 +263,31 @@ abstract class DB {
     return _db.query(Recipe.table);
   }
 
+  // Find recipe by substring
+  static Future<List<int>> findRecipe(String recipe) async {
+    List<Map<String, dynamic>> _results;
+    _results = await _db.rawQuery("""
+      SELECT *
+      FROM recipe
+      WHERE title LIKE '%$recipe%'
+    """);
+    return _results.map((rec) => rec['id']).toList().cast<int>();
+  }
+
   // Returns all ingredients
   static Future<List<Map<String, dynamic>>> getIngredients() {
     return _db.query(Ingredient.table);
+  }
+
+  // Find ingredient
+  static Future<List<String>> findIngredients(String ingredient) async {
+    List<Map<String, dynamic>> _results;
+    _results = await _db.rawQuery("""
+      SELECT *
+      FROM ingredient
+      WHERE name LIKE '%$ingredient%'
+    """);
+    return _results.map((ing) => ing['name']).toList().cast<String>();
   }
 
   // Returns all ingredients for a given recipe
@@ -272,6 +304,26 @@ abstract class DB {
         .map((ingredient) => ingredient['ingredient_name'])
         .toList()
         .cast<String>();
+  }
+
+  // Returns all recipes that have given ingredients
+  static Future<List<int>> getRecipeWithIngredients(List<String> ing) async {
+    List<Map<String, dynamic>> _results;
+    String conditions = """""";
+    for (var i = 0; i < ing.length; i++) {
+      conditions += """ingredient_name = "${ing.elementAt(i)}" OR """;
+    }
+    conditions =
+        conditions.substring(0, conditions.length - 4); //get rid of last OR
+
+    _results = await _db.rawQuery("""
+      SELECT *
+      FROM recipe_ingredient
+      WHERE $conditions
+    """);
+    // print("Query Conditions: $conditions");
+    // print(_results);
+    return _results.map((recipe) => recipe['recipe_id']).toList().cast<int>();
   }
 
   // Returns all tags for a given recipe

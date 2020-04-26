@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class TabNavigationModel extends ChangeNotifier {
 
   /* Constructor */
-  TabNavigationModel({int tabCount = 1}) : 
+  TabNavigationModel({int tabCount = 1, bool expandSheet = false}) : 
     _currentTab = 0, 
     _previousTab = -1, 
     _tabCount = tabCount,
-    _expandSheet = false;
+    _expandSheet = expandSheet;
 
   /* Private Variables */
   int _tabCount;
