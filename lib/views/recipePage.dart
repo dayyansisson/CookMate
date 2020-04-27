@@ -11,7 +11,7 @@ class RecipePage extends StatelessWidget {
   /* TODO REMOVE CONSTANTS */
   final Recipe recipe = Recipe(
     id: -1,
-    title: "Wild Rice & Egg",
+    title: "Wild Rice & Eggs",
     description: "Wild rice's nutty and earthy flavors elevate an otherwise boring dish instantly.",
     image: "https://ethosfun.com/wp-content/uploads/2019/09/bowl-cuisine-delicious-2067473.jpg",
     category: "Breakfast",
@@ -19,6 +19,15 @@ class RecipePage extends StatelessWidget {
     cookTime:  "10 min",
     servings: "4-6",
     tags: [ "magical", "incredible" ],
+    ingredients: [ 
+      "1 tablespoon TJ’s Soy Sauce",
+      "1 tablespoon TJ’s Soyaki Sauce, Stir Fry Sauce, or other tangy marinade you might have sitting in your fridge",
+      "1 tsp TJ’s Garlic Powder, if you’ve got it",
+      "1/4 cup TJ’s neutral oil (Sunflower, Canola, Grapeseed, etc. will all work here)",
+      "1 generous cup any TJ’s Vegetables you might have on hand (green/red/yellow onion, bell peppers, carrots, mushrooms, frozen peas/corn/edamame/broccoli), thawed if frozen, and chopped",
+      "3 or 4 cups cooked, day-old TJ’s Rice",
+      "2 TJ’s Large Eggs, beaten"
+    ],
     steps: [
       "First, you get some stuff. When you're done, then do some stuff with it.",
       "After, it's pretty simple. You take the stuff out of the thing.",
@@ -48,26 +57,46 @@ class RecipePage extends StatelessWidget {
           ),
         ),
         Stack(
+          alignment: Alignment.topLeft,
           children: <Widget>[
             Padding(  // Top Bar
-              padding: const EdgeInsets.only(top: _TOP_BAR_EDGE_PADDING, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Button(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      "BACK",
-                      style: TextStyle(
-                        color: StyleSheet.WHITE,
-                        fontWeight: FontWeight.bold,
-                        fontSize: _PAGE_NAME_FONT_SIZE
+              padding: const EdgeInsets.only(top: _TOP_BAR_EDGE_PADDING - 10, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
+              child: Container(
+                height: 40,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Button(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        "BACK",
+                        style: TextStyle(
+                          color: StyleSheet.WHITE,
+                          fontWeight: FontWeight.bold,
+                          fontSize: _PAGE_NAME_FONT_SIZE
+                        ),
                       ),
                     ),
-                  ),
-                  Spacer(),
-                  snackbar,
-                ]
+                    Spacer(),
+                    _TopBarButton(
+                      icon: Icons.playlist_add,
+                      color: StyleSheet.WHITE,
+                      size: 30,
+                      onTap: () {
+                        print('shopping bag');
+                      },
+                    ),
+                    Container(width: 15),
+                    _TopBarButton(
+                      icon: Icons.favorite_border,
+                      color: StyleSheet.WHITE,
+                      size: 30,
+                      onTap: () {
+                        print('favorites');
+                      },
+                    ),
+                  ]
+                ),
               ),
             ),
             ChangeNotifierProvider(
@@ -79,17 +108,36 @@ class RecipePage extends StatelessWidget {
       ],
     );
   }
+}
 
-  // TODO: Replace with actual Menu widget
-  Widget get snackbar {
-    return Container(
-      width: 16,
-      child: Column(
-        children: <Widget>[
-          Container(height: 2, color: StyleSheet.WHITE),
-          Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-          Container(height: 2, color: StyleSheet.WHITE),
-        ],
+class _TopBarButton extends StatelessWidget {
+
+  final IconData icon;
+  final Color color;
+  final double size;
+
+  final Future<dynamic> future;
+  final Function onTap;
+
+  _TopBarButton({
+    @required this.icon, 
+    @required this.color, 
+    @required this.size,
+    @required this.onTap,
+    this.future
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Button(
+      onPressed: onTap,
+      child: Container(
+        child: Icon(
+          icon,
+          color: color,
+          size: size,
+        ),
       ),
     );
   }

@@ -35,6 +35,7 @@ class Recipe extends Entity {
     this.url,
     this.servings,
     this.tags,
+    this.ingredients,
     this.steps
   });
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
+import 'package:CookMate/widgets/marquee.dart';
 import 'package:CookMate/widgets/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -101,7 +102,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
           dragController.value += (details.primaryDelta / (MediaQuery.of(context).size.height - _MIN_SHEET_HEIGHT));
         });
       },
-      onVerticalDragEnd: (details) {
+      onVerticalDragEnd: (details) {    // TODO account for user acceleration and velocity
         if(dragController.value > 0.5) {
           dragController.forward(from: dragController.value);
           Provider.of<TabNavigationModel>(context, listen: false).expandSheet = true;
@@ -163,13 +164,13 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
           left: _SHEET_BORDER_RADIUS,
           child: Container(
             width: MediaQuery.of(context).size.width - (2 * _SHEET_BORDER_RADIUS),
+            height: _TITLE_SIZE,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
-                  child: Text(
-                    recipe.title,   // TODO fix low letters like "g" cut off at bottom
-                    maxLines: 1,    // TODO fix overflow
+                  child: Marquee(
+                    recipe.title,
                     style: TextStyle(
                       fontSize: _TITLE_SIZE,
                       fontFamily: 'Hoefler',
@@ -319,11 +320,11 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                         ),
                         child: Container(
                           width: screenWidth -  (2 * _TabClipper.tabSpacing(screenWidth)),
-                          child: ShaderMask(
+                          child: ShaderMask(          // TODO FIX THE SHADER AMOUNT
                             shaderCallback: (rect) {
                               return const LinearGradient(
                                 begin: Alignment(0, -1),
-                                end: Alignment(0, -0.98),
+                                end: Alignment(0, -0.96),
                                 colors: [Colors.transparent, Colors.black],
                               ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
                             },
@@ -360,49 +361,52 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
     final double textWidth = MediaQuery.of(context).size.width - (_TabClipper.TAB_RADIUS * 10/3);
 
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: ListView.builder(
-            itemCount: recipe.steps.length,
-            itemBuilder: (_, index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      width: _TabClipper.TAB_RADIUS,
-                      alignment: Alignment.center,
-                      child: Text(
-                        "${(index + 1).toString()}.",
-                        style: TextStyle(
-                        color: StyleSheet.WHITE,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 18,
-                      ),
-                      )
-                    ),
-                    Container(width: _TabClipper.TAB_RADIUS / 3),
-                    Container(
-                      width: textWidth,
-                      child: Text(
-                        recipe.steps[index],
-                        style: TextStyle(
+    return Transform.translate(
+      offset: Offset(-_TabClipper.TAB_RADIUS / 2, 0),
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: ListView.builder(
+              itemCount: recipe.steps.length,
+              itemBuilder: (_, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: _TabClipper.TAB_RADIUS,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${(index + 1).toString()}.",
+                          style: TextStyle(
                           color: StyleSheet.WHITE,
-                          fontWeight: FontWeight.w300,
-                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18,
                         ),
+                        )
                       ),
-                    )
-                  ],
-                ),
-              );
-            }
+                      Container(width: _TabClipper.TAB_RADIUS / 3),
+                      Container(
+                        width: textWidth,
+                        child: Text(
+                          recipe.steps[index],
+                          style: TextStyle(
+                            color: StyleSheet.WHITE,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 20,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }
+            ),
           ),
-        ),
-        Container(height: _HEAD_SPACE)
-      ],
+          Container(height: _HEAD_SPACE)
+        ],
+      ),
     );
   }
 
