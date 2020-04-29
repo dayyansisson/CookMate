@@ -368,4 +368,10 @@ abstract class DB {
         queryBy('ingredient', 'name', '$ingredient');
     return ingMap.then((ing) => ing[0]['id']);
   }
+
+  static Future<List<Map<String, dynamic>>> isRecipeAFavorite(String id) {
+    Future<List<Map<String, dynamic>>> recipeIsFavorite =
+        _db.query('favorite', where: 'recipe_id = ?', whereArgs: [id]);
+    return recipeIsFavorite;
+  }
 }
