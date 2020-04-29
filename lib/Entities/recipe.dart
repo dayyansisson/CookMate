@@ -22,6 +22,7 @@ class Recipe extends Entity {
   List<String> tags;
   List<String> ingredients; // List<Ingredient> ingredients;
   List<String> steps;
+  bool favorite;
 
   // Recipe Constructor
   Recipe({
@@ -45,6 +46,15 @@ class Recipe extends Entity {
 
   Future<void> removeFromFavorites() async {
     DB.unfavoriteRecipe("$id");
+  }
+
+  Future<bool> isFavorite() async {
+    if (favorite != null) {
+      return favorite;
+    }
+    var _result = await DB.isRecipeAFavorite("$id");
+    favorite = _result.length > 0;
+    return favorite;
   }
 
   Future<List<String>> getIngredients() async {

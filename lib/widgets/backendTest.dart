@@ -357,6 +357,37 @@ class _BackendTestState extends State<BackendTest> {
                 "Find recipe substring",
               ),
             ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                DB.favoriteRecipe("177");
+                DB.favoriteRecipe("214");
+                DB.favoriteRecipe("2");
+                DB.unfavoriteRecipe("214");
+
+                var _fav = await DB.isRecipeAFavorite("177");
+                if (_fav.length > 0) {
+                  print("Found recipe 177");
+                } else {
+                  print("Recipe 177 is not a fav");
+                }
+                var _fav2 = await DB.isRecipeAFavorite("214");
+                if (_fav2.length > 0) {
+                  print("Found recipe 214");
+                } else {
+                  print("Recipe 214 is not a fav");
+                }
+                var rec = await DB.getRecipe("214");
+                print("Is 214 a fav: ${await rec.isFavorite()}");
+
+                var rec2 = await DB.getRecipe("177");
+                print("Is 177 a fav: ${await rec2.isFavorite()}");
+              },
+              child: Text(
+                "Check Favorites",
+              ),
+            ),
           ],
         )
       ],
