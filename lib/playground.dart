@@ -1,5 +1,9 @@
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/views/recipePage.dart';
+import 'package:CookMate/widgets/page%20layout/mainPage.dart';
+import 'package:CookMate/widgets/page%20layout/pageSheet.dart';
+import 'package:CookMate/widgets/page%20layout/sheetTab.dart';
+import 'package:CookMate/widgets/recipeCard.dart';
 import 'package:flutter/material.dart';
 
 /* This class only exists for us to develop different parts of the app 

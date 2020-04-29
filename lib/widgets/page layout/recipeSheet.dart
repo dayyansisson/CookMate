@@ -5,6 +5,7 @@ import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/marquee.dart';
 import 'package:CookMate/widgets/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class RecipeSheet extends StatefulWidget {
@@ -31,6 +32,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   /* Animation Controller */
   AnimationController dragController;
   Animation<double> dragPosition;
+  ScrollController directionsScrollController;
 
   /* Referenced variables */
   Recipe recipe;
@@ -41,6 +43,8 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     super.initState();
 
     recipe = widget.recipe;
+
+    directionsScrollController = ScrollController()..addListener(directionsScrollListener);
     
     dragController = AnimationController(
       vsync: this, 
@@ -55,6 +59,18 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     );
 
     dragController.value = 1;
+  }
+
+  void directionsScrollListener () {
+
+    if(directionsScrollController.position.outOfRange) {
+      TabNavigationModel model = Provider.of<TabNavigationModel>(context, listen: false);
+      if(directionsScrollController.offset < directionsScrollController.position.minScrollExtent - 80) {
+        model.expandSheet = true;
+      } else if(directionsScrollController.offset > directionsScrollController.position.maxScrollExtent + 80){
+        model.expandSheet = false;
+      }
+    }
   }
 
   @override
@@ -75,9 +91,9 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                   topRight: Radius.circular(_SHEET_BORDER_RADIUS)
                 ),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                  filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
                   child: Container(
-                    color: Colors.white12,
+                    color: StyleSheet.TAB_GREY.withOpacity(0.3),
                     child: Column(
                       children: <Widget> [
                         header,
@@ -178,20 +194,23 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                     ),
                   ),
                 ),
-                AnimatedSwitcher(
-                  duration: Duration(milliseconds: 400),
-                  switchInCurve: Curves.easeInOut,
-                  switchOutCurve: Curves.easeInOut,
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(
-                      scale: animation,
-                      child: child,
-                    );
-                  },
-                  child: _ExpandIcon(
-                    Provider.of<TabNavigationModel>(context, listen: true).expandSheet
-                    ? Icons.arrow_drop_down : Icons.arrow_right,
-                    1 - dragController.value
+                Transform.translate(
+                  offset: Offset(0, -10),
+                  child: AnimatedSwitcher(
+                    duration: Duration(milliseconds: 400),
+                    switchInCurve: Curves.easeInOut,
+                    switchOutCurve: Curves.easeInOut,
+                    transitionBuilder: (child, animation) {
+                      return ScaleTransition(
+                        scale: animation,
+                        child: child,
+                      );
+                    },
+                    child: _ExpandIcon(
+                      Provider.of<TabNavigationModel>(context, listen: true).expandSheet
+                      ? Icons.arrow_drop_down : Icons.arrow_right,
+                      1 - dragController.value
+                    ),
                   ),
                 )
               ],
@@ -299,7 +318,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
           child: ClipPath(
             clipper: _TabClipper(),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
               child: Container(
                 color: Colors.white12,
                 child: Column(
@@ -318,19 +337,22 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                           top: 20,
                           left: _TabClipper.tabSpacing(screenWidth),
                         ),
-                        child: Container(
-                          width: screenWidth -  (2 * _TabClipper.tabSpacing(screenWidth)),
-                          child: ShaderMask(          // TODO FIX THE SHADER AMOUNT
-                            shaderCallback: (rect) {
-                              return const LinearGradient(
-                                begin: Alignment(0, -1),
-                                end: Alignment(0, -0.96),
-                                colors: [Colors.transparent, Colors.black],
-                              ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-                            },
-                            blendMode: BlendMode.dstIn,
-                            child: contents
-                          )
+                        child: Transform.translate(
+                          offset: Offset(-_TabClipper.TAB_RADIUS / 2, -5),
+                          child: Container(
+                            width: screenWidth -  (2 * _TabClipper.tabSpacing(screenWidth)),
+                            child: ShaderMask(          // TODO FIX THE SHADER AMOUNT
+                              shaderCallback: (rect) {
+                                return const LinearGradient(
+                                  begin: Alignment(0, -1),
+                                  end: Alignment(0, -0.92),
+                                  colors: [Colors.transparent, Colors.black],
+                                ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+                              },
+                              blendMode: BlendMode.dstIn,
+                              child: contents
+                            )
+                          ),
                         ),
                       ),
                     ),
@@ -361,52 +383,50 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
     final double textWidth = MediaQuery.of(context).size.width - (_TabClipper.TAB_RADIUS * 10/3);
 
-    return Transform.translate(
-      offset: Offset(-_TabClipper.TAB_RADIUS / 2, 0),
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              itemCount: recipe.steps.length,
-              itemBuilder: (_, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        width: _TabClipper.TAB_RADIUS,
-                        alignment: Alignment.center,
-                        child: Text(
-                          "${(index + 1).toString()}.",
-                          style: TextStyle(
-                          color: StyleSheet.WHITE,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18,
-                        ),
-                        )
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: ListView.builder(
+            itemCount: recipe.steps.length,
+            controller: directionsScrollController,
+            itemBuilder: (_, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      width: _TabClipper.TAB_RADIUS,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "${(index + 1).toString()}.",
+                        style: TextStyle(
+                        color: StyleSheet.WHITE,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
                       ),
-                      Container(width: _TabClipper.TAB_RADIUS / 3),
-                      Container(
-                        width: textWidth,
-                        child: Text(
-                          recipe.steps[index],
-                          style: TextStyle(
-                            color: StyleSheet.WHITE,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 20,
-                          ),
-                        ),
                       )
-                    ],
-                  ),
-                );
-              }
-            ),
+                    ),
+                    Container(width: _TabClipper.TAB_RADIUS / 3),
+                    Container(
+                      width: textWidth,
+                      child: Text(
+                        recipe.steps[index],
+                        style: TextStyle(
+                          color: StyleSheet.WHITE,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 20,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }
           ),
-          Container(height: _HEAD_SPACE)
-        ],
-      ),
+        ),
+        Container(height: _HEAD_SPACE)
+      ],
     );
   }
 
@@ -528,8 +548,8 @@ class _ExpandIcon extends StatelessWidget {
       splashColor: Colors.transparent,
       icon: Icon(
         icon,
-        color: StyleSheet.WHITE.withOpacity(0.3 * iconOpacity),
-        size: 30,
+        color: StyleSheet.WHITE.withOpacity(0.4 * iconOpacity),
+        size: 36,
       ),
     );
   }

@@ -13,7 +13,8 @@ class RecipePage extends StatelessWidget {
     id: -1,
     title: "Wild Rice & Eggs",
     description: "Wild rice's nutty and earthy flavors elevate an otherwise boring dish instantly.",
-    image: "https://ethosfun.com/wp-content/uploads/2019/09/bowl-cuisine-delicious-2067473.jpg",
+    //image: "https://ethosfun.com/wp-content/uploads/2019/09/bowl-cuisine-delicious-2067473.jpg",
+    image: "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/roasted-pumpkin-arugula-salad.jpg",
     category: "Breakfast",
     prepTime: "15 min",
     cookTime:  "10 min",
@@ -36,7 +37,7 @@ class RecipePage extends StatelessWidget {
       "After, it's pretty simple. You take the stuff out of the thing.",
       "Voila, in 3 easy steps you were able to make the thing you wanted to make without doing really anything."
     ]
-  ); 
+  );
 
   /* Layout Constants */
   static const double _PAGE_NAME_FONT_SIZE = 16;
@@ -47,20 +48,30 @@ class RecipePage extends StatelessWidget {
 
     return Stack(
       children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(recipe.image),
-              colorFilter: ColorFilter.mode(Colors.black26, BlendMode.overlay),
-              fit: BoxFit.cover
-            )
+         ShaderMask(
+          shaderCallback: (rect) {
+            return const LinearGradient(
+              begin: Alignment(0, -1),
+              end: Alignment(0, -0.75),
+              colors: [Colors.black26, Colors.transparent],
+            ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+          },
+          blendMode: BlendMode.hardLight,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(recipe.image),
+                colorFilter: ColorFilter.mode(Colors.black54, BlendMode.softLight),
+                fit: BoxFit.cover
+              )
+            ),
           ),
         ),
         Stack(
           alignment: Alignment.topLeft,
           children: <Widget>[
             Padding(  // Top Bar
-              padding: const EdgeInsets.only(top: _TOP_BAR_EDGE_PADDING - 10, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
+              padding: const EdgeInsets.only(top: _TOP_BAR_EDGE_PADDING - 20, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
               child: Container(
                 height: 40,
                 child: Row(

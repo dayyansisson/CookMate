@@ -101,20 +101,17 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
   /* Getter for the tab navigation of the sheet */
   Widget get _navigation {
 
+    List<Widget> _navigationWidgets = List<Widget>();
+    _navigationWidgets.add(Padding(padding: EdgeInsets.symmetric(horizontal: 15)));
+    for(int i = 0; i < tabCount; i++) {
+      _navigationWidgets.add(TabIndicator(name: tabNames[i], index: i));
+    }
+    _navigationWidgets.add(Padding(padding: EdgeInsets.symmetric(horizontal: 15)));
+
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(padding: EdgeInsets.symmetric(horizontal: 25)),
-        Spacer(),
-        TabIndicator(name: tabNames[0], index: 0),
-        Spacer(flex: tabNames[0].length),
-        TabIndicator(name: tabNames[1], index: 1),
-        Spacer(flex: tabNames[1].length),
-        TabIndicator(name: tabNames[2], index: 2),
-        Spacer(),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 25)),
-      ],
+      children: _navigationWidgets
     );
   }
 
