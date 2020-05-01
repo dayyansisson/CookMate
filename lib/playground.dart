@@ -1,3 +1,4 @@
+import 'package:CookMate/backend/backend.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/views/recipePage.dart';
 import 'package:CookMate/widgets/page%20layout/mainPage.dart';
@@ -10,12 +11,20 @@ import 'package:flutter/material.dart';
    without affecting each other's work.
 */
 class Playground extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: StyleSheet.WHITE,
-      body: RecipePage(),
+      body: RecipePage(
+        futureRecipe: DB.getRecipe('213'),
+      ),
+    );
+  }
+}
+
+
       // body: MainPage(
       //   name: 'Home',
       //   backgroundImage: "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/cranberry-orange-cornbread.jpg",
@@ -102,6 +111,3 @@ class Playground extends StatelessWidget {
       //     SheetTab(name: "Today", bodyContent: null),
       //   ]),
       // )
-    );
-  }
-}

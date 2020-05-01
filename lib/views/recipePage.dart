@@ -6,45 +6,59 @@ import 'package:CookMate/widgets/page%20layout/recipeSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class RecipePage extends StatelessWidget {
+class RecipePage extends StatefulWidget {
 
-  /* TODO REMOVE CONSTANTS */
-  final Recipe recipe = Recipe(
-    id: -1,
-    title: "Wild Rice & Eggs",
-    description: "Wild rice's nutty and earthy flavors elevate an otherwise boring dish instantly.",
-    //image: "https://ethosfun.com/wp-content/uploads/2019/09/bowl-cuisine-delicious-2067473.jpg",
-    image: "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/roasted-pumpkin-arugula-salad.jpg",
-    category: "Breakfast",
-    prepTime: "15 min",
-    cookTime:  "10 min",
-    servings: "4-6",
-    tags: [ "magical", "incredible" ],
-    ingredients: [ 
-      "1 tablespoon TJ’s Soy Sauce",
-      "1 tablespoon TJ’s Soyaki Sauce, Stir Fry Sauce, or other tangy marinade you might have sitting in your fridge",
-      "1 tsp TJ’s Garlic Powder, if you’ve got it",
-      "1/4 cup TJ’s neutral oil (Sunflower, Canola, Grapeseed, etc. will all work here)",
-      "1 generous cup any TJ’s Vegetables you might have on hand (green/red/yellow onion, bell peppers, carrots, mushrooms, frozen peas/corn/edamame/broccoli), thawed if frozen, and chopped",
-      "3 or 4 cups cooked, day-old TJ’s Rice",
-      "2 TJ’s Large Eggs, beaten"
-    ],
-    steps: [
-      "First, you get some stuff. When you're done, then do some stuff with it.",
-      "After, it's pretty simple. You take the stuff out of the thing.",
-      "Voila, in 3 easy steps you were able to make the thing you wanted to make without doing really anything.",
-      "First, you get some stuff. When you're done, then do some stuff with it.",
-      "After, it's pretty simple. You take the stuff out of the thing.",
-      "Voila, in 3 easy steps you were able to make the thing you wanted to make without doing really anything."
-    ]
-  );
+  final Recipe recipe;
+  final Future<Recipe> futureRecipe;
+
+  RecipePage({this.recipe, this.futureRecipe});
+
+  @override
+  _RecipePageState createState() => _RecipePageState();
+}
+
+class _RecipePageState extends State<RecipePage> {
 
   /* Layout Constants */
   static const double _PAGE_NAME_FONT_SIZE = 16;
   static const double _TOP_BAR_EDGE_PADDING = 30;
 
+  Recipe recipe;
+
+  @override
+  void initState() { 
+    super.initState();
+
+    recipe = widget.recipe;
+    initRecipe();
+  }
+
+  void initRecipe() async {
+    
+    widget.futureRecipe.then(
+      (futureRecipe) {
+        setState(() {
+          recipe = futureRecipe;
+        });
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    if(recipe != null) {
+      return buildRecipe(context);
+    }
+
+    return Container(
+      color: StyleSheet.WHITE,
+      alignment: Alignment.center,
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget buildRecipe(BuildContext context) {
 
     return Stack(
       children: <Widget>[
@@ -89,21 +103,26 @@ class RecipePage extends StatelessWidget {
                       ),
                     ),
                     Spacer(),
-                    _TopBarButton(
-                      icon: Icons.playlist_add,
-                      color: StyleSheet.WHITE,
+                    _TopBarToggle(
+                      disabledIcon: _TopBarIcon(
+                        icon: Icons.favorite_border,
+                        color: StyleSheet.WHITE,
+                        size: 30,
+                      ),
+                      enabledIcon: _TopBarIcon(
+                        icon: Icons.favorite,
+                        color: StyleSheet.WHITE,
+                        size: 30,
+                      ),
                       size: 30,
-                      onTap: () {
-                        print('shopping bag');
-                      },
-                    ),
-                    Container(width: 15),
-                    _TopBarButton(
-                      icon: Icons.favorite_border,
-                      color: StyleSheet.WHITE,
-                      size: 30,
-                      onTap: () {
-                        print('favorites');
+                      enabled: recipe.isFavorite(),
+                      onTap: () async {
+                        bool favorited = await recipe.isFavorite();
+                        if(favorited) {
+                          recipe.removeFromFavorites();
+                        } else {
+                          recipe.addToFavorites();
+                        }
                       },
                     ),
                   ]
@@ -121,21 +140,37 @@ class RecipePage extends StatelessWidget {
   }
 }
 
-class _TopBarButton extends StatelessWidget {
+class _TopBarIcon extends StatelessWidget {
 
   final IconData icon;
   final Color color;
   final double size;
 
-  final Future<dynamic> future;
-  final Function onTap;
-
-  _TopBarButton({
+  _TopBarIcon({
     @required this.icon, 
     @required this.color, 
     @required this.size,
+  }) : super(key: ValueKey<List<dynamic>>([icon, color, size]));
+
+  @override
+  Widget build(BuildContext context) => Icon(icon, color: color, size: size);
+}
+
+class _TopBarToggle extends StatelessWidget {
+
+  final _TopBarIcon disabledIcon;
+  final _TopBarIcon enabledIcon;
+  final double size;
+
+  final Future<bool> enabled;
+  final Function onTap;
+
+  _TopBarToggle({
+    @required this.disabledIcon,
+    @required this.enabledIcon,
+    @required this.size,
     @required this.onTap,
-    this.future
+    this.enabled
   });
 
   @override
@@ -144,11 +179,26 @@ class _TopBarButton extends StatelessWidget {
     return Button(
       onPressed: onTap,
       child: Container(
-        child: Icon(
-          icon,
-          color: color,
-          size: size,
-        ),
+        width: size,
+        height: size,
+        child: FutureBuilder<bool>(
+          future: enabled,
+          builder: (_, snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+
+            if(!snapshot.hasData) {
+              print('error');
+              return Container();
+            }
+
+            return AnimatedSwitcher(
+              duration: Duration(milliseconds: 250),
+              child: snapshot.data ? enabledIcon : disabledIcon,
+            );
+          },
+        )
       ),
     );
   }
