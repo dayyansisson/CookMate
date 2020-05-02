@@ -1,4 +1,4 @@
-import 'package:CookMate/Entities/entity.dart';
+import 'package:CookMate/entities/entity.dart';
 import 'package:CookMate/backend/backend.dart';
 // import 'package:CookMate/Entities/ingredient.dart';
 

@@ -1,4 +1,4 @@
-import 'package:CookMate/Entities/recipe.dart';
+import 'package:CookMate/entities/recipe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

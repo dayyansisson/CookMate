@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:CookMate/Entities/ingredient.dart';
+import 'package:CookMate/entities/ingredient.dart';
 import 'package:CookMate/Enums/category.dart';
-import 'package:CookMate/Entities/entity.dart';
+import 'package:CookMate/entities/entity.dart';
 import 'package:CookMate/entities/recipe.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/services.dart' show rootBundle;
