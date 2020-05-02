@@ -17,16 +17,17 @@ class _MarqueeState extends State<Marquee> {
 
   ScrollController _scrollController;
   bool _forward;
-  Timer _timer;
 
   @override
   void initState() {
 
     super.initState();
 
+    print(widget.text.length);
+
     _scrollController = ScrollController();
     _forward = true;
-    _timer = Timer.periodic(Duration(seconds: 5),
+    Timer.periodic(Duration(seconds: 5),
       (Timer timer) {
         animate();
       }
@@ -71,6 +72,6 @@ class _MarqueeState extends State<Marquee> {
     }
 
     _forward = !_forward;
-    _scrollController.animateTo(offsetTarget, duration: Duration(seconds: 1), curve: Curves.easeInOut);
+    _scrollController.animateTo(offsetTarget, duration: Duration(seconds: widget.text.length ~/ 10), curve: Curves.easeInOut);
   }
 }

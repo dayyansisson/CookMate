@@ -36,7 +36,15 @@ class _RecipePageState extends State<RecipePage> {
   void initRecipe() async {
     
     widget.futureRecipe.then(
-      (futureRecipe) {
+      // Load in all futures
+      (futureRecipe) async {
+        List<Future> preloads = [
+          futureRecipe.getIngredients(),
+          futureRecipe.getSteps(),
+          futureRecipe.getTags(),
+          futureRecipe.isFavorite()
+        ];
+        await Future.wait(preloads);
         setState(() {
           recipe = futureRecipe;
         });
@@ -104,6 +112,7 @@ class _RecipePageState extends State<RecipePage> {
                     ),
                     Spacer(),
                     _TopBarToggle(
+                      initialValue: recipe.favorite,
                       disabledIcon: _TopBarIcon(
                         icon: Icons.favorite_border,
                         color: StyleSheet.WHITE,
@@ -115,13 +124,11 @@ class _RecipePageState extends State<RecipePage> {
                         size: 30,
                       ),
                       size: 30,
-                      enabled: recipe.isFavorite(),
-                      onTap: () async {
-                        bool favorited = await recipe.isFavorite();
-                        if(favorited) {
-                          recipe.removeFromFavorites();
-                        } else {
+                      onTap: (bool value) async {
+                        if(value) {
                           recipe.addToFavorites();
+                        } else {
+                          recipe.removeFromFavorites();
                         }
                       },
                     ),
@@ -156,48 +163,65 @@ class _TopBarIcon extends StatelessWidget {
   Widget build(BuildContext context) => Icon(icon, color: color, size: size);
 }
 
-class _TopBarToggle extends StatelessWidget {
+
+class _TopBarToggle extends StatefulWidget {
 
   final _TopBarIcon disabledIcon;
   final _TopBarIcon enabledIcon;
   final double size;
 
-  final Future<bool> enabled;
-  final Function onTap;
+  final bool initialValue;
+  final Function(bool) onTap;
 
   _TopBarToggle({
+    @required this.initialValue,
     @required this.disabledIcon,
     @required this.enabledIcon,
     @required this.size,
-    @required this.onTap,
-    this.enabled
+    @required this.onTap
   });
+
+  @override
+  __TopBarToggleState createState() => __TopBarToggleState();
+}
+
+class __TopBarToggleState extends State<_TopBarToggle> {
+
+  bool enabled;
+
+  @override
+  void initState() { 
+    super.initState();
+    enabled = widget.initialValue;
+  }
 
   @override
   Widget build(BuildContext context) {
 
     return Button(
-      onPressed: onTap,
+      onPressed: () {
+        setState(() {
+          enabled = !enabled;
+          widget.onTap(enabled);
+        });
+      },
       child: Container(
-        width: size,
-        height: size,
-        child: FutureBuilder<bool>(
-          future: enabled,
-          builder: (_, snapshot) {
-            if(snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            }
-
-            if(!snapshot.hasData) {
-              print('error');
-              return Container();
-            }
-
-            return AnimatedSwitcher(
-              duration: Duration(milliseconds: 250),
-              child: snapshot.data ? enabledIcon : disabledIcon,
-            );
+        width: widget.size,
+        height: widget.size,
+        child: AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          switchInCurve: Curves.easeInOut,
+          switchOutCurve: Curves.easeInOut,
+          transitionBuilder: (child, animation) {
+            return ScaleTransition(
+              scale: animation,
+              child: FadeTransition(
+                opacity: animation,
+                child: child,
+              )
+            );  
           },
+          child: enabled ? widget.enabledIcon : widget.disabledIcon,
         )
       ),
     );

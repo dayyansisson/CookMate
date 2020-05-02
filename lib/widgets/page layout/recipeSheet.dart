@@ -256,6 +256,10 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   Widget _basicInfo(String title, String data) {
 
+    if(data == null) {
+      data = "None";
+    }
+
     return Column(
       children: <Widget> [
         Text(
@@ -279,28 +283,27 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   Widget get tagRow {
 
-    List<String> tags = List<String>();
-    tags.add(recipe.category);
-    for(String tag in recipe.tags) {
-      tags.add(tag);
+    if(recipe.tags == null) {
+      return Container();
     }
+
+    List<Widget> row = List<Widget>();
+    row.add(Container(width: 15));
+    row.add(Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: Tag(content: recipe.category)));
+    for(String tag in recipe.tags) {
+      row.add(Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: Tag(content: tag)));
+    }
+    row.add(Container(width: 15));
 
     return Container(
       height: Tag.DEFAULT_SIZE * 2,
       alignment: Alignment.center,
-      child: ListView.builder(
-        itemCount: tags.length,
+      child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Tag(content: tags[index]),
-          );
-        }
+        children: row,
       ),
     );
-
   }
 
   Widget get tabBody {

@@ -41,10 +41,12 @@ class Recipe extends Entity {
   });
 
   Future<void> addToFavorites() async {
+    favorite = true;
     DB.favoriteRecipe("$id");
   }
 
   Future<void> removeFromFavorites() async {
+    favorite = false;
     DB.unfavoriteRecipe("$id");
   }
 
