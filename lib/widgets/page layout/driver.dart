@@ -18,10 +18,10 @@ import 'package:provider/provider.dart';
    without affecting each other's work.
 */
 
-class Playground extends StatelessWidget {
+class Driver extends StatelessWidget {
 
 PageController _controller;
-Playground() {_controller = PageController();}
+Driver() {_controller = PageController();}
 
   @override
 Widget build(BuildContext context) {
