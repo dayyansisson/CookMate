@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Marquee extends StatefulWidget {
@@ -15,6 +15,9 @@ class Marquee extends StatefulWidget {
 
 class _MarqueeState extends State<Marquee> {
 
+  double _spacing;
+  double _fading;
+
   ScrollController _scrollController;
   bool _forward;
 
@@ -23,8 +26,6 @@ class _MarqueeState extends State<Marquee> {
 
     super.initState();
 
-    print(widget.text.length);
-
     _scrollController = ScrollController();
     _forward = true;
     Timer.periodic(Duration(seconds: 5),
@@ -32,17 +33,20 @@ class _MarqueeState extends State<Marquee> {
         animate();
       }
     );
+
+    _spacing = sqrt(widget.style.fontSize);
+    _fading = _spacing/140;
   }
 
   @override
   Widget build(BuildContext context) {
 
     return Transform.translate(
-      offset: Offset(-5, 0),
+      offset: Offset(-_spacing, 0),
       child: ShaderMask(
         shaderCallback: (rect) {
-          return const LinearGradient(
-            stops: [0, 0.05, 0.95, 1],
+          return LinearGradient(
+            stops: [0, _fading, 1 - _fading, 1],
             colors: [Colors.transparent, Colors.black, Colors.black, Colors.transparent],
           ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
         },
@@ -52,9 +56,9 @@ class _MarqueeState extends State<Marquee> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: <Widget>[
-              Container(width: 8),
+              Container(width: _spacing),
               Text(widget.text, style: widget.style, maxLines: 1),
-              Container(width: 8),
+              Container(width: _spacing),
             ],
           )
         ),
