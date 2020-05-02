@@ -13,17 +13,6 @@ import 'package:flutter/material.dart';
 */
 class Playground extends StatelessWidget {
 
-  // @override
-  // Widget build(BuildContext context) {
-
-  //   return Scaffold(
-  //     backgroundColor: StyleSheet.WHITE,
-  //     body: RecipePage(
-  //       futureRecipe: DB.getRecipe('347'),
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
 
