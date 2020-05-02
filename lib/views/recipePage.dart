@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:CookMate/entities/recipe.dart';
+import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/favoriteButton.dart';
@@ -8,11 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class RecipePage extends StatefulWidget {
-
-  final Recipe recipe;
-  final Future<Recipe> futureRecipe;
-
-  RecipePage({this.recipe, this.futureRecipe});
 
   @override
   _RecipePageState createState() => _RecipePageState();
@@ -24,50 +19,26 @@ class _RecipePageState extends State<RecipePage> {
   static const double _PAGE_NAME_FONT_SIZE = 16;
   static const double _TOP_BAR_EDGE_PADDING = 30;
 
-  Recipe recipe;
-
-  @override
-  void initState() { 
-    super.initState();
-
-    loadRecipe();
-  }
-
-  void loadRecipe() async {
-    
-    Recipe futureRecipe = widget.recipe;
-    if(widget.futureRecipe != null) {
-      futureRecipe = await widget.futureRecipe;
-    }
-
-    List<Future> preloads = [
-      futureRecipe.getIngredients(),
-      futureRecipe.getSteps(),
-      futureRecipe.getTags(),
-      futureRecipe.isFavorite()
-    ];
-    await Future.wait(preloads);
-    
-    setState(() {
-      recipe = futureRecipe;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
 
-    if(recipe != null) {
-      return buildPage(context);
-    }
-
-    return Container(
-      color: StyleSheet.WHITE,
-      alignment: Alignment.center,
-      child: CircularProgressIndicator(),
+    return Consumer<RecipeModel>(
+      builder: (context, recipe, loadingScreen) {
+        if(recipe.isReadyForDisplay) {
+          return buildPage(context, recipe);
+        }
+        recipe.loadRecipeForDisplay();
+        return loadingScreen;
+      },
+      child: Container(
+        color: StyleSheet.WHITE,
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 
-  Widget buildPage(BuildContext context) {
+  Widget buildPage(BuildContext context, RecipeModel recipe) {
 
     return Scaffold(
       backgroundColor: StyleSheet.WHITE,
@@ -85,7 +56,7 @@ class _RecipePageState extends State<RecipePage> {
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(recipe.image),
+                  image: NetworkImage(recipe.imageURL),
                   colorFilter: ColorFilter.mode(Colors.black54, BlendMode.softLight),
                   fit: BoxFit.cover
                 )
@@ -114,27 +85,14 @@ class _RecipePageState extends State<RecipePage> {
                         ),
                       ),
                       Spacer(),
-                      FavoriteButton(
-                        recipe: recipe,
-                        disabledIcon: Icon(
-                          Icons.favorite_border,
-                          color: StyleSheet.WHITE,
-                          size: 30,
-                        ),
-                        enabledIcon: Icon(
-                          Icons.favorite,
-                          color: StyleSheet.WHITE,
-                          size: 30,
-                        ),
-                        size: 30,
-                      ),
+                      FavoriteButton(),
                     ]
                   ),
                 ),
               ),
               ChangeNotifierProvider(
                 create: (_) => TabNavigationModel(tabCount: 2, expandSheet: true),
-                child: RecipeSheet(recipe)
+                child: RecipeSheet()
               )
             ],
           )

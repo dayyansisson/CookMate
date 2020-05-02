@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:CookMate/entities/recipe.dart';
+import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/marquee.dart';
@@ -9,9 +9,6 @@ import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class RecipeSheet extends StatefulWidget {
-
-  final Recipe recipe;
-  RecipeSheet(this.recipe);
 
   @override
   _RecipeSheetState createState() => _RecipeSheetState();
@@ -34,16 +31,14 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   Animation<double> dragPosition;
   ScrollController directionsScrollController;
 
-  /* Referenced variables */
-  Recipe recipe;
+  RecipeModel recipe;
 
   @override
   void initState() { 
 
     super.initState();
 
-    recipe = widget.recipe;
-
+    recipe = Provider.of<RecipeModel>(context, listen: false);
     directionsScrollController = ScrollController()..addListener(directionsScrollListener);
     
     dragController = AnimationController(
@@ -151,7 +146,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   /* Getter for the header segment of the sheet */
   Widget get _title {
-    
+
     return Stack(
       alignment: Alignment.topCenter,
       children: <Widget>[

@@ -1,6 +1,7 @@
-import 'package:CookMate/entities/recipe.dart';
+import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class _ButtonIcon extends StatelessWidget {
 
@@ -17,10 +18,7 @@ class FavoriteButton extends StatefulWidget {
   final _ButtonIcon enabledIcon;
   final double size;
 
-  final Recipe recipe;
-
   FavoriteButton({
-    @required this.recipe,
     Icon disabledIcon = const Icon(
       Icons.favorite_border,
       color: StyleSheet.WHITE,
@@ -43,68 +41,53 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   bool enabled;
 
   @override
-  void initState() { 
-    super.initState();
-
-    initEnabled();
-  }
-
-  void initEnabled() async {
-
-    enabled = widget.recipe.favorite;
-    if(enabled == null) {
-      widget.recipe.isFavorite().then(
-        (isFavorite) {
-          setState(() {
-            enabled = isFavorite;
-          });
-        }
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
 
-    if(enabled == null) {
-      return Container(
-        width: widget.size,
-        height: widget.size,
-        alignment: Alignment.center,
-        child: CircularProgressIndicator()
-      );
-    }
-
-    return Button(
-      onPressed: () {
-        setState(() {
-          enabled = !enabled;
-        });
-        if(enabled) {
-          widget.recipe.addToFavorites();
-        } else {
-          widget.recipe.removeFromFavorites();
+    return Consumer<RecipeModel>(
+      builder: (context, recipe, loadingPlaceholder) {
+        enabled = recipe.isFavorite;
+        if(enabled == null) {
+          return loadingPlaceholder;
         }
+
+        return Button(
+          onPressed: () {
+            setState(() {
+              enabled = !enabled;
+            });
+            if(enabled) {
+              recipe.favorite();
+            } else {
+              recipe.unfavorite();
+            }
+          },
+          child: Container(
+            width: widget.size,
+            height: widget.size,
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              switchInCurve: Curves.easeInOut,
+              switchOutCurve: Curves.easeInOut,
+              transitionBuilder: (child, animation) {
+                return ScaleTransition(
+                  scale: animation,
+                  child: FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  )
+                );  
+              },
+              child: enabled ? widget.enabledIcon : widget.disabledIcon,
+            )
+          ),
+        );
       },
       child: Container(
         width: widget.size,
         height: widget.size,
-        child: AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
-          switchInCurve: Curves.easeInOut,
-          switchOutCurve: Curves.easeInOut,
-          transitionBuilder: (child, animation) {
-            return ScaleTransition(
-              scale: animation,
-              child: FadeTransition(
-                opacity: animation,
-                child: child,
-              )
-            );  
-          },
-          child: enabled ? widget.enabledIcon : widget.disabledIcon,
-        )
-      ),
+        alignment: Alignment.center,
+        child: CircularProgressIndicator()
+      )
     );
   }
 }
