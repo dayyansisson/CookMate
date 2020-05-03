@@ -1,4 +1,4 @@
-import 'package:CookMate/entities/ingredient.dart';
+import 'package:flutter/material.dart';
 
 /*
   This file lays out the shopping ingredient class. 
@@ -7,7 +7,7 @@ import 'package:CookMate/entities/ingredient.dart';
 class ShoppingIngredient {
   
   bool purchased;
-  Ingredient ingredient;
+  String ingredient;
 
-  //Everything from the server below
+  ShoppingIngredient(this.ingredient, { @required this.purchased });
 }

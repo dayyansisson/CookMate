@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
+import 'package:CookMate/util/cookMateIcons.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/favoriteButton.dart';
 import 'package:CookMate/widgets/page%20layout/recipeSheet.dart';
@@ -17,7 +18,7 @@ class _RecipePageState extends State<RecipePage> {
 
   /* Layout Constants */
   static const double _PAGE_NAME_FONT_SIZE = 16;
-  static const double _TOP_BAR_EDGE_PADDING = 30;
+  static const double _TOP_BAR_EDGE_PADDING = 15;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +58,6 @@ class _RecipePageState extends State<RecipePage> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: NetworkImage(recipe.imageURL),
-                  colorFilter: ColorFilter.mode(Colors.black54, BlendMode.softLight),
                   fit: BoxFit.cover
                 )
               ),
@@ -66,37 +66,68 @@ class _RecipePageState extends State<RecipePage> {
           Stack(
             alignment: Alignment.topLeft,
             children: <Widget>[
+              ChangeNotifierProvider(
+                create: (_) => TabNavigationModel(tabCount: 2, expandSheet: true),
+                child: RecipeSheet()
+              ),
               Padding(  // Top Bar
-                padding: const EdgeInsets.only(top: _TOP_BAR_EDGE_PADDING - 20, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
+                padding: const EdgeInsets.only(top: _TOP_BAR_EDGE_PADDING, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
                 child: Container(
                   height: 40,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Button(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          "BACK",
-                          style: TextStyle(
-                            color: StyleSheet.WHITE,
-                            fontWeight: FontWeight.bold,
-                            fontSize: _PAGE_NAME_FONT_SIZE
+                      roundedBackground([
+                        Button(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            "BACK",
+                            style: TextStyle(
+                              color: StyleSheet.WHITE,
+                              fontWeight: FontWeight.bold,
+                              fontSize: _PAGE_NAME_FONT_SIZE
+                            ),
                           ),
                         ),
-                      ),
+                      ]),
                       Spacer(),
-                      FavoriteButton(),
+                      roundedBackground([
+                        Icon(
+                          CookMateIcon.bag_icon,
+                          color: StyleSheet.WHITE,
+                        ),
+                        Container(width: 20),
+                        FavoriteButton()
+                      ]),
                     ]
                   ),
                 ),
               ),
-              ChangeNotifierProvider(
-                create: (_) => TabNavigationModel(tabCount: 2, expandSheet: true),
-                child: RecipeSheet()
-              )
             ],
           )
         ],
+      ),
+    );
+  }
+
+  Widget roundedBackground (List<Widget> widgets) {
+
+    return ClipRRect(
+      borderRadius: BorderRadius.all(Radius.circular(15)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          height: 100,
+          alignment: Alignment.center,
+          color: StyleSheet.DEEP_GREY.withOpacity(0.5),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: widgets,
+            ),
+          ),
+        )
       ),
     );
   }

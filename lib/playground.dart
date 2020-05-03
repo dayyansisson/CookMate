@@ -33,7 +33,7 @@ class Playground extends StatelessWidget {
             bodyContent: Padding(
               padding: const EdgeInsets.only(left: 25, right: 25, top: 10),
               child: FutureBuilder<Recipe>(
-                future: DB.getRecipe('100'),
+                future: DB.getRecipe('101'),
                 builder: (context, snapshot) {
                   if(snapshot.hasData) {
                     return RecipeCard(snapshot.data);

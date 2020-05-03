@@ -1,7 +1,9 @@
 import 'dart:ui';
+import 'package:CookMate/entities/shoppingIngredient.dart';
 import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
+import 'package:CookMate/widgets/checkbox.dart';
 import 'package:CookMate/widgets/marquee.dart';
 import 'package:CookMate/widgets/tag.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +25,16 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   static const double _INFO_SIZE = 15;
   static const double _LINE_SPACING = 1.2;
   static const double _HEAD_SPACE = 70;
-
+  static const double _BACKGROUND_FADE_FACTOR = 0.35;
   static const double _MIN_SHEET_HEIGHT = _SHEET_BORDER_RADIUS + _TITLE_SIZE + 14 + (_DESCRIPTION_SIZE * _LINE_SPACING * 3) + 40 + (_INFO_SIZE * 2) + _HEAD_SPACE;
 
   /* Animation Controller */
   AnimationController dragController;
   Animation<double> dragPosition;
   ScrollController directionsScrollController;
+
+  /* Shopping List */
+  List<ShoppingIngredient> shoppingIngredients;
 
   RecipeModel recipe;
 
@@ -38,7 +43,14 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
     super.initState();
 
+    // Init. recipe
     recipe = Provider.of<RecipeModel>(context, listen: false);
+    shoppingIngredients = List<ShoppingIngredient>(recipe.ingredients.length);
+    for(int i = 0; i < recipe.ingredients.length; i++) {
+      shoppingIngredients[i] = ShoppingIngredient(recipe.ingredients[i], purchased: false);
+    }
+
+    // Init controllers
     directionsScrollController = ScrollController()..addListener(directionsScrollListener);
     
     dragController = AnimationController(
@@ -71,36 +83,39 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
 
-    return Padding(
-      padding: const EdgeInsets.only(top: _HEAD_SPACE),
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            width: MediaQuery.of(context).size.width,
-            top: (MediaQuery.of(context).size.height - _MIN_SHEET_HEIGHT) * dragPosition.value,
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(_SHEET_BORDER_RADIUS),
-                  topRight: Radius.circular(_SHEET_BORDER_RADIUS)
-                ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-                  child: Container(
-                    color: StyleSheet.TAB_GREY.withOpacity(0.3),
-                    child: Column(
-                      children: <Widget> [
-                        header,
-                        Expanded(child: tabBody),
-                      ]
+    return Container(
+      color: StyleSheet.BLACK.withOpacity((1 - dragController.value) * _BACKGROUND_FADE_FACTOR),
+      child: Padding(
+        padding: const EdgeInsets.only(top: _HEAD_SPACE),
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              width: MediaQuery.of(context).size.width,
+              top: (MediaQuery.of(context).size.height - _MIN_SHEET_HEIGHT) * dragPosition.value,
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(_SHEET_BORDER_RADIUS),
+                    topRight: Radius.circular(_SHEET_BORDER_RADIUS)
+                  ),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                    child: Container(
+                      color: StyleSheet.TAB_GREY.withOpacity(0.3),
+                      child: Column(
+                        children: <Widget> [
+                          header,
+                          Expanded(child: tabBody),
+                        ]
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -366,14 +381,52 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   Widget get ingredientsList {
 
-    return Text(
-      '– 3 large brown egsqwertfyudhkdfgh\n– 1 cup of Wild Rice\n– 2 ½ cups of Kale\n– 1 sweet potato',
-      style: TextStyle(
-        color: StyleSheet.WHITE,
-        fontWeight: FontWeight.w300,
-        fontSize: 20,
-        height: 2
-      ),
+    final double textWidth = MediaQuery.of(context).size.width - (_TabClipper.TAB_RADIUS * 10/3);
+
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: ListView.builder(
+            itemCount: shoppingIngredients.length,
+            controller: directionsScrollController,
+            itemBuilder: (_, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: _TabClipper.TAB_RADIUS,
+                      alignment: Alignment.center,
+                      child: Checkoff(
+                        initialValue: shoppingIngredients[index].purchased,
+                        onTap: (bool purchased) => setState(() => shoppingIngredients[index].purchased = purchased),
+                      )
+                    ),
+                    Container(width: _TabClipper.TAB_RADIUS / 3),
+                    Opacity(
+                      opacity: shoppingIngredients[index].purchased ? 0.3 : 1,
+                      child: Container(
+                        width: textWidth,
+                        child: Text(
+                          shoppingIngredients[index].ingredient,
+                          style: TextStyle(
+                            color: StyleSheet.WHITE,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 20,
+                            decoration: shoppingIngredients[index].purchased ? TextDecoration.lineThrough : TextDecoration.none
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }
+          ),
+        ),
+        Container(height: _HEAD_SPACE)
+      ],
     );
   }
 
