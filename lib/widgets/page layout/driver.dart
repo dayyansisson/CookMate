@@ -1,31 +1,17 @@
-import 'dart:io';
-import 'dart:ui';
 import 'package:CookMate/provider/pageModel.dart';
-import 'package:CookMate/provider/searchModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
-import 'package:CookMate/widgets/dropdown%20menu/dropdownSearch.dart';
 import 'package:CookMate/widgets/navBar.dart';
-import 'package:CookMate/widgets/page%20layout/mainPage.dart';
-import 'package:CookMate/widgets/page%20layout/pageSheet.dart';
-import 'package:CookMate/widgets/page%20layout/sheetTab.dart';
-import 'package:CookMate/widgets/recipeCard.dart';
-import 'package:CookMate/widgets/searchBar.dart';
 import 'package:flutter/material.dart';
-import 'package:CookMate/util/cookMateIcons.dart';
 import 'package:provider/provider.dart';
-
-/* This class only exists for us to develop different parts of the app 
-   without affecting each other's work.
-*/
 
 class Driver extends StatelessWidget {
 
-PageController _controller;
-Driver() {_controller = PageController();}
+  final PageController _controller;
+  Driver() : _controller = PageController();
 
   @override
-Widget build(BuildContext context) {
-  
+  Widget build(BuildContext context) {
+    
     return ChangeNotifierProvider<PageModel>(
       create: (_) => PageModel(),
       child: Scaffold(
@@ -36,19 +22,19 @@ Widget build(BuildContext context) {
               physics: NeverScrollableScrollPhysics(),
               controller: _controller,
               children: <Widget>[
-                Page2(),
-                Page4(),
-                Page4(),
-                Page5()
+                TestPage(1),
+                TestPage(2),
+                TestPage(3),
+                TestPage(4),
               ]
             );
           }
         ),
-        backgroundColor: Colors.red,
-        //bottomNavigationBar: NavBar(),
+        backgroundColor: StyleSheet.WHITE,
+        bottomNavigationBar: NavBar(),
       ),
     );
-}
+  }
   
 
 
@@ -68,36 +54,16 @@ Widget build(BuildContext context) {
   }
 }
 
-class Page2 extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.red,
-      body: Container(
-        child: Column(
-          children: <Widget>[
-          ],
-        ),
-      ),
-    );
-  }
-}
 
-class Page4 extends StatelessWidget {
+class TestPage extends StatelessWidget {
+
+  final int index;
+  TestPage(this.index);
+
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Text('Page 4'),
-      ),
-    );
-  }
-}
-class Page5 extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Text('Page 5'),
+      body:  Center(
+        child: Text(index.toString()),
       ),
     );
   }
