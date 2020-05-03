@@ -36,19 +36,9 @@ class Driver extends StatelessWidget {
     );
   }
   
+  void changePage(PageModel model) {
 
-
-  changePage(PageModel model) {
-    if (model.onHome == false && model.nextPage == 0) {
-      _controller.jumpToPage(model.nextPage);
-    }
-    if (model.onSearch == false && model.nextPage == 1) {
-      _controller.jumpToPage(model.nextPage);
-    }
-    if (model.onCatalog == false && model.nextPage == 2) {
-      _controller.jumpToPage(model.nextPage);
-    }
-    if (model.onSearch == false && model.nextPage == 3) {
+    if(_controller.hasClients) {
       _controller.jumpToPage(model.nextPage);
     }
   }
@@ -62,7 +52,7 @@ class TestPage extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  Center(
+      body: Center(
         child: Text(index.toString()),
       ),
     );

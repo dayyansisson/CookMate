@@ -92,10 +92,7 @@ class _RecipePageState extends State<RecipePage> {
                       ]),
                       Spacer(),
                       roundedBackground([
-                        Icon(
-                          CookMateIcon.bag_icon,
-                          color: StyleSheet.WHITE,
-                        ),
+                        Icon(CookMateIcon.bag_icon, color:  StyleSheet.WHITE),
                         Container(width: 20),
                         FavoriteButton()
                       ]),
