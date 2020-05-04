@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:CookMate/entities/ingredient.dart';
-import 'package:CookMate/Enums/category.dart';
+import 'package:CookMate/enums/category.dart';
 import 'package:CookMate/entities/entity.dart';
 import 'package:CookMate/entities/recipe.dart';
 import 'package:sqflite/sqflite.dart';

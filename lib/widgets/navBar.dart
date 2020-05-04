@@ -15,9 +15,19 @@ class _NavBarState extends State<NavBar> {
   Widget build(BuildContext context) {
     return Consumer<PageModel>(
       builder: (context, model, _) {
-      return Container(
-        height: 60,
-        color: Colors.white,
+        return Container(
+          height: 60,
+          decoration: BoxDecoration(
+            color: StyleSheet.WHITE,
+            boxShadow: [
+              BoxShadow(
+                offset: Offset(0, 0),
+                blurRadius: 6,
+                spreadRadius: 2,
+                color: StyleSheet.LIGHT_GREY.withOpacity(0.2)
+              )
+            ]
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

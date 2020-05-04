@@ -22,24 +22,24 @@ class RecipeCard extends StatefulWidget {
 
 class _RecipeCardState extends State<RecipeCard> {
 
-  RecipeModel model;
+  RecipePageModel model;
 
   @override
   void initState() {
 
-    model = RecipeModel(recipe: widget.recipe);
+    model = RecipePageModel(recipe: widget.recipe);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    return ChangeNotifierProvider<RecipeModel>(
+    return ChangeNotifierProvider<RecipePageModel>(
       create: (_) => model,
       child: Button(
         onPressed: () => Navigator.push(context, MaterialPageRoute(
           builder: (context) {
-            return ChangeNotifierProvider<RecipeModel>.value(
+            return ChangeNotifierProvider<RecipePageModel>.value(
               value: model,
               child: RecipePage()
             );
@@ -68,7 +68,7 @@ class _RecipeCardState extends State<RecipeCard> {
                   Positioned(
                     top: 15,
                     right: 15,
-                    child: FavoriteButton()
+                    child: Container(child: FavoriteButton())
                   )
                 ],
               ),

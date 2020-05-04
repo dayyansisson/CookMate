@@ -1,5 +1,9 @@
 import 'package:CookMate/provider/pageModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
+import 'package:CookMate/views/catalogPage.dart';
+import 'package:CookMate/views/homePage.dart';
+import 'package:CookMate/views/searchPage.dart';
+import 'package:CookMate/views/shoppingListPage.dart';
 import 'package:CookMate/widgets/navBar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,10 +26,10 @@ class Driver extends StatelessWidget {
               physics: NeverScrollableScrollPhysics(),
               controller: _controller,
               children: <Widget>[
-                TestPage(1),
-                TestPage(2),
-                TestPage(3),
-                TestPage(4),
+                HomePage(),
+                // SearchPage(),
+                // CatalogPage(),
+                // ShoppingListPage(),
               ]
             );
           }
@@ -41,20 +45,5 @@ class Driver extends StatelessWidget {
     if(_controller.hasClients) {
       _controller.jumpToPage(model.nextPage);
     }
-  }
-}
-
-
-class TestPage extends StatelessWidget {
-
-  final int index;
-  TestPage(this.index);
-
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(index.toString()),
-      ),
-    );
   }
 }

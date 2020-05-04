@@ -32,6 +32,9 @@ class StyleSheet {
     brightness: Brightness.light,
     fontFamily: 'Lato',
   );
+
+  /* Images */
+  static const String DEFAULT_RECIPE_IMAGE = 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/chimichuri-soup.jpg';
 }
 
 class Button extends StatelessWidget {

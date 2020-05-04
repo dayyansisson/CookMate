@@ -33,10 +33,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   Animation<double> dragPosition;
   ScrollController directionsScrollController;
 
-  /* Shopping List */
-  List<ShoppingIngredient> shoppingIngredients;
-
-  RecipeModel recipe;
+  RecipePageModel recipe;
 
   @override
   void initState() { 
@@ -44,11 +41,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     super.initState();
 
     // Init. recipe
-    recipe = Provider.of<RecipeModel>(context, listen: false);
-    shoppingIngredients = List<ShoppingIngredient>(recipe.ingredients.length);
-    for(int i = 0; i < recipe.ingredients.length; i++) {
-      shoppingIngredients[i] = ShoppingIngredient(recipe.ingredients[i], purchased: false);
-    }
+    recipe = Provider.of<RecipePageModel>(context, listen: false);
 
     // Init controllers
     directionsScrollController = ScrollController()..addListener(directionsScrollListener);
@@ -387,7 +380,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
       children: <Widget>[
         Expanded(
           child: ListView.builder(
-            itemCount: shoppingIngredients.length,
+            itemCount: recipe.shoppingIngredients.length,
             controller: directionsScrollController,
             itemBuilder: (_, index) {
               return Padding(
@@ -399,22 +392,22 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                       width: _TabClipper.TAB_RADIUS,
                       alignment: Alignment.center,
                       child: Checkoff(
-                        initialValue: shoppingIngredients[index].purchased,
-                        onTap: (bool purchased) => setState(() => shoppingIngredients[index].purchased = purchased),
+                        initialValue: recipe.shoppingIngredients[index].purchased,
+                        onTap: (bool purchased) => setState(() => recipe.shoppingIngredients[index].purchased = purchased),
                       )
                     ),
                     Container(width: _TabClipper.TAB_RADIUS / 3),
                     Opacity(
-                      opacity: shoppingIngredients[index].purchased ? 0.3 : 1,
+                      opacity: recipe.shoppingIngredients[index].purchased ? 0.3 : 1,
                       child: Container(
                         width: textWidth,
                         child: Text(
-                          shoppingIngredients[index].ingredient,
+                          recipe.shoppingIngredients[index].ingredient,
                           style: TextStyle(
                             color: StyleSheet.WHITE,
                             fontWeight: FontWeight.w300,
                             fontSize: 20,
-                            decoration: shoppingIngredients[index].purchased ? TextDecoration.lineThrough : TextDecoration.none
+                            decoration: recipe.shoppingIngredients[index].purchased ? TextDecoration.lineThrough : TextDecoration.none
                           ),
                         ),
                       ),

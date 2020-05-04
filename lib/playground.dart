@@ -17,35 +17,5 @@ class Playground extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Driver();
-
-    // return Scaffold(
-    //   backgroundColor: StyleSheet.WHITE,
-    //   body: MainPage(
-    //     name: 'Home',
-    //     backgroundImage: "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/cranberry-orange-cornbread.jpg",
-    //     pageSheet: PageSheet([
-    //       SheetTab(
-    //         name: "Featured",     
-    //         title: "Featured Meals\nof the Week",
-    //         subtitle: "Wild Rice & Eggs, Baked Honey Feta, plus more!",
-    //         bodyGradient: StyleSheet.VERTICAL_GRADIENT_WHITE,
-    //         canExpandSheet: true,
-    //         bodyContent: Padding(
-    //           padding: const EdgeInsets.only(left: 25, right: 25, top: 10),
-    //           child: FutureBuilder<Recipe>(
-    //             future: DB.getRecipe('101'),
-    //             builder: (context, snapshot) {
-    //               if(snapshot.hasData) {
-    //                 return RecipeCard(snapshot.data);
-    //               }
-
-    //               return Center(child: CircularProgressIndicator());
-    //             },
-    //           )
-    //         )
-    //       ),
-    //     ]),
-    //   )
-    // );
   }
 }

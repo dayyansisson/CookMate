@@ -43,7 +43,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   @override
   Widget build(BuildContext context) {
 
-    return Consumer<RecipeModel>(
+    return Consumer<RecipePageModel>(
       builder: (context, recipe, loadingPlaceholder) {
         enabled = recipe.isFavorite;
         if(enabled == null) {

@@ -1,5 +1,5 @@
 import 'package:CookMate/entities/recipe.dart';
-import 'package:CookMate/Enums/category.dart';
+import 'package:CookMate/enums/category.dart';
 import 'package:CookMate/backend/backend.dart';
 import 'package:flutter/material.dart';
 
