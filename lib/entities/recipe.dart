@@ -1,6 +1,5 @@
 import 'package:CookMate/entities/entity.dart';
 import 'package:CookMate/backend/backend.dart';
-// import 'package:CookMate/entities/ingredient.dart';
 
 /*
   This file lays out the recipe class. 
