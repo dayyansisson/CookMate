@@ -113,8 +113,8 @@ abstract class DB {
 
     // Shopping Cart
     // await db.execute("""
-
     // """);
+
     print("DB created.");
 
     addRecipesFromFile();
@@ -150,7 +150,6 @@ abstract class DB {
           });
 
           // Populate ingredient table
-          // List<String> detailedIng = List<String>();
           List<String> detailedIng = new List();
           var detailedIngredients = v['ingredients'];
           detailedIngredients.forEach((ingKey, ingredient) {
