@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:CookMate/provider/pageModel.dart';
 import 'package:CookMate/provider/searchModel.dart';
+import 'package:CookMate/Controllers/SearchController.dart';
+import 'package:CookMate/Entities/recipe.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/dropdown%20menu/dropdownSearch.dart';
 import 'package:CookMate/widgets/navBar.dart';
@@ -13,6 +15,9 @@ import 'package:CookMate/widgets/searchBar.dart';
 import 'package:flutter/material.dart';
 import 'package:CookMate/util/cookMateIcons.dart';
 import 'package:provider/provider.dart';
+import 'package:CookMate/Controllers/HomeController.dart';
+
+//import 'Controllers/CatalogController.dart';
 
 /* This class only exists for us to develop different parts of the app 
    without affecting each other's work.
@@ -26,12 +31,12 @@ Playground() {_controller = PageController();}
   @override
 Widget build(BuildContext context) {
   
-    return ChangeNotifierProvider<PageModel>(
-      create: (_) => PageModel(),
+    return ChangeNotifierProvider<SearchModel>(
+      create: (_) => SearchModel(),
       child: Scaffold(
-        body:  Consumer<PageModel>(
+        body:  Consumer<SearchModel>(
           builder: (context, model, _) {
-            changePage(model);
+            //changePage(model);
             return PageView(
               physics: NeverScrollableScrollPhysics(),
               controller: _controller,
@@ -45,7 +50,7 @@ Widget build(BuildContext context) {
           }
         ),
         backgroundColor: Colors.red,
-        bottomNavigationBar: NavBar(),
+        //bottomNavigationBar: NavBar(),
       ),
     );
 }
@@ -75,6 +80,8 @@ class Page2 extends StatelessWidget {
       body: Container(
         child: Column(
           children: <Widget>[
+            SearchBar(),
+            DropDownSearch()
           ],
         ),
       ),

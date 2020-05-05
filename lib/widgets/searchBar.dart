@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:CookMate/util/cookMateIcons.dart';
 import 'package:CookMate/provider/searchModel.dart';
 import 'package:provider/provider.dart';
+import 'package:CookMate/Controllers/SearchController.dart';
 
 
 class SearchBar extends StatefulWidget {
@@ -19,13 +20,16 @@ class _SearchBarState extends State<SearchBar>{
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 25.0),
             child: TextField(
-              onChanged: (value) {
-                setState(() {
+              onChanged: (value) async {
                   print(value);
-                  model.inputList.add(value);
+                  if (value == '') {
+                    model.inputList = [];
+                    changeList(model.inputList, model);
+                  } else {
+                  List<String> temp = await SearchController().findIngredients(value);
+                  model.inputList = temp;
                   changeList(model.inputList, model);
-                  print(model.inputList);
-                });
+                  }
               },
               decoration: InputDecoration(
                 filled: true,

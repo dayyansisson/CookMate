@@ -27,10 +27,10 @@ class _DropDownSearchState extends State<DropDownSearch>{
               maxWidth: 300.0
             ),
               child: ListView.builder(
-                itemCount: model.inputList.length, 
+                itemCount: limitDisplay(model.inputList.length), 
                 itemBuilder: (context, index) {
                   return Container (
-                    height: 30,
+                    height: 25,
                     color: Colors.white,
                     child: Column(
                       children: <Widget>[
@@ -55,5 +55,13 @@ class _DropDownSearchState extends State<DropDownSearch>{
         );
       }
     );
+  }
+}
+
+int limitDisplay(int length) {
+  if (length == 0) {
+    return 0;
+  } else {
+    return length;
   }
 }
