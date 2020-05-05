@@ -1,6 +1,5 @@
-import 'package:CookMate/Entities/entity.dart';
+import 'package:CookMate/entities/entity.dart';
 import 'package:CookMate/backend/backend.dart';
-// import 'package:CookMate/Entities/ingredient.dart';
 
 /*
   This file lays out the recipe class. 
@@ -15,7 +14,7 @@ class Recipe extends Entity {
   String description;
   String image;
   String category;
-  String prepTime; //prepTime is not in data yet
+  String prepTime;
   String cookTime;
   String servings;
   String url;
@@ -25,23 +24,27 @@ class Recipe extends Entity {
   bool favorite;
 
   // Recipe Constructor
-  Recipe({
-    this.id,
-    this.title,
-    this.description,
-    this.image,
-    this.category,
-    this.prepTime,
-    this.cookTime,
-    this.servings,
-    this.url,
-  });
+  Recipe(
+      {this.id,
+      this.title,
+      this.description,
+      this.image,
+      this.category,
+      this.prepTime,
+      this.cookTime,
+      this.url,
+      this.servings,
+      this.tags,
+      this.ingredients,
+      this.steps});
 
   Future<void> addToFavorites() async {
+    favorite = true;
     DB.favoriteRecipe("$id");
   }
 
   Future<void> removeFromFavorites() async {
+    favorite = false;
     DB.unfavoriteRecipe("$id");
   }
 
@@ -105,7 +108,7 @@ class Recipe extends Entity {
       description: map['description'],
       image: map['image'],
       category: map['category'],
-      prepTime: null,
+      prepTime: map['prepTime'],
       cookTime: map['cookTime'],
       servings: map['servings'],
       url: map['url'],

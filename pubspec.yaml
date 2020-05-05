@@ -32,7 +32,11 @@ flutter:
   uses-material-design: true
   assets:
     - assets/recipes.json
+    - assets/new_recipes.json
   fonts:
+    - family: CookmateIcons 
+      fonts:
+        - asset: assets/fonts/icon/cookMateIcons.ttf
     - family: Hoefler
       fonts:
         - asset: assets/fonts/hoefler/HoeflerText-Regular.ttf

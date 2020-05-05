@@ -1,9 +1,5 @@
-import 'dart:math';
-
-import 'package:CookMate/Entities/query.dart';
-import 'package:CookMate/Entities/recipe.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:CookMate/entities/recipe.dart';
+import 'package:CookMate/backend/backend.dart';
 
 /*
   This file lays out the catalog page controller. 
@@ -14,32 +10,62 @@ import 'package:flutter/services.dart';
   2 - The Today Tab
 */
 
-class CatalogController {
+class HomeController {
+  
+  //Singleton constuctor
+  static final HomeController _homeController = HomeController._internal();
 
-  String imageURL; //Comes from Server Format: JSON This is for the background image
+  factory HomeController(){
+    return _homeController;
+  }
+
+  HomeController._internal();
+  
+  //Class Variables
+  Future<String> imageURL; //Comes from Server Format: JSON This is for the background image
   //int currentTab; //Internal provided to the controller by the view
   List<Recipe> currentRecipeList;
   String headLine; //Server Format: JSON, This is the header for the home page
   String body; //Server Format: JSON
+  String title;
 
-  String getImageURL(){
-    return currentRecipeList[0].imageURL;
+  Future<String> getImageURL() async {
+    if(currentRecipeList == null){
+      return "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/easy-bolognesey-recipe.jpg";
+    }
+    return currentRecipeList[0].image;
   }
 
   /*
     This method returns the displayed recipes 
   */
-  List<Recipe> getRecipe(int currentTab){
+  Future<List<Recipe>> getRecipes(int currentTab) async{
     if(currentTab == 0){
-      currentRecipeList = backend.getFeaturedRecipes();
+      currentRecipeList = await DB.getFeaturedRecipes();
     }
     else if(currentTab == 1){
-      currentRecipeList = backend.getFavoriteRecipes();
+      //currentRecipeList = await DB.getFavoriteRecipes(); //Change to List<Recipes> brian 
     }
     else if(currentTab == 2){
-      currentRecipeList = backend.getTodayRecipes();
+      currentRecipeList = DB.getTodayRecipes();
     }
     return currentRecipeList;
+  }
+
+  /*
+    This method returns the correct title of the tab on the home page
+  */
+  String getTitle(int currentTab){
+    if(currentTab == 0){
+      title = "Featured";
+    }
+    else if(currentTab == 1){
+      title = "Favorites";
+    }
+    else if(currentTab == 2){
+      title = "Today";
+    }
+    return title;
   }
 
   /*
@@ -47,10 +73,10 @@ class CatalogController {
   */
   String getHeader(int currentTab){
     if(currentTab == 0){
-      headLine = 'Featured Meals of the Week';
+      headLine = "Featured Meals\nof the Week";
     }
     else if(currentTab == 1){
-      headLine = 'Your Favorite Recipes';
+      headLine = "Your Favorites\nRecipes";
     }
     else if(currentTab == 2){
       headLine = "Today's Meals";
@@ -64,18 +90,7 @@ class CatalogController {
   String getBody(int currentTab){
     if(currentTab == 0){
       //checks to make sure there are at least two elements in the recipe list
-      if(currentRecipeList.length >= 2){
-        String title_1 = currentRecipeList[0].title;
-        String title_2 = currentRecipeList[1].title;
-        body = "$title_1, $title_2, plus more!";
-      }
-      else if(currentRecipeList.length == 1){
-        String title_1 = currentRecipeList[0].title;
-        body = "$title_1";
-      }
-      else{
-        body = '';
-      }
+      body = "Trader Joes' Featured Recipes!";
         
     }
     else if(currentTab == 1){
@@ -86,8 +101,4 @@ class CatalogController {
     }
     return body;
   }
-
-
-
-
 }

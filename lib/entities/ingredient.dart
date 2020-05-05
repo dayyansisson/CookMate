@@ -1,6 +1,4 @@
-import 'package:CookMate/Entities/recipe.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:CookMate/entities/recipe.dart';
 
 /*
   This file lays out the ingredient class. 

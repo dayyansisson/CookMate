@@ -5,6 +5,7 @@ class StyleSheet {
   /* Colors */
   static const Color BLACK = const Color(0xFF000000);
   static const Color DEEP_GREY = const Color(0xFF262626);
+  static const Color TAB_GREY = const Color(0xFF262626);
   static const Color DARK_GREY = const Color(0xFF4D4D4D);
   static const Color GREY = const Color(0xFF8E8E8E);
   static const Color LIGHT_GREY = const Color(0xFFACACAC);
@@ -31,6 +32,9 @@ class StyleSheet {
     brightness: Brightness.light,
     fontFamily: 'Lato',
   );
+
+  /* Images */
+  static const String DEFAULT_RECIPE_IMAGE = 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/chimichuri-soup.jpg';
 }
 
 class Button extends StatelessWidget {
