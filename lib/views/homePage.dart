@@ -14,22 +14,53 @@ class HomePage extends StatelessWidget {
       backgroundImage: StyleSheet.DEFAULT_RECIPE_IMAGE,
       pageSheet: PageSheet([
         SheetTab(
-            name: 'Featured',
+            name: 'A',
             title: 'Featured Meals\nof the Week',
-            subtitle:
-                'Something for each part of your day, handpicked just for you!',
+            subtitle: 'Something for each part of your day, handpicked just for you!',
             canExpandSheet: true,
             bodyContent: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25),
-                child: RecipeCardList(HomeController().getRecipes(0)))),
+              padding: EdgeInsets.symmetric(horizontal: 25),
+              child: RecipeCardList(HomeController().getRecipes(0)))),
         SheetTab(
-            name: 'Favorites',
+            name: 'B',
+            title: 'Featured Meals\nof the Week',
+            subtitle: 'Something for each part of your day, handpicked just for you!',
+            canExpandSheet: true,
+            bodyContent: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25),
+              child: RecipeCardList(HomeController().getRecipes(0)))),
+        SheetTab(
+            name: 'C',
+            title: 'Featured Meals\nof the Week',
+            subtitle: 'Something for each part of your day, handpicked just for you!',
+            canExpandSheet: true,
+            bodyContent: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25),
+              child: RecipeCardList(HomeController().getRecipes(0)))),
+        SheetTab(
+            name: 'D',
             title: 'Your Favorite\nRecipes',
             subtitle: 'All the recipes you\'ve bookmarked for safekeeping',
             canExpandSheet: true,
             bodyContent: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25),
-                child: RecipeCardList(HomeController().getRecipes(1))))
+                child: RecipeCardList(HomeController().getRecipes(1)))),
+        SheetTab(
+            name: 'E',
+            title: 'Your Favorite\nRecipes',
+            subtitle: 'All the recipes you\'ve bookmarked for safekeeping',
+            canExpandSheet: true,
+            bodyContent: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 25),
+                child: RecipeCardList(HomeController().getRecipes(1)))),
+        SheetTab(
+            name: 'F',
+            title: 'Your Favorite\nRecipes',
+            subtitle: 'All the recipes you\'ve bookmarked for safekeeping',
+            canExpandSheet: true,
+            bodyContent: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 25),
+                child: RecipeCardList(HomeController().getRecipes(1)))),
       ]),
     );
   }
