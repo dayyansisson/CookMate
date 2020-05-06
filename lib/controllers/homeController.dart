@@ -44,7 +44,17 @@ class HomeController {
       currentRecipeList = await DB.getFeaturedRecipes();
     }
     else if(currentTab == 1){
-      //currentRecipeList = await DB.getFavoriteRecipes(); //Change to List<Recipes> brian 
+
+      /* TODO @BR this is the code to check */
+
+      List<Map<String, dynamic>> recipeIDs = await DB.getFavoriteRecipes();
+      for (int i = 0; i < recipeIDs.length; i++) {
+        print(recipeIDs[i]);
+        Recipe rec = await DB.getRecipe(recipeIDs[i]['recipe_id'].toString());
+        currentRecipeList.add(rec);
+      }
+
+
     }
     else if(currentTab == 2){
       currentRecipeList = DB.getTodayRecipes();
