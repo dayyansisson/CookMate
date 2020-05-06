@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:CookMate/entities/shoppingIngredient.dart';
 import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';

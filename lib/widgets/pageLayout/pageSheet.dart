@@ -5,8 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PageSheet extends StatefulWidget {
+
   final List<SheetTab> tabs;
   PageSheet(this.tabs);
+
+  PageSheet.builder({ @required int tabCount, @required SheetTab Function(int) builder }) : tabs = List<SheetTab>(tabCount) {
+
+    for(int index = 0; index < tabCount; index++) {
+      tabs[index] = builder(index);
+    }
+  }
 
   @override
   _PageSheetState createState() => _PageSheetState();
@@ -18,8 +26,8 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
   static const int _NAVIGATION_SPACING = 20;
 
   /* Animation Constants */
-  static const Curve _BODY_CURVE =
-      const Interval(0, 1, curve: Curves.easeInOutCubic);
+  static const Curve BODY_CURVE = const Interval(0, 1, curve: Curves.easeInOutCubic);
+  static const Duration ANIMATION_LENGTH = const Duration(milliseconds: 600);
 
   /* Harcoded values to replace with dynamic */
   int tabCount;
@@ -86,7 +94,7 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
         ),
         Positioned.fill(
             // Navigation
-            top: _SHEET_BORDER_RADIUS - TabIndicator.NAVIGATION_TEXT_SIZE,
+            top: _SHEET_BORDER_RADIUS - TabIndicator.NAVIGATION_TEXT_SIZE * 1.25,
             child: _navigation),
       ],
     );
@@ -94,19 +102,6 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
 
   /* Getter for the tab navigation of the sheet */
   Widget get _navigation {
-
-    // List<Widget> _navigationWidgets = List<Widget>();
-    // _navigationWidgets.add(Padding(padding: EdgeInsets.symmetric(horizontal: 15)));
-    // for (int i = 0; i < tabCount; i++) {
-    //   _navigationWidgets.add(TabIndicator(name: tabNames[i], index: i));
-    // }
-    // _navigationWidgets.add(Padding(padding: EdgeInsets.symmetric(horizontal: 15)));
-
-    // return Row(
-    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: _navigationWidgets
-    // );
 
     List<TabIndicator> tabs = List<TabIndicator>(tabCount);
     for(int i = 0; i < tabCount; i++) {
@@ -122,9 +117,9 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
       child: Stack(
         children: <Widget>[
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 600),
-            switchInCurve: _BODY_CURVE,
-            switchOutCurve: _BODY_CURVE,
+            duration: ANIMATION_LENGTH,
+            switchInCurve: BODY_CURVE,
+            switchOutCurve: BODY_CURVE,
             transitionBuilder: (child, animation) {
               double start = previousTab > tab ? 1 : -1;
               Animation<Offset> offsetAnimation =
@@ -188,22 +183,32 @@ class _NavigationBar extends StatefulWidget {
   __NavigationBarState createState() => __NavigationBarState();
 }
 
-enum _RelativeAlignment { FromLeft, FromRight, Center }
-
 class __NavigationBarState extends State<_NavigationBar> {
 
   /* CONSTANTS */
   static const int MAX_TABS = 3;
-  static const Duration ANIMATION_LENGTH = const Duration(milliseconds: 200);
+  static const int CENTER = -1;
+  static const int LEFT = 0;
+  static const int RIGHT = 1;
 
   int tabCount;
   double tabSpacing;
   int leftEdgeIndex;
   int rightEdgeIndex;
 
+  //List<List<double>> lrPairs;
+  List<AnimatedPositioned> tabWidgets;
+
+  @override
+  void initState() { 
+    super.initState();
+    
+    tabCount = widget.tabs.length;
+    tabWidgets = List<AnimatedPositioned>(tabCount);
+  }
+
   void calculateValues() {
 
-    tabCount = widget.tabs.length;
 
     int adjustedTabCount = tabCount > MAX_TABS ? MAX_TABS : tabCount;
     tabSpacing = MediaQuery.of(context).size.width / (adjustedTabCount + 1);
@@ -223,7 +228,6 @@ class __NavigationBarState extends State<_NavigationBar> {
       rightEdgeIndex = currentTab + 2;
     }
 
-
     /* Adjust for overcompensation */
     if(leftEdgeIndex < 0) {
       leftEdgeIndex = 0;
@@ -241,73 +245,79 @@ class __NavigationBarState extends State<_NavigationBar> {
     return Consumer<TabNavigationModel>(
       builder: (context, model, _) {
         calculateEdgeValues(model.currentTab);
-        List<Widget> tabs = List<Widget>(tabCount);
         for(int i = 0; i < tabCount; i++) {
-          tabs[i] = tabDisplay(widget.tabs[i]);
+          tabWidgets[i] = alignTab(widget.tabs[i]);
         }
-
-        return Stack(children: tabs, alignment: Alignment.topCenter);
+        return Stack(children: tabWidgets, alignment: Alignment.topCenter);
       }
     );
   }
 
-  Widget tabDisplay(TabIndicator tab) {
+  AnimatedPositioned alignTab(TabIndicator tab) {
 
-    _RelativeAlignment alignment;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    int alignment;
     if(tab.index <= leftEdgeIndex) {
-      alignment = _RelativeAlignment.FromLeft;
+      alignment = LEFT;
     } else if(tab.index >= rightEdgeIndex) {
-      alignment = _RelativeAlignment.FromRight;
+      alignment = RIGHT;
     } else {
-      alignment = _RelativeAlignment.Center;
+      alignment = CENTER;
     }
 
-    Widget tabWidget;
-    double offset = calculatePosition(tab, alignment);
+    final double tabWidth = tab.name.length * TabIndicator.NAVIGATION_TEXT_SIZE;
+    final double primary = calcPrimary(tab.index, alignment, tabWidth);
+    final double secondary = screenWidth - primary - tabWidth;
+
+    double left;
+    double right; 
     switch(alignment) {
-      case _RelativeAlignment.FromLeft:
-        tabWidget = Positioned(
-          left: offset,
-          child: tab,
-        );
+      case LEFT:
+        left = primary;
+        right = secondary;
         break;
-      case _RelativeAlignment.FromRight:
-        tabWidget = Positioned(
-          right: offset,
-          child: tab,
-        );
+      case RIGHT:
+        left = secondary;
+        right = primary;
         break;
-      case _RelativeAlignment.Center:
-        tabWidget = Positioned(
-          child: tab,
-        );
+      case CENTER:
+        left = (screenWidth - tabWidth) / 2;
+        right = (screenWidth - tabWidth) / 2;
         break;
     }
 
-    return tabWidget;
+    return AnimatedPositioned(
+      duration: _PageSheetState.ANIMATION_LENGTH,
+      curve: _PageSheetState.BODY_CURVE,
+      left: left,
+      right: right,
+      child: AnimatedOpacity(
+        duration: _PageSheetState.ANIMATION_LENGTH,
+        curve: _PageSheetState.BODY_CURVE,
+        opacity: left < 0 || right < 0 ? 0 : 1,
+        child: tab,
+      ),
+    );
   }
 
-  double calculatePosition(TabIndicator tab, _RelativeAlignment alignment) {
+  double calcPrimary(int index, int alignment, double tabWidth) {
 
-    int delta;
+    int delta = CENTER;
     switch(alignment) {
-      case _RelativeAlignment.FromLeft:
-        delta = tab.index - leftEdgeIndex;
+      case LEFT:
+        delta = index - leftEdgeIndex;
         break;
-      case _RelativeAlignment.FromRight:
-        delta = tab.index - rightEdgeIndex;
-        break;
-      default:
-        delta = 0;
+      case RIGHT:
+        delta = index - rightEdgeIndex;
         break;
     }
 
-    double tabWidth = tab.name.length * TabIndicator.NAVIGATION_TEXT_SIZE;
     double spacing = tabSpacing * (delta + 1) - (tabWidth / 2);
 
-    if(tab.index < leftEdgeIndex) {
+    if(index < leftEdgeIndex) {
       spacing = -tabWidth;
-    } else if(tab.index > rightEdgeIndex) {
+    } else if(index > rightEdgeIndex) {
       spacing = -tabWidth;
     }
 

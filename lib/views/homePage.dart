@@ -12,56 +12,21 @@ class HomePage extends StatelessWidget {
     return MainPage(
       name: 'Home',
       backgroundImage: StyleSheet.DEFAULT_RECIPE_IMAGE,
-      pageSheet: PageSheet([
-        SheetTab(
-            name: 'A',
-            title: 'Featured Meals\nof the Week',
-            subtitle: 'Something for each part of your day, handpicked just for you!',
+      pageSheet: PageSheet.builder(
+        tabCount: 3,
+        builder: (currentTab) {
+          return SheetTab(
+            name: HomeController().getTitle(currentTab),
+            header: HomeController().getHeader(currentTab),
+            subheader: HomeController().getSubheader(currentTab),
             canExpandSheet: true,
             bodyContent: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25),
-              child: RecipeCardList(HomeController().getRecipes(0)))),
-        SheetTab(
-            name: 'B',
-            title: 'Featured Meals\nof the Week',
-            subtitle: 'Something for each part of your day, handpicked just for you!',
-            canExpandSheet: true,
-            bodyContent: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25),
-              child: RecipeCardList(HomeController().getRecipes(0)))),
-        SheetTab(
-            name: 'C',
-            title: 'Featured Meals\nof the Week',
-            subtitle: 'Something for each part of your day, handpicked just for you!',
-            canExpandSheet: true,
-            bodyContent: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25),
-              child: RecipeCardList(HomeController().getRecipes(0)))),
-        SheetTab(
-            name: 'D',
-            title: 'Your Favorite\nRecipes',
-            subtitle: 'All the recipes you\'ve bookmarked for safekeeping',
-            canExpandSheet: true,
-            bodyContent: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25),
-                child: RecipeCardList(HomeController().getRecipes(1)))),
-        SheetTab(
-            name: 'E',
-            title: 'Your Favorite\nRecipes',
-            subtitle: 'All the recipes you\'ve bookmarked for safekeeping',
-            canExpandSheet: true,
-            bodyContent: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25),
-                child: RecipeCardList(HomeController().getRecipes(1)))),
-        SheetTab(
-            name: 'F',
-            title: 'Your Favorite\nRecipes',
-            subtitle: 'All the recipes you\'ve bookmarked for safekeeping',
-            canExpandSheet: true,
-            bodyContent: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25),
-                child: RecipeCardList(HomeController().getRecipes(1)))),
-      ]),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: RecipeCardList(HomeController().getRecipes(currentTab)),
+            )
+          );
+        },
+      )
     );
   }
 }

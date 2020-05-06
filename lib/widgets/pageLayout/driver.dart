@@ -28,7 +28,7 @@ class Driver extends StatelessWidget {
               children: <Widget>[
                 HomePage(),
                 // SearchPage(),
-                // CatalogPage(),
+                CatalogPage(),
                 // ShoppingListPage(),
               ]
             );
@@ -43,7 +43,11 @@ class Driver extends StatelessWidget {
   void changePage(PageModel model) {
 
     if(_controller.hasClients) {
-      _controller.jumpToPage(model.nextPage);
+      _controller.animateToPage(
+        model.nextPage,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut
+      );
     }
   }
 }

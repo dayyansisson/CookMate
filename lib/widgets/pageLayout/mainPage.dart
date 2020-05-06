@@ -10,16 +10,16 @@ class MainPage extends StatefulWidget {
   final String name;
   final String backgroundImage;
   final PageSheet pageSheet;
-  final String title;
-  final String subtitle;
+  final String header;
+  final String subheader;
 
   /* Constructor */
   MainPage(
       {@required this.name,
       @required this.backgroundImage,
       @required this.pageSheet,
-      this.title,
-      this.subtitle});
+      this.header,
+      this.subheader});
 
   /* Constants */
   static const double TITLE_FONT_SIZE = 36;
@@ -43,8 +43,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (_) =>
-            TabNavigationModel(tabCount: widget.pageSheet.tabs.length),
+        create: (_) => TabNavigationModel(tabCount: widget.pageSheet.tabs.length),
         child: Stack(
           children: <Widget>[
             Consumer<TabNavigationModel>(
@@ -107,14 +106,14 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         : MainPage.TITLE_FONT_SIZE;
     final double widgetHeight = (fontSize * 2) + padding;
     String text = subtitle
-        ? widget.pageSheet.tabs[model.currentTab].subtitle
-        : widget.pageSheet.tabs[model.currentTab].title;
+        ? widget.pageSheet.tabs[model.currentTab].subheader
+        : widget.pageSheet.tabs[model.currentTab].header;
     if (model.expandSheet) {
       text = "";
     } else if (text == null) {
       text = "";
-      if (widget.title != null) {
-        text = widget.title;
+      if (widget.header != null) {
+        text = widget.header;
       }
     }
 

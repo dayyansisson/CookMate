@@ -87,7 +87,7 @@ class HomeController {
   /*
     This method returns the correct header based on the current tab the user is on
   */
-  String getBody(int currentTab){
+  String getSubheader(int currentTab){
     if(currentTab == 0){
       //checks to make sure there are at least two elements in the recipe list
       body = "Trader Joes' Featured Recipes!";

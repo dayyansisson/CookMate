@@ -9,8 +9,8 @@ class SheetTab {
   Widget get bodyContent => Container(decoration: BoxDecoration(gradient: bodyGradient), child: _bodyContent);
 
   final String backgroundImage;
-  final String title;
-  final String subtitle;
+  final String header;
+  final String subheader;
   final Gradient bodyGradient;
   final bool canExpandSheet;
 
@@ -18,8 +18,8 @@ class SheetTab {
     @required this.name, 
     @required Widget bodyContent,
     this.backgroundImage,
-    this.title,
-    this.subtitle,
+    this.header,
+    this.subheader,
     this.bodyGradient = StyleSheet.VERTICAL_GRADIENT_LIGHT,
     this.canExpandSheet = false
   }) : _bodyContent = bodyContent;
