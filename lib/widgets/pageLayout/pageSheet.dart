@@ -21,6 +21,7 @@ class PageSheet extends StatefulWidget {
 }
 
 class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
+
   /* Layout Constants */
   static const double _SHEET_BORDER_RADIUS = 40;
   static const int _NAVIGATION_SPACING = 20;
@@ -56,10 +57,8 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
       child: Consumer<TabNavigationModel>(
         builder: (context, model, _) {
           return GestureDetector(
-              onHorizontalDragEnd: (DragEndDetails details) =>
-                  onHorizontalSwipe(details, model),
-              onVerticalDragEnd: (DragEndDetails details) =>
-                  onVerticalSwipe(details, model),
+              onHorizontalDragEnd: (DragEndDetails details) => onHorizontalSwipe(details, model),
+              onVerticalDragEnd: (DragEndDetails details) => onVerticalSwipe(details, model),
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
@@ -83,19 +82,19 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
     return Stack(
       alignment: Alignment.topLeft,
       children: <Widget>[
-        Container(
-          // Rounded edges
+        Container(  // Rounded edges
           decoration: BoxDecoration(
-              color: StyleSheet.WHITE,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(_SHEET_BORDER_RADIUS),
-                  topRight: Radius.circular(_SHEET_BORDER_RADIUS))),
+            color: StyleSheet.WHITE,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(_SHEET_BORDER_RADIUS),
+              topRight: Radius.circular(_SHEET_BORDER_RADIUS)
+            ),
+          ),
           height: _SHEET_BORDER_RADIUS + _NAVIGATION_SPACING,
         ),
-        Positioned.fill(
-            // Navigation
-            top: _SHEET_BORDER_RADIUS - TabIndicator.NAVIGATION_TEXT_SIZE * 1.25,
-            child: _navigation),
+        Positioned.fill(  // Navigation
+          top: _SHEET_BORDER_RADIUS - TabIndicator.NAVIGATION_TEXT_SIZE * 1.25,
+          child: _navigation),
       ],
     );
   }
