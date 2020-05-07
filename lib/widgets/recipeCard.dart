@@ -124,7 +124,7 @@ class _RecipeCardState extends State<RecipeCard> {
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
                         Text(
-                          widget.recipe.cookTime == null ? '' : widget.recipe.cookTime,   // TODO make prep+cook
+                          widget.recipe.cookTime ?? '',   // TODO make prep+cook
                           style: TextStyle(
                             color: StyleSheet.GREY,
                             fontWeight: FontWeight.w300
@@ -137,7 +137,7 @@ class _RecipeCardState extends State<RecipeCard> {
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
                         Text(
-                          widget.recipe.servings == null ? '' : widget.recipe.servings,
+                          widget.recipe.servings ?? '',
                           style: TextStyle(
                             color: StyleSheet.GREY,
                             fontWeight: FontWeight.w300

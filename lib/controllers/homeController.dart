@@ -39,21 +39,21 @@ class HomeController {
   /*
     This method returns the displayed recipes 
   */
-  Future<List<Recipe>> getRecipes(int currentTab) async{
+  Future<List<Recipe>> getRecipes(int currentTab) async {
+    
     if(currentTab == 0){
       currentRecipeList = await DB.getFeaturedRecipes();
     }
     else if(currentTab == 1){
 
-      /* TODO @BR this is the code to check */
-
       List<Map<String, dynamic>> recipeIDs = await DB.getFavoriteRecipes();
+
+      List<Future<Recipe>> favoriteRecipes = List<Future<Recipe>>(recipeIDs.length);
       for (int i = 0; i < recipeIDs.length; i++) {
-        print(recipeIDs[i]);
-        Recipe rec = await DB.getRecipe(recipeIDs[i]['recipe_id'].toString());
-        currentRecipeList.add(rec);
+       favoriteRecipes[i] = DB.getRecipe(recipeIDs[i]['recipe_id'].toString());
       }
 
+      await Future.wait(favoriteRecipes).then((value) => currentRecipeList = value);
 
     }
     else if(currentTab == 2){

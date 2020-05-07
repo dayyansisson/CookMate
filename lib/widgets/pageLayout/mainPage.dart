@@ -14,12 +14,12 @@ class MainPage extends StatefulWidget {
   final String subheader;
 
   /* Constructor */
-  MainPage(
-      {@required this.name,
-      @required this.backgroundImage,
-      @required this.pageSheet,
-      this.header,
-      this.subheader});
+  MainPage({
+    @required this.name,
+    @required this.backgroundImage,
+    @required this.pageSheet,
+    this.header,
+    this.subheader});
 
   /* Constants */
   static const double TITLE_FONT_SIZE = 36;
@@ -50,9 +50,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               // Background
               builder: (context, model, _) {
                 String url = widget.pageSheet.tabs[model.currentTab].backgroundImage;
-                if (url == null) {
-                  url = widget.backgroundImage;
-                }
+                url ??= widget.backgroundImage;
+                
                 return AnimatedSwitcher(
                     duration: const Duration(milliseconds: _TITLE_SWITCH_DURATION),
                     switchInCurve: Curves.fastOutSlowIn,
@@ -123,16 +122,23 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           ),
           child: AnimatedSwitcher(
               duration: Duration(milliseconds: _TITLE_SWITCH_DURATION),
-              switchInCurve: _TITLE_CURVE,
-              switchOutCurve: _TITLE_CURVE,
+              switchInCurve: Curves.easeInOutCubic,
+              switchOutCurve: Curves.easeInOutCubic,
               transitionBuilder: (child, animation) {
-                return ScaleTransition(
-                    scale: animation,
-                    alignment: Alignment.center,
+                
+                double direction = model.previousTab < model.currentTab ? -1 : 1;
+                if(animation.isDismissed) {
+                  direction *= -1;
+                }
+                Animation<Offset> slide = Tween<Offset>(begin: Offset(direction, 0), end: Offset(0, 0)).animate(animation);
+
+                return SlideTransition(
+                    position: slide,
                     child: FadeTransition(
                       opacity: animation,
                       child: child,
-                    ));
+                    )
+                  );
               },
               child: _HeaderTitle(
                 text: text,

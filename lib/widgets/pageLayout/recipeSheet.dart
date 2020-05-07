@@ -258,9 +258,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   Widget _basicInfo(String title, String data) {
 
-    if(data == null) {
-      data = "None";
-    }
+    data ??= 'None';
 
     return Column(
       children: <Widget> [
