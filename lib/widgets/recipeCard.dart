@@ -15,6 +15,8 @@ class RecipeCard extends StatefulWidget {
 
   // TODO implement multiple layouts
   // TODO implement general scaling
+  // TODO account for text overflow
+  // TODO what if the heart cannot be seen
 
   @override
   _RecipeCardState createState() => _RecipeCardState();
