@@ -15,6 +15,16 @@ import 'package:CookMate/entities/recipe.dart';
 */
 
 class CatalogController {
+
+  /* Constants */
+  static const int APPETIZERS = 0;
+  static const int BEVERAGE = 1;
+  static const int BREAKFAST = 2;
+  static const int LUNCH = 3;
+  static const int DINNER = 4;
+  static const int DESSERTS = 5;
+  static const int NUMBER_OF_CATEGORIES = 6;
+
   //Singleton constuctor
   static final CatalogController _catalogController = CatalogController._internal();
 
@@ -30,29 +40,44 @@ class CatalogController {
   List<Recipe> currentRecipeList; //Local DB/Server Format: JSON
   //DB _backend;
 
+  String getTitle(int currentTab) {
+
+    String title;
+    switch(currentTab) {
+      case APPETIZERS: title = 'Appetizers'; break;
+      case BEVERAGE: title = 'Beverage'; break;
+      case BREAKFAST: title = 'Breakfast'; break;
+      case LUNCH: title = 'Lunch'; break;
+      case DINNER: title = 'Dinner'; break;
+      case DESSERTS: title = 'Desserts'; break;
+    }
+
+    return title;
+  }
+
   //Get recipe method
   //Call this method when the view updates, this updates the displayed recipes and the image that is displayed
   Future<List<Recipe>> getRecipes(int currentTab) async {
-  //Based on current tab make call 
-  if(currentTab == 0){
-    currentRecipeList = await DB.getRecipesByCategory(Category.appetizers);
-  }
-  else if (currentTab == 1){
-    currentRecipeList = await DB.getRecipesByCategory(Category.beverages);
-  }
-  else if(currentTab == 2){
-    currentRecipeList = await DB.getRecipesByCategory(Category.breakfast);
-  }
-  else if(currentTab == 3){
-    currentRecipeList = await DB.getRecipesByCategory(Category.lunch);
-  }
-  else if(currentTab == 4){
-    currentRecipeList = await DB.getRecipesByCategory(Category.dinner);
-  }
-  else if(currentTab == 5){
-    currentRecipeList = await DB.getRecipesByCategory(Category.desserts);
-  }
-  return currentRecipeList;
+    //Based on current tab make call 
+    if(currentTab == 0){
+      currentRecipeList = await DB.getRecipesByCategory(Category.appetizers);
+    }
+    else if (currentTab == 1){
+      currentRecipeList = await DB.getRecipesByCategory(Category.beverages);
+    }
+    else if(currentTab == 2){
+      currentRecipeList = await DB.getRecipesByCategory(Category.breakfast);
+    }
+    else if(currentTab == 3){
+      currentRecipeList = await DB.getRecipesByCategory(Category.lunch);
+    }
+    else if(currentTab == 4){
+      currentRecipeList = await DB.getRecipesByCategory(Category.dinner);
+    }
+    else if(currentTab == 5){
+      currentRecipeList = await DB.getRecipesByCategory(Category.desserts);
+    }
+    return currentRecipeList;
   }
 
   //This method returns the background image url from a randomly selected recipe in the current recipe list

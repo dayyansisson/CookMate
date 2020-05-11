@@ -10,16 +10,16 @@ class MainPage extends StatefulWidget {
   final String name;
   final String backgroundImage;
   final PageSheet pageSheet;
-  final String title;
-  final String subtitle;
+  final String header;
+  final String subheader;
 
   /* Constructor */
-  MainPage(
-      {@required this.name,
-      @required this.backgroundImage,
-      @required this.pageSheet,
-      this.title,
-      this.subtitle});
+  MainPage({
+    @required this.name,
+    @required this.backgroundImage,
+    @required this.pageSheet,
+    this.header,
+    this.subheader});
 
   /* Constants */
   static const double TITLE_FONT_SIZE = 36;
@@ -43,21 +43,17 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (_) =>
-            TabNavigationModel(tabCount: widget.pageSheet.tabs.length),
+        create: (_) => TabNavigationModel(tabCount: widget.pageSheet.tabs.length),
         child: Stack(
           children: <Widget>[
             Consumer<TabNavigationModel>(
               // Background
               builder: (context, model, _) {
-                String url =
-                    widget.pageSheet.tabs[model.currentTab].backgroundImage;
-                if (url == null) {
-                  url = widget.backgroundImage;
-                }
+                String url = widget.pageSheet.tabs[model.currentTab].backgroundImage;
+                url ??= widget.backgroundImage;
+                
                 return AnimatedSwitcher(
-                    duration:
-                        const Duration(milliseconds: _TITLE_SWITCH_DURATION),
+                    duration: const Duration(milliseconds: _TITLE_SWITCH_DURATION),
                     switchInCurve: Curves.fastOutSlowIn,
                     switchOutCurve: Curves.fastOutSlowIn,
                     child: Background(url));
@@ -69,9 +65,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 Padding(
                   // Top Bar
                   padding: const EdgeInsets.only(
-                      top: _TOP_BAR_EDGE_PADDING,
-                      right: _TOP_BAR_EDGE_PADDING,
-                      left: _TOP_BAR_EDGE_PADDING),
+                    top: _TOP_BAR_EDGE_PADDING,
+                    right: _TOP_BAR_EDGE_PADDING,
+                    left: _TOP_BAR_EDGE_PADDING),
                   child: Row(children: <Widget>[
                     Text(
                       widget.name.toUpperCase(),
@@ -84,44 +80,40 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     snackbar,
                   ]),
                 ),
-                Consumer<TabNavigationModel>(
-                    // Titles
-                    builder: (context, model, _) => Column(children: <Widget>[
-                          titleBuilder(context, model,
-                              padding: MainPage.TITLE_FONT_SIZE),
-                          titleBuilder(context, model,
-                              subtitle: true, padding: 24)
-                        ])),
+                Consumer<TabNavigationModel>( // Titles
+                  builder: (context, model, _) => Column(children: <Widget>[
+                    titleBuilder(context, model, padding: MainPage.TITLE_FONT_SIZE),
+                    titleBuilder(context, model, subtitle: true, padding: 24)
+                  ])),
                 Padding(padding: const EdgeInsets.only(top: 24)),
                 widget.pageSheet,
               ],
             )
           ],
-        ));
+        )
+      );
   }
 
-  Widget titleBuilder(BuildContext context, TabNavigationModel model,
-      {@required double padding, bool subtitle = false}) {
-    final double fontSize = subtitle
-        ? MainPage.SUBTITLE_FONT_SIZE * MainPage.SUBTITLE_LINE_HEIGHT
-        : MainPage.TITLE_FONT_SIZE;
-    final double widgetHeight = (fontSize * 2) + padding;
-    String text = subtitle
-        ? widget.pageSheet.tabs[model.currentTab].subtitle
-        : widget.pageSheet.tabs[model.currentTab].title;
+  bool _didExceedOneLine(int textLength, double textSize, double padding) => MediaQuery.of(context).size.width < (textLength * textSize) + (padding * 2);
+
+  Widget titleBuilder(BuildContext context, TabNavigationModel model, { @required double padding, bool subtitle = false }) {
+    String text = subtitle ? widget.pageSheet.tabs[model.currentTab].subheader : widget.pageSheet.tabs[model.currentTab].header;
     if (model.expandSheet) {
       text = "";
     } else if (text == null) {
       text = "";
-      if (widget.title != null) {
-        text = widget.title;
+      if (widget.header != null) {
+        text = widget.header;
       }
     }
+    final double fontSize = subtitle ? MainPage.SUBTITLE_FONT_SIZE * MainPage.SUBTITLE_LINE_HEIGHT : MainPage.TITLE_FONT_SIZE;
+    final int numberOfLines = _didExceedOneLine(text.length, MainPage.SUBTITLE_FONT_SIZE, _TOP_BAR_EDGE_PADDING) ? 2 : 1;
+    final double widgetHeight = (fontSize * numberOfLines) + padding;
 
     return AnimatedContainer(
       curve: Curves.fastOutSlowIn,
       duration: const Duration(milliseconds: 500),
-      constraints: BoxConstraints(maxHeight: text == "" ? 0 : widgetHeight),
+      height: text == "" ? 0 : widgetHeight,
       child: Padding(
           padding: EdgeInsets.only(
             top: padding,
@@ -130,16 +122,23 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           ),
           child: AnimatedSwitcher(
               duration: Duration(milliseconds: _TITLE_SWITCH_DURATION),
-              switchInCurve: _TITLE_CURVE,
-              switchOutCurve: _TITLE_CURVE,
+              switchInCurve: Curves.easeInOutCubic,
+              switchOutCurve: Curves.easeInOutCubic,
               transitionBuilder: (child, animation) {
-                return ScaleTransition(
-                    scale: animation,
-                    alignment: Alignment.center,
+                
+                double direction = model.previousTab < model.currentTab ? -1 : 1;
+                if(animation.isDismissed) {
+                  direction *= -1;
+                }
+                Animation<Offset> slide = Tween<Offset>(begin: Offset(direction, 0), end: Offset(0, 0)).animate(animation);
+
+                return SlideTransition(
+                    position: slide,
                     child: FadeTransition(
                       opacity: animation,
                       child: child,
-                    ));
+                    )
+                  );
               },
               child: _HeaderTitle(
                 text: text,
@@ -173,14 +172,17 @@ class _HeaderTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (subtitle) {
-      return Text(
-        text,
-        style: TextStyle(
-            color: StyleSheet.WHITE,
-            fontSize: MainPage.SUBTITLE_FONT_SIZE,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w300,
-            height: MainPage.SUBTITLE_LINE_HEIGHT),
+      return Container(
+      alignment: Alignment.centerLeft,
+        child: Text(
+          text,
+          style: TextStyle(
+              color: StyleSheet.WHITE,
+              fontSize: MainPage.SUBTITLE_FONT_SIZE,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w300,
+              height: MainPage.SUBTITLE_LINE_HEIGHT),
+        ),
       );
     }
 

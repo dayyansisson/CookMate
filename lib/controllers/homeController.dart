@@ -39,12 +39,22 @@ class HomeController {
   /*
     This method returns the displayed recipes 
   */
-  Future<List<Recipe>> getRecipes(int currentTab) async{
+  Future<List<Recipe>> getRecipes(int currentTab) async {
+    
     if(currentTab == 0){
       currentRecipeList = await DB.getFeaturedRecipes();
     }
     else if(currentTab == 1){
-      //currentRecipeList = await DB.getFavoriteRecipes(); //Change to List<Recipes> brian 
+
+      List<Map<String, dynamic>> recipeIDs = await DB.getFavoriteRecipes();
+
+      List<Future<Recipe>> favoriteRecipes = List<Future<Recipe>>(recipeIDs.length);
+      for (int i = 0; i < recipeIDs.length; i++) {
+       favoriteRecipes[i] = DB.getRecipe(recipeIDs[i]['recipe_id'].toString());
+      }
+
+      await Future.wait(favoriteRecipes).then((value) => currentRecipeList = value);
+
     }
     else if(currentTab == 2){
       currentRecipeList = DB.getTodayRecipes();
@@ -87,7 +97,7 @@ class HomeController {
   /*
     This method returns the correct header based on the current tab the user is on
   */
-  String getBody(int currentTab){
+  String getSubheader(int currentTab){
     if(currentTab == 0){
       //checks to make sure there are at least two elements in the recipe list
       body = "Trader Joes' Featured Recipes!";
