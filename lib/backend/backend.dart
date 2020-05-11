@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:CookMate/entities/ingredient.dart';
+import 'package:CookMate/entities/shoppingIngredient.dart';
 import 'package:CookMate/enums/category.dart';
 import 'package:CookMate/entities/entity.dart';
 import 'package:CookMate/entities/recipe.dart';
@@ -112,8 +113,15 @@ abstract class DB {
     """);
 
     // Shopping Cart
-    // await db.execute("""
-    // """);
+    await db.execute("""
+    CREATE TABLE "cart" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "recipe_id"	INTEGER NOT NULL,
+      "item"	TEXT NOT NULL,
+      "purchased"	INTEGER DEFAULT 0,
+      FOREIGN KEY("recipe_id") REFERENCES "recipe"("id") ON DELETE CASCADE
+    )
+    """);
 
     print("DB created.");
 
@@ -419,7 +427,7 @@ abstract class DB {
     STEP
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
-// Returns all steps for a given recipe id in order
+  // Returns all steps for a given recipe id in order
   static Future<List<String>> getStepsForRecipe(String id) async {
     List<Map<String, dynamic>> _results;
     _results = await _db.rawQuery("""
@@ -429,5 +437,54 @@ abstract class DB {
     ORDER BY 'recipe_step.order'
     """);
     return _results.map((step) => step['step']).toList().cast<String>();
+  }
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    CART
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  CREATE TABLE "cart" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "recipe_id"	INTEGER NOT NULL,
+      "item"	TEXT NOT NULL,
+      "purchased"	INTEGER DEFAULT 0,
+      FOREIGN KEY("recipe_id") REFERENCES "recipe"("id") ON DELETE CASCADE
+    )
+ */
+  // Takes in recipeID and the ShoppingIngredient items and inserts
+  static void addRecipeToShoppingList(
+      int recipeID, List<ShoppingIngredient> ingr) {
+    for (var item in ingr) {
+      // Map<String, dynamic> mapCartItem = {
+      //   "recipe_id": recipeID,
+      //   "purchased": item.purchased ? 1 : 0, // 0: false, 1: true
+      //   "item": item.ingredient
+      // };
+      insertWithMap('cart', item.toMap());
+    }
+  }
+
+  //Returns a map of all shopping list items
+  static Future<List<Map<String, dynamic>>> getShoppingList() {
+    return _db.query('cart');
+  }
+
+  //Removes all items matching the recipeID
+  static void removeRecipeFromShoppingList(int recipeID) {
+    _db.delete('cart', where: 'recipe_id = ?', whereArgs: [recipeID]);
+  }
+
+  // trunctuates table
+  static void clearAllFromShoppingList() {
+    _db.delete('cart');
+  }
+
+  // TODO: Change this to an update method that pulls new info from ShoppingIngredient entity
+  // Add two functions to the entity for changing purchased status
+  static Future<void> updateShoppingListItem(
+      int recipeID, ShoppingIngredient ingr) async {
+    await _db.update('cart', ingr.toMap(),
+        where: 'recipe_id = ? AND text = ?',
+        whereArgs: [ingr.recipeID, ingr.ingredient]);
   }
 }
