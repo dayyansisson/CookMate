@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:CookMate/entities/shoppingIngredient.dart';
 import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
@@ -259,9 +258,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   Widget _basicInfo(String title, String data) {
 
-    if(data == null) {
-      data = "None";
-    }
+    data ??= 'None';
 
     return Column(
       children: <Widget> [

@@ -12,25 +12,21 @@ class HomePage extends StatelessWidget {
     return MainPage(
       name: 'Home',
       backgroundImage: StyleSheet.DEFAULT_RECIPE_IMAGE,
-      pageSheet: PageSheet([
-        SheetTab(
-            name: 'Featured',
-            title: 'Featured Meals\nof the Week',
-            subtitle:
-                'Something for each part of your day, handpicked just for you!',
+      pageSheet: PageSheet.builder(
+        tabCount: 3,
+        builder: (currentTab) {
+          return SheetTab(
+            name: HomeController().getTitle(currentTab),
+            header: HomeController().getHeader(currentTab),
+            subheader: HomeController().getSubheader(currentTab),
             canExpandSheet: true,
             bodyContent: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25),
-                child: RecipeCardList(HomeController().getRecipes(0)))),
-        SheetTab(
-            name: 'Favorites',
-            title: 'Your Favorite\nRecipes',
-            subtitle: 'All the recipes you\'ve bookmarked for safekeeping',
-            canExpandSheet: true,
-            bodyContent: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25),
-                child: RecipeCardList(HomeController().getRecipes(1))))
-      ]),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: RecipeCardList(HomeController().getRecipes(currentTab)),
+            )
+          );
+        },
+      )
     );
   }
 }

@@ -68,6 +68,10 @@ class _MarqueeState extends State<Marquee> {
 
   void animate() {
 
+    if(!_scrollController.hasClients) {
+      return;
+    }
+
     double offsetTarget;
     if(_forward) {
       offsetTarget = _scrollController.position.maxScrollExtent;
