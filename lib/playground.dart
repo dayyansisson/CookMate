@@ -5,11 +5,11 @@ import 'package:CookMate/provider/searchModel.dart';
 import 'package:CookMate/Controllers/SearchController.dart';
 import 'package:CookMate/Entities/recipe.dart';
 import 'package:CookMate/util/styleSheet.dart';
-import 'package:CookMate/widgets/dropdown%20menu/dropdownSearch.dart';
+import 'package:CookMate/widgets/dropdownMenu/dropdownSearch.dart';
 import 'package:CookMate/widgets/navBar.dart';
-import 'package:CookMate/widgets/page%20layout/mainPage.dart';
-import 'package:CookMate/widgets/page%20layout/pageSheet.dart';
-import 'package:CookMate/widgets/page%20layout/sheetTab.dart';
+//import 'package:CookMate/widgets/page%20layout/mainPage.dart';
+//import 'package:CookMate/widgets/page%20layout/pageSheet.dart';
+//import 'package:CookMate/widgets/page%20layout/sheetTab.dart';
 import 'package:CookMate/widgets/recipeCard.dart';
 import 'package:CookMate/widgets/searchBar.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,6 @@ import 'package:CookMate/Controllers/HomeController.dart';
 /* This class only exists for us to develop different parts of the app 
    without affecting each other's work.
 */
-
 class Playground extends StatelessWidget {
 
 PageController _controller;
@@ -57,20 +56,7 @@ Widget build(BuildContext context) {
   
 
 
-  changePage(PageModel model) {
-    if (model.onHome == false && model.nextPage == 0) {
-      _controller.jumpToPage(model.nextPage);
-    }
-    if (model.onSearch == false && model.nextPage == 1) {
-      _controller.jumpToPage(model.nextPage);
-    }
-    if (model.onCatalog == false && model.nextPage == 2) {
-      _controller.jumpToPage(model.nextPage);
-    }
-    if (model.onSearch == false && model.nextPage == 3) {
-      _controller.jumpToPage(model.nextPage);
-    }
-  }
+ 
 }
 
 class Page2 extends StatelessWidget {

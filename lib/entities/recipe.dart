@@ -1,6 +1,5 @@
 import 'package:CookMate/entities/entity.dart';
 import 'package:CookMate/backend/backend.dart';
-// import 'package:CookMate/Entities/ingredient.dart';
 
 /*
   This file lays out the recipe class. 
@@ -15,33 +14,47 @@ class Recipe extends Entity {
   String description;
   String image;
   String category;
-  String prepTime; //prepTime is not in data yet
+  String prepTime;
   String cookTime;
   String servings;
   String url;
   List<String> tags;
   List<String> ingredients; // List<Ingredient> ingredients;
   List<String> steps;
+  bool favorite;
 
   // Recipe Constructor
-  Recipe({
-    this.id,
-    this.title,
-    this.description,
-    this.image,
-    this.category,
-    this.prepTime,
-    this.cookTime,
-    this.servings,
-    this.url,
-  });
+  Recipe(
+      {this.id,
+      this.title,
+      this.description,
+      this.image,
+      this.category,
+      this.prepTime,
+      this.cookTime,
+      this.url,
+      this.servings,
+      this.tags,
+      this.ingredients,
+      this.steps});
 
   Future<void> addToFavorites() async {
+    favorite = true;
     DB.favoriteRecipe("$id");
   }
 
   Future<void> removeFromFavorites() async {
+    favorite = false;
     DB.unfavoriteRecipe("$id");
+  }
+
+  Future<bool> isFavorite() async {
+    if (favorite != null) {
+      return favorite;
+    }
+    var _result = await DB.isRecipeAFavorite("$id");
+    favorite = _result.length > 0;
+    return favorite;
   }
 
   Future<List<String>> getIngredients() async {
@@ -95,7 +108,7 @@ class Recipe extends Entity {
       description: map['description'],
       image: map['image'],
       category: map['category'],
-      prepTime: null,
+      prepTime: map['prepTime'],
       cookTime: map['cookTime'],
       servings: map['servings'],
       url: map['url'],

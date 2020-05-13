@@ -222,7 +222,7 @@ class _BackendTestState extends State<BackendTest> {
                 print("${rec.id}: ${rec.title}");
                 if (rec.id == 213) {
                   print(
-                      "Recipe:\n${rec.id}: ${rec.title} servs:${rec.servings} cookTime:${rec.cookTime}");
+                      "Recipe:\n${rec.id}: ${rec.title} servs:${rec.servings} cookTime:${rec.cookTime} prepTime:${rec.prepTime}");
 
                   var ings = rec.getIngredients();
                   ings.then((onValue) {
@@ -294,12 +294,13 @@ class _BackendTestState extends State<BackendTest> {
                   "man",
                   "Sea",
                   "Quin",
-                  "ed Onion",
+                  "Onion",
+                  "Tea",
                 ];
                 var _results =
-                    await DB.findIngredients(ingredients.elementAt(2));
+                    await DB.findIngredients(ingredients.elementAt(6));
                 // print(_results);
-                print("Searched for: ${ingredients.elementAt(2)}");
+                print("Searched for: ${ingredients.elementAt(6)}");
                 _results.forEach((ing) {
                   print(ing);
                 });
@@ -313,14 +314,14 @@ class _BackendTestState extends State<BackendTest> {
               textColor: Colors.white,
               onPressed: () async {
                 List<String> ingredients = [
-                  "4 TJ's Whole Wheat Hamburger Buns",
-                  "TJ's Fresh Cilantro, chopped",
-                  "TJ's Amba Mango Sauce",
-                  "TJ's Sea Salt",
-                  "1 package TJ's Quinoa Cowboy Veggie Burgers",
-                  "1/2 TJ's Red Onion, diced"
+                  "Buns",
+                  "Cilantro",
+                  "Sauce",
+                  "Salt",
+                  "Quinoa",
+                  "Onion",
+                  "Harvest Blend Herbal Tea"
                 ];
-                // recipe 22, 23
                 var _results = await DB.getRecipeWithIngredients(ingredients);
                 _results.forEach((recipe) {
                   print(recipe);
@@ -355,6 +356,37 @@ class _BackendTestState extends State<BackendTest> {
               },
               child: Text(
                 "Find recipe substring",
+              ),
+            ),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              onPressed: () async {
+                DB.favoriteRecipe("177");
+                DB.favoriteRecipe("214");
+                DB.favoriteRecipe("2");
+                DB.unfavoriteRecipe("214");
+
+                var _fav = await DB.isRecipeAFavorite("177");
+                if (_fav.length > 0) {
+                  print("Found recipe 177");
+                } else {
+                  print("Recipe 177 is not a fav");
+                }
+                var _fav2 = await DB.isRecipeAFavorite("214");
+                if (_fav2.length > 0) {
+                  print("Found recipe 214");
+                } else {
+                  print("Recipe 214 is not a fav");
+                }
+                var rec = await DB.getRecipe("214");
+                print("Is 214 a fav: ${await rec.isFavorite()}");
+
+                var rec2 = await DB.getRecipe("177");
+                print("Is 177 a fav: ${await rec2.isFavorite()}");
+              },
+              child: Text(
+                "Check Favorites",
               ),
             ),
           ],
