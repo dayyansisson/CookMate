@@ -27,7 +27,7 @@ class Driver extends StatelessWidget {
               controller: _controller,
               children: <Widget>[
                 HomePage(),
-                // SearchPage(),
+                SearchPage(),
                 CatalogPage(),
                 // ShoppingListPage(),
               ]

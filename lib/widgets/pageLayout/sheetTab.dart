@@ -1,4 +1,5 @@
 import 'package:CookMate/util/styleSheet.dart';
+import 'package:CookMate/widgets/searchBar.dart';
 import 'package:flutter/material.dart';
 
 class SheetTab {
@@ -13,6 +14,7 @@ class SheetTab {
   final String subheader;
   final Gradient bodyGradient;
   final bool canExpandSheet;
+  final SearchBar searchBar;
 
   SheetTab({
     @required this.name, 
@@ -21,6 +23,7 @@ class SheetTab {
     this.header,
     this.subheader,
     this.bodyGradient = StyleSheet.VERTICAL_GRADIENT_LIGHT,
-    this.canExpandSheet = false
+    this.canExpandSheet = false,
+    this.searchBar
   }) : _bodyContent = bodyContent;
 }

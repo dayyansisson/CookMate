@@ -1,11 +1,14 @@
+import 'package:CookMate/provider/searchModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/pageLayout/background.dart';
 import 'package:CookMate/widgets/pageLayout/pageSheet.dart';
+import 'package:CookMate/widgets/searchBar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
+
   /* Members */
   final String name;
   final String backgroundImage;
@@ -19,7 +22,8 @@ class MainPage extends StatefulWidget {
     @required this.backgroundImage,
     @required this.pageSheet,
     this.header,
-    this.subheader});
+    this.subheader
+  });
 
   /* Constants */
   static const double TITLE_FONT_SIZE = 36;
@@ -37,8 +41,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   /* Animation Constants */
   static const int _TITLE_SWITCH_DURATION = 650;
-  static const Curve _TITLE_CURVE =
-      const Interval(0.5, 1, curve: Curves.fastOutSlowIn);
 
   @override
   Widget build(BuildContext context) {
@@ -84,8 +86,30 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   builder: (context, model, _) => Column(children: <Widget>[
                     titleBuilder(context, model, padding: MainPage.TITLE_FONT_SIZE),
                     titleBuilder(context, model, subtitle: true, padding: 24)
-                  ])),
+                ])),
                 Padding(padding: const EdgeInsets.only(top: 24)),
+                Consumer<TabNavigationModel>( // Search bar
+                  builder: (context, model, _) { 
+                    if(widget.pageSheet.tabs[model.currentTab].searchBar == null) {
+                      return Container();
+                    }
+                    return Column(
+                      children: <Widget>[
+                        ChangeNotifierProvider<SearchModel>(
+                          create: (_) => SearchModel(),
+                          child: Stack(
+                            alignment: Alignment.topCenter,
+                            overflow: Overflow.visible,
+                            children: [
+                              SearchBar(),
+                            ],
+                          ),
+                        ),
+                        Padding(padding: const EdgeInsets.only(top: 24)),
+                      ]
+                    );
+                  }
+                ),
                 widget.pageSheet,
               ],
             )
@@ -97,6 +121,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   bool _didExceedOneLine(int textLength, double textSize, double padding) => MediaQuery.of(context).size.width < (textLength * textSize) + (padding * 2);
 
   Widget titleBuilder(BuildContext context, TabNavigationModel model, { @required double padding, bool subtitle = false }) {
+
     String text = subtitle ? widget.pageSheet.tabs[model.currentTab].subheader : widget.pageSheet.tabs[model.currentTab].header;
     if (model.expandSheet) {
       text = "";
