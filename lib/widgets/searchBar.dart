@@ -1,3 +1,4 @@
+import 'package:CookMate/util/styleSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:CookMate/util/cookMateIcons.dart';
 import 'package:CookMate/provider/searchModel.dart';
@@ -18,7 +19,7 @@ class _SearchBarState extends State<SearchBar>{
       builder: (context, model, _) {
         return ConstrainedBox (
           constraints: BoxConstraints(
-            maxHeight: 45.0,
+            maxHeight: 50.0,
             maxWidth: 400.0
           ),
           child: Padding(
@@ -36,6 +37,7 @@ class _SearchBarState extends State<SearchBar>{
                     changeList(model.inputList, model);
                   }
                 },
+                style: TextStyle(color: StyleSheet.WHITE),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Color.fromRGBO(255, 255, 255, 0.25),

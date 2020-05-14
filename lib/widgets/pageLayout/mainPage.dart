@@ -1,9 +1,9 @@
 import 'package:CookMate/provider/searchModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
+import 'package:CookMate/widgets/dropdownMenu/dropdownSearch.dart';
 import 'package:CookMate/widgets/pageLayout/background.dart';
 import 'package:CookMate/widgets/pageLayout/pageSheet.dart';
-import 'package:CookMate/widgets/searchBar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -97,15 +97,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       children: <Widget>[
                         ChangeNotifierProvider<SearchModel>(
                           create: (_) => SearchModel(),
-                          child: Stack(
-                            alignment: Alignment.topCenter,
-                            overflow: Overflow.visible,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              SearchBar(),
+                              widget.pageSheet.tabs[model.currentTab].searchBar,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                                child: DropDownSearch(),
+                              )
                             ],
                           ),
                         ),
-                        Padding(padding: const EdgeInsets.only(top: 24)),
+                        //Padding(padding: const EdgeInsets.only(top: 24)),
                       ]
                     );
                   }
