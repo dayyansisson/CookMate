@@ -39,7 +39,7 @@ class ShoppingListController {
       return false;
     } else{
       //Database call to update
-      DB.addRecipeToShoppingList(rec, ingr);
+      //DB.addRecipeToShoppingList(rec, ingr);
 
       //Update Controller List
       shoppingList.add(_shoppingListRecipe(rec, ingr));
@@ -64,7 +64,7 @@ class ShoppingListController {
     } else{
       //Remove from local list and DB
       shoppingList.remove(_shoppingListRecipe.fromRec(rec));
-      DB.removeRecipeFromList(rec);
+      //DB.removeRecipeFromList(rec);
 
       //Return true if successfully removed
       return true;
@@ -74,7 +74,7 @@ class ShoppingListController {
   //This method clears all the recipes from the shopping list
   clearAll(){
     shoppingList.clear();
-    DB.clearAllFromShoppingList();
+    //DB.clearAllFromShoppingList();
   }
 
   //This method marks a specific ingredient as purchased
@@ -99,7 +99,7 @@ class ShoppingListController {
       }
       else{
         ingredients[ingredients.indexOf(ing)].purchased = true;
-        DB.markPurchased(rec);
+        //DB.markPurchased(rec);
 
         //Return true if sucessful
         return true;

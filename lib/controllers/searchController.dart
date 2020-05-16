@@ -14,6 +14,9 @@ class SearchController {
 
   SearchController._internal();
 
+  //Instance variables
+  List<String> currentIngredients = List<String>();
+
 
 /* 
   This method takes a substring from the view and makes a backend call to find the ingredients
@@ -30,12 +33,43 @@ Future<List<String>> findIngredients(String substring) async {
   return ingredients;
 }
 
-  Future<List<Recipe>> getRecipesFromIngredients(List<String> ing) async {
+  Future<List<Recipe>> addIngredientToSearch(String ing) async {
+
+    //Adds the ingredient to the current search
+    currentIngredients.add(ing);
+
     //List of recipes that will be returned
     List<Recipe> searchResults = List<Recipe>();
     
     //Call to backend to get the recipe IDs that match the list of ingredients
-    List<int> ingredientSearch = await DB.getRecipeWithIngredients(ing);
+    List<int> ingredientSearch = await DB.getRecipeWithIngredients(currentIngredients);
+    
+    if(ingredientSearch == null || ingredientSearch.length == 0){
+      //TODO handle null
+      print('null return');
+    }
+
+    //Sorts the returned list by id frequency
+    ingredientSearch = _sortList(ingredientSearch);
+    //Takes the list of recipe ids and returns a list of recipes from them
+    for(int i = 0; i < ingredientSearch.length; i++){
+      Recipe rec = await DB.getRecipe(ingredientSearch[i].toString());
+      searchResults.add(rec);
+    }
+    //searchResults = await _idToObject(ingredientSearch);
+    
+    return searchResults;
+  }
+
+  Future<List<Recipe>> removeIngredientsFromSearch(String ing) async {
+    //removes the ingredient from the current search
+    currentIngredients.remove(ing);
+
+    //List of recipes that will be returned
+    List<Recipe> searchResults = List<Recipe>();
+    
+    //Call to backend to get the recipe IDs that match the list of ingredients
+    List<int> ingredientSearch = await DB.getRecipeWithIngredients(currentIngredients);
     
     if(ingredientSearch == null || ingredientSearch.length == 0){
       //TODO handle null
