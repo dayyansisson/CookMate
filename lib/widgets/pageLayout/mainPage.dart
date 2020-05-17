@@ -1,4 +1,3 @@
-import 'package:CookMate/provider/searchModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/pageLayout/background.dart';
@@ -95,10 +94,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     }
                     return Column(
                       children: <Widget>[
-                        ChangeNotifierProvider<SearchModel>(
-                          create: (_) => SearchModel(),
-                          child: widget.pageSheet.tabs[model.currentTab].searchBar
-                        ),
+                        widget.pageSheet.tabs[model.currentTab].searchBar,
                         Padding(padding: const EdgeInsets.only(top: 24)),
                       ]
                     );
