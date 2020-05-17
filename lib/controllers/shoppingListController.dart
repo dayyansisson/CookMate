@@ -24,7 +24,7 @@ class ShoppingListController extends ChangeNotifier{
   }
 
   //Instance list
-  List<shoppingListRecipe> shoppingList = List<shoppingListRecipe>();
+  List<ShoppingListRecipe> shoppingList = List<ShoppingListRecipe>();
 
   ShoppingListController._internal();
 
@@ -32,22 +32,24 @@ class ShoppingListController extends ChangeNotifier{
 
   //This method adds a recipe to the shopping list with the selected ingredients from it
   bool addRecipeToShoppingList(Recipe rec, List<ShoppingIngredient> ingr){
+    //TODO test that this always works
     //Check for null
     if(rec == null || ingr == null){
       return false;
     }
 
-    if(!shoppingList.contains(shoppingListRecipe(rec,ingr))){
+    if(!shoppingList.contains(ShoppingListRecipe(rec,ingr))){
       //return false if already in the list
       return false;
     } else{
       //Database call to update
-      //DB.addRecipeToShoppingList(rec, ingr);
+      DB.addRecipeToShoppingList(rec.id, ingr);
 
       //Update Controller List
-      shoppingList.add(shoppingListRecipe(rec, ingr));
+      shoppingList.add(ShoppingListRecipe(rec, ingr));
 
       //return true if added
+      notifyListeners();
       return true;
     }
   }
@@ -61,13 +63,13 @@ class ShoppingListController extends ChangeNotifier{
     }
 
     //Check if list contains the rec
-    if(!shoppingList.contains(shoppingListRecipe.fromRec(rec))){
+    if(!shoppingList.contains(ShoppingListRecipe.fromRec(rec))){
       //if item is not present return false
       return false;
     } else{
       //Remove from local list and DB
-      shoppingList.remove(shoppingListRecipe.fromRec(rec));
-      //DB.removeRecipeFromList(rec);
+      shoppingList.remove(ShoppingListRecipe.fromRec(rec));
+      DB.removeRecipeFromShoppingList(rec.id);
 
       //Return true if successfully removed
       notifyListeners();
@@ -78,7 +80,7 @@ class ShoppingListController extends ChangeNotifier{
   //This method clears all the recipes from the shopping list
   clearAll(){
     shoppingList.clear();
-    //DB.clearAllFromShoppingList();
+    DB.clearAllFromShoppingList();
     notifyListeners();
   }
 
@@ -91,7 +93,7 @@ class ShoppingListController extends ChangeNotifier{
     }
     
     //Check if list contains the rec
-    if(!shoppingList.contains(shoppingListRecipe.fromRec(rec))){
+    if(!shoppingList.contains(ShoppingListRecipe.fromRec(rec))){
       //if item is not present return false
       return false;
     } else{
@@ -120,7 +122,7 @@ class ShoppingListController extends ChangeNotifier{
     }
     
     //Check if list contains the rec
-    if(!shoppingList.contains(shoppingListRecipe.fromRec(rec))){
+    if(!shoppingList.contains(ShoppingListRecipe.fromRec(rec))){
       //if item is not present return false
       return false;
     } else{
@@ -142,7 +144,7 @@ class ShoppingListController extends ChangeNotifier{
   }
 
   //This method gets the ingredients for a specific recipe
-  List<ShoppingIngredient> getShoppingIngredients(Recipe rec) => shoppingList[shoppingList.indexOf(shoppingListRecipe.fromRec(rec))].getIngredients();
+  List<ShoppingIngredient> getShoppingIngredients(Recipe rec) => shoppingList[shoppingList.indexOf(ShoppingListRecipe.fromRec(rec))].getIngredients();
 
   //This method checks if an ingredient has been purchased
   bool purchased(List<ShoppingIngredient> ingredients, ShoppingIngredient ing) => ingredients[ingredients.indexOf(ing)].purchased;

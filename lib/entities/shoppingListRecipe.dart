@@ -1,31 +1,23 @@
 import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/entities/shoppingIngredient.dart';
-
-class shoppingListRecipe{
+class ShoppingListRecipe {
   //Variables
-  String recipeTitle;
+  Recipe recipe;
   List<ShoppingIngredient> ing;
 
   //Constructor
-  shoppingListRecipe(Recipe rec, List<ShoppingIngredient> ing){
-    recipeTitle = rec.title;
+  ShoppingListRecipe(Recipe rec, List<ShoppingIngredient> ing){
+    recipe = rec;
     this.ing = ing;
   }
-
-  shoppingListRecipe.fromRec(Recipe rec) {
-    recipeTitle = rec.title;
-    this.ing == null;
+  ShoppingListRecipe.fromRec(Recipe rec) {
+    recipe = rec;
   }
-
+  
   //This method returns the list of shopping ingredients
   List<ShoppingIngredient> getIngredients() => this.ing;
 
-  //This method returns the recipe title'
-  String getTitle() => this.recipeTitle;
-
   //Overloads the == and hashcode methods for the contains method
-  bool operator ==(Object other) => other is shoppingListRecipe && other.recipeTitle == this.recipeTitle;
-
-  int get hashCode => recipeTitle.hashCode;
-
+  bool operator ==(Object other) => other is ShoppingListRecipe && other.recipe == this.recipe;
+  int get hashCode => recipe.hashCode;
 }
