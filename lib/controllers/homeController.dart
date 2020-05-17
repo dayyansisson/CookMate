@@ -63,24 +63,6 @@ class HomeController extends ChangeNotifier {
   }
 
   /*
-    This method returns the displayed recipes 
-  */
-  // Future<List<Recipe>> getRecipes(int currentTab) async {
-
-  //   Future<List<Recipe>> recipes;
-    
-  //   if(currentTab == FEATURED_INDEX){
-  //     featuredRecipes = DB.getFeaturedRecipes();
-  //   } else if(currentTab == FAVORITES_INDEX) {
-  //     return favoriteRecipes;
-  //   } else if(currentTab == TODAY_INDEX){
-  //     featuredRecipes = DB.getTodayRecipes();
-  //   }
-
-  //   return recipes;
-  // }
-
-  /*
     This method returns the correct title of the tab on the home page
   */
   String getTitle(int currentTab) {
