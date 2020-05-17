@@ -35,7 +35,7 @@ class _DropDownSearchState extends State<DropDownSearch>{
                 itemBuilder: (context, index) {
                   return Button(
                     child: Container(
-                      height: 40, 
+                      constraints: BoxConstraints(minHeight: 48),
                       alignment: Alignment.center,
                       color: Colors.white,
                       padding: const EdgeInsets.all(8.0),

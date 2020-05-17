@@ -3,6 +3,7 @@ import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/views/recipePage.dart';
+import 'package:CookMate/widgets/fadeImage.dart';
 import 'package:CookMate/widgets/favoriteButton.dart';
 import 'package:CookMate/widgets/marquee.dart';
 import 'package:flutter/material.dart';
@@ -55,16 +56,11 @@ class _RecipeCardState extends State<RecipeCard> {
             children: <Widget>[
               Stack(
                 children: <Widget>[
-                  AspectRatio(
-                    aspectRatio: 3/2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        image: DecorationImage(
-                          image: NetworkImage(widget.recipe.image),
-                          fit: BoxFit.cover
-                        )
-                      ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    child: AspectRatio(
+                      aspectRatio: 3/2,
+                      child: FadeImage(widget.recipe.image),
                     ),
                   ),
                   Positioned(

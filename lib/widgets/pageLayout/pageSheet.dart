@@ -350,15 +350,15 @@ class _TabIndicatorState extends State<TabIndicator> {
       bool enabled = navigationModel.currentTab == widget.index;
       double indicatorSize = enabled ? _POINT_ENABLED_SIZE : 0;
 
-      return Button(
-        splashColor: StyleSheet.TRANSPARENT,
-        onPressed: () {
-          navigationModel.currentTab = widget.index; // Try change the tab index
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            AnimatedOpacity(
+      return Stack(
+        alignment: Alignment.center,
+        overflow: Overflow.visible,
+        children: <Widget>[
+          Button(
+            onPressed: () {
+              navigationModel.currentTab = widget.index; // Try change the tab index
+            },
+            child: AnimatedOpacity(
               opacity: enabled ? 1 : 0.5,
               child: Text(
                 widget.name.toUpperCase(),
@@ -372,8 +372,10 @@ class _TabIndicatorState extends State<TabIndicator> {
               duration: _ANIM_DURATION,
               curve: Curves.easeInOut,
             ),
-            Padding(padding: EdgeInsets.symmetric(vertical: 1)),
-            AnimatedContainer(
+          ),
+          Positioned(
+            bottom: 8,
+            child: AnimatedContainer(
               width: indicatorSize,
               height: indicatorSize,
               decoration: const BoxDecoration(
@@ -381,8 +383,8 @@ class _TabIndicatorState extends State<TabIndicator> {
                 duration: _ANIM_DURATION,
                 curve: Curves.easeInOut,
               ),
-            ],
           ),
+          ],
         );
       }
     );
