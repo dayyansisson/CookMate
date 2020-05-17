@@ -64,12 +64,10 @@ class Page2 extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.red,
       body: Container(
-        child: Column(
-          children: <Widget>[
-            SearchBar(),
-            DropDownSearch()
-          ],
-        ),
+        child: Column(children: <Widget>[
+          SearchBar(),
+          Container(height: 200, width: 200, color: Colors.green)
+        ],)
       ),
     );
   }

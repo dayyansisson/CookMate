@@ -10,4 +10,5 @@ class SearchModel extends ChangeNotifier {
     inputList = list;
     notifyListeners();
   }
+  
 }
