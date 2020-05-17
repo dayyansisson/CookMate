@@ -54,46 +54,54 @@ class _RecipePageState extends State<RecipePage> {
           blendMode: BlendMode.hardLight,
           child: Container(
             decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(model.imageURL), fit: BoxFit.cover)),
+              image: DecorationImage(
+                image: NetworkImage(model.imageURL), 
+                fit: BoxFit.cover
+              )
+            ),
           ),
         ),
         Stack(
           alignment: Alignment.topLeft,
           children: <Widget>[
             ChangeNotifierProvider(
-                create: (_) =>
-                    TabNavigationModel(tabCount: 2, expandSheet: true),
-                child: RecipeSheet()),
+              create: (_) => TabNavigationModel(tabCount: 2, expandSheet: true),
+              child: RecipeSheet()
+            ),
             Padding(
               // Top Bar
               padding: const EdgeInsets.only(
-                  top: _TOP_BAR_EDGE_PADDING,
-                  right: _TOP_BAR_EDGE_PADDING,
-                  left: _TOP_BAR_EDGE_PADDING),
+                top: _TOP_BAR_EDGE_PADDING,
+                right: _TOP_BAR_EDGE_PADDING,
+                left: _TOP_BAR_EDGE_PADDING
+              ),
               child: Container(
                 height: 40,
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       roundedBackground([
-                        Button(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(
-                            "BACK",
-                            style: TextStyle(
-                                color: StyleSheet.WHITE,
-                                fontWeight: FontWeight.bold,
-                                fontSize: _PAGE_NAME_FONT_SIZE),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Button(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              "BACK",
+                              style: TextStyle(
+                                  color: StyleSheet.WHITE,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: _PAGE_NAME_FONT_SIZE),
+                            ),
                           ),
                         ),
                       ]),
                       Spacer(),
                       roundedBackground([
-                        ShoppingBagIcon(() => ShoppingListController()
-                            .addRecipeToShoppingList(
-                                model.recipe, model.shoppingIngredients)),
-                        Container(width: 20),
+                        ShoppingBagIcon(
+                          () => ShoppingListController().addRecipeToShoppingList(
+                            model.recipe, model.shoppingIngredients
+                          )
+                        ),
                         FavoriteButton()
                       ]),
                     ]),
@@ -115,7 +123,7 @@ class _RecipePageState extends State<RecipePage> {
             alignment: Alignment.center,
             color: StyleSheet.DEEP_GREY.withOpacity(0.5),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: widgets,
@@ -127,6 +135,7 @@ class _RecipePageState extends State<RecipePage> {
 }
 
 class ShoppingBagIcon extends StatefulWidget {
+
   final Function onTap;
   ShoppingBagIcon(this.onTap);
 
@@ -162,47 +171,45 @@ class _ShoppingBagIconState extends State<ShoppingBagIcon>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: DEFAULT_SIZE,
-      height: DEFAULT_SIZE,
-      alignment: Alignment.center,
-      child: Button(
-        onPressed: () {
-          widget.onTap();
-          bounce();
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Container(
-              height: 40,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(
-                    CookMateIcon.bag_icon,
-                    color: StyleSheet.WHITE,
-                    size: bounceAnimation != null
-                        ? bounceAnimation.value
-                        : DEFAULT_SIZE,
-                  ),
-                  Container(width: 20),
-                  Text(
-                    "Added ingredients to shopping list",
-                    style: TextStyle(fontSize: 16),
-                  )
-                ],
-              ),
+    return Button(
+      onPressed: () {
+        widget.onTap();
+        bounce();
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Container(
+            height: 40,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  CookMateIcon.bag_icon,
+                  color: StyleSheet.WHITE,
+                  size: bounceAnimation != null
+                      ? bounceAnimation.value
+                      : DEFAULT_SIZE,
+                ),
+                Container(width: 20),
+                Text(
+                  "Added ingredients to shopping list",
+                  style: TextStyle(fontSize: 16),
+                )
+              ],
             ),
-            backgroundColor: Colors.redAccent,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20))),
-          ));
-        },
-        child: Icon(
-          CookMateIcon.bag_icon,
-          color: StyleSheet.WHITE,
-          size: bounceAnimation != null ? bounceAnimation.value : DEFAULT_SIZE,
-        ),
+          ),
+          backgroundColor: Colors.redAccent,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20)
+              )
+            ),
+          )
+        );
+      },
+      child: Icon(
+        CookMateIcon.bag_icon,
+        color: StyleSheet.WHITE,
+        size: bounceAnimation != null ? bounceAnimation.value : DEFAULT_SIZE,
       ),
     );
   }

@@ -93,7 +93,7 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
           height: _SHEET_BORDER_RADIUS + _NAVIGATION_SPACING,
         ),
         Positioned.fill(  // Navigation
-          top: _SHEET_BORDER_RADIUS - TabIndicator.NAVIGATION_TEXT_SIZE * 1.25,
+          top: _SHEET_BORDER_RADIUS - TabIndicator.NAVIGATION_TEXT_SIZE * 2.35,
           child: _navigation),
       ],
     );

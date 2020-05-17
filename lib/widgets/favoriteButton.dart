@@ -49,7 +49,6 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         if(enabled == null) {
           return loadingPlaceholder;
         }
-
         return Button(
           onPressed: () {
             setState(() {

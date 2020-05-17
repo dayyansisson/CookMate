@@ -68,8 +68,8 @@ class _RecipeCardState extends State<RecipeCard> {
                     ),
                   ),
                   Positioned(
-                    top: 15,
-                    right: 15,
+                    top: 10,
+                    right: 10,
                     child: Container(child: FavoriteButton())
                   )
                 ],

@@ -49,7 +49,7 @@ class _NavBarIcon extends StatelessWidget {
   /* CONSTANTS */
   static const double _ENABLED_OPACITY = 1;
   static const double _DISABLED_OPACITY = 0.4;
-  static const Alignment _ENABLED_ALIGNMENT = Alignment(0.0, -0.3);
+  static const Alignment _ENABLED_ALIGNMENT = Alignment(0.0, -1);
   static const Alignment _DISABLED_ALIGNMENT = Alignment.center;
   static const Duration _ANIMATION_SPEED = Duration(milliseconds: 250);
 

@@ -11,6 +11,7 @@ class Tag extends StatefulWidget {
 
   final double size;
   final double borderWidth;
+  final double horizontalPadding;
   final Color color;
   final Color textColor;
 
@@ -21,6 +22,7 @@ class Tag extends StatefulWidget {
   Tag({ this.content = "", 
         this.size = DEFAULT_SIZE,
         this.borderWidth = 0.075,
+        this.horizontalPadding = 0,
         this.color = StyleSheet.WHITE,
         this.textColor = StyleSheet.WHITE,
         this.query,
@@ -50,84 +52,89 @@ class _TagState extends State<Tag> {
     bool hasQuery = widget.query != null;
     String text = hasQuery ? widget.query.ingredient : widget.content;
 
-    return Stack(
-      overflow: Overflow.visible,
-      children: <Widget>[
-        Button(
-          onPressed: () { 
-            if(widget.onPressed != null) {
-              widget.onPressed();
-              return;
-            }
-
-            if(widget.pop) {
-              setState(() {
-                // scale
-                if(widget.popCallback != null) {
-                  widget.popCallback();
+    return Container(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
+        child: Stack(
+          overflow: Overflow.visible,
+          children: <Widget>[
+            Button(
+              onPressed: () { 
+                if(widget.onPressed != null) {
+                  widget.onPressed();
+                  return;
                 }
-              });
-            }
-          },
-          child: Transform.scale(
-            scale: scale,
-            child: Container(
-              height: widget.size * 2,
-              decoration: BoxDecoration(
-                color: widget.color.withOpacity(0.1),
-                border: Border.all(
-                  color: widget.color.withOpacity(0.75),
-                  width: widget.size * widget.borderWidth,
-                ),
-                borderRadius: BorderRadius.circular(widget.size)
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: widget.size / 2,
-                  vertical: widget.size * (2/5)
-                ),
-                child: FittedBox(
-                  fit: BoxFit.fitHeight,
-                  child: Text(
-                    text.toLowerCase(),
-                    style: TextStyle(
-                      color: widget.textColor,
-                      fontWeight: FontWeight.w400
+
+                if(widget.pop) {
+                  setState(() {
+                    // scale
+                    if(widget.popCallback != null) {
+                      widget.popCallback();
+                    }
+                  });
+                }
+              },
+              child: Transform.scale(
+                scale: scale,
+                child: Container(
+                  height: widget.size * 2,
+                  decoration: BoxDecoration(
+                    color: widget.color.withOpacity(0.1),
+                    border: Border.all(
+                      color: widget.color.withOpacity(0.75),
+                      width: widget.size * widget.borderWidth,
+                    ),
+                    borderRadius: BorderRadius.circular(widget.size)
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: widget.size / 2,
+                      vertical: widget.size * (2/5)
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.fitHeight,
+                      child: Text(
+                        text.toLowerCase(),
+                        style: TextStyle(
+                          color: widget.textColor,
+                          fontWeight: FontWeight.w400
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
+            hasQuery ? Positioned(
+              height: 22,
+              right: -2,
+              top: -2,
+              child: SizedBox(
+                width: 22,
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent,
+                    shape: BoxShape.circle
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(3),
+                    child: FittedBox(
+                      child: Text(
+                        widget.query.resultCount.toString(),
+                        style: TextStyle(
+                          color: StyleSheet.WHITE,
+                          fontWeight: FontWeight.w400
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ) : Container(),
+          ],
         ),
-        hasQuery ? Positioned(
-          height: 22,
-          right: -8,
-          top: -8,
-          child: SizedBox(
-            width: 22,
-            child: Container(
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.redAccent,
-                shape: BoxShape.circle
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(3),
-                child: FittedBox(
-                  child: Text(
-                    widget.query.resultCount.toString(),
-                    style: TextStyle(
-                      color: StyleSheet.WHITE,
-                      fontWeight: FontWeight.w400
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ) : Container(),
-      ],
+      ),
     );
   }
 }
