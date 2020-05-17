@@ -21,7 +21,7 @@ class ShoppingIngredient extends Entity {
     if (purchased) {
       return;
     }
-
+    this.purchased = true;
     await DB.updateShoppingListItem(recipeID, this);
   }
 
@@ -29,7 +29,7 @@ class ShoppingIngredient extends Entity {
     if (!purchased) {
       return;
     }
-
+    this.purchased = false;
     await DB.updateShoppingListItem(recipeID, this);
   }
 

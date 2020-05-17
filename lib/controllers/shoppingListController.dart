@@ -1,6 +1,9 @@
 import 'dart:core';
 import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/entities/shoppingIngredient.dart';
+import 'package:CookMate/entities/shoppingListRecipe.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../backend/backend.dart';
 import '../entities/recipe.dart';
 import '../entities/shoppingIngredient.dart';
@@ -11,7 +14,7 @@ import '../entities/shoppingIngredient.dart';
   This file lays out the shopping list page controller. 
 */
 
-class ShoppingListController {
+class ShoppingListController extends ChangeNotifier{
 
   //Singleton constuctor
   static final ShoppingListController _shoppingListController = ShoppingListController._internal();
@@ -21,7 +24,7 @@ class ShoppingListController {
   }
 
   //Instance list
-  List<_shoppingListRecipe> shoppingList = List<_shoppingListRecipe>();
+  List<shoppingListRecipe> shoppingList = List<shoppingListRecipe>();
 
   ShoppingListController._internal();
 
@@ -34,7 +37,7 @@ class ShoppingListController {
       return false;
     }
 
-    if(!shoppingList.contains(_shoppingListRecipe(rec,ingr))){
+    if(!shoppingList.contains(shoppingListRecipe(rec,ingr))){
       //return false if already in the list
       return false;
     } else{
@@ -42,7 +45,7 @@ class ShoppingListController {
       //DB.addRecipeToShoppingList(rec, ingr);
 
       //Update Controller List
-      shoppingList.add(_shoppingListRecipe(rec, ingr));
+      shoppingList.add(shoppingListRecipe(rec, ingr));
 
       //return true if added
       return true;
@@ -58,15 +61,16 @@ class ShoppingListController {
     }
 
     //Check if list contains the rec
-    if(!shoppingList.contains(_shoppingListRecipe.fromRec(rec))){
+    if(!shoppingList.contains(shoppingListRecipe.fromRec(rec))){
       //if item is not present return false
       return false;
     } else{
       //Remove from local list and DB
-      shoppingList.remove(_shoppingListRecipe.fromRec(rec));
+      shoppingList.remove(shoppingListRecipe.fromRec(rec));
       //DB.removeRecipeFromList(rec);
 
       //Return true if successfully removed
+      notifyListeners();
       return true;
     }
   }
@@ -75,6 +79,7 @@ class ShoppingListController {
   clearAll(){
     shoppingList.clear();
     //DB.clearAllFromShoppingList();
+    notifyListeners();
   }
 
   //This method marks a specific ingredient as purchased
@@ -86,48 +91,60 @@ class ShoppingListController {
     }
     
     //Check if list contains the rec
-    if(!shoppingList.contains(_shoppingListRecipe.fromRec(rec))){
+    if(!shoppingList.contains(shoppingListRecipe.fromRec(rec))){
       //if item is not present return false
       return false;
     } else{
       //Mark as purchased in list and update DB
-      List<ShoppingIngredient> ingredients = shoppingList[shoppingList.indexOf(_shoppingListRecipe.fromRec(rec))].ing;
+      List<ShoppingIngredient> ingredients = getShoppingIngredients(rec);
       
       //Checks if the ingredient has already been marked as purchased
-      if(ingredients[ingredients.indexOf(ing)] == true){
+      if(purchased(ingredients, ing)){
         return false;
       }
       else{
-        ingredients[ingredients.indexOf(ing)].purchased = true;
-        //DB.markPurchased(rec);
+        ingredients[ingredients.indexOf(ing)].markPurchased();
 
         //Return true if sucessful
+        notifyListeners();
         return true;
       }
     }
   }
 
-}
+  //This method marks an ingredient as unpurchased
+  bool markNotPurchased(Recipe rec, ShoppingIngredient ing){
+    //Handle null
+    if(rec == null || ing == null){
+      return false;
+    }
+    
+    //Check if list contains the rec
+    if(!shoppingList.contains(shoppingListRecipe.fromRec(rec))){
+      //if item is not present return false
+      return false;
+    } else{
+      //Mark as purchased in list and update DB
+      List<ShoppingIngredient> ingredients = getShoppingIngredients(rec);
+      
+      //Checks if the ingredient has already been marked as purchased
+      if(!purchased(ingredients, ing)){
+        return false;
+      }
+      else{
+        ingredients[ingredients.indexOf(ing)].markNotPurchased();
 
-class _shoppingListRecipe{
-  //Variables
-  String recipeTitle;
-  List<ShoppingIngredient> ing;
-
-  //Constructor
-  _shoppingListRecipe(Recipe rec, List<ShoppingIngredient> ing){
-    recipeTitle = rec.title;
-    this.ing = ing;
+        //Return true if sucessful
+        notifyListeners();
+        return true;
+      }
+    }
   }
 
-  _shoppingListRecipe.fromRec(Recipe rec) {
-    recipeTitle = rec.title;
-    this.ing == null;
-  }
+  //This method gets the ingredients for a specific recipe
+  List<ShoppingIngredient> getShoppingIngredients(Recipe rec) => shoppingList[shoppingList.indexOf(shoppingListRecipe.fromRec(rec))].getIngredients();
 
-  //Overloads the == and hashcode methods for the contains method
-  bool operator ==(Object other) => other is _shoppingListRecipe && other.recipeTitle == this.recipeTitle;
-
-  int get hashCode => recipeTitle.hashCode;
-
+  //This method checks if an ingredient has been purchased
+  bool purchased(List<ShoppingIngredient> ingredients, ShoppingIngredient ing) => ingredients[ingredients.indexOf(ing)].purchased;
 }
+
