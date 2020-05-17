@@ -97,18 +97,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       children: <Widget>[
                         ChangeNotifierProvider<SearchModel>(
                           create: (_) => SearchModel(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              widget.pageSheet.tabs[model.currentTab].searchBar,
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                                child: DropDownSearch(),
-                              )
-                            ],
-                          ),
+                          child: widget.pageSheet.tabs[model.currentTab].searchBar
                         ),
-                        //Padding(padding: const EdgeInsets.only(top: 24)),
+                        Padding(padding: const EdgeInsets.only(top: 24)),
                       ]
                     );
                   }
