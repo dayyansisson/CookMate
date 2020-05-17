@@ -14,7 +14,30 @@ class _DropdownMenuState extends State<DropdownMenu>{
   @override  
   Widget build(BuildContext context) {
     return Container(
-     
+      //child: ClipRRect (
+      //borderRadius: BorderRadius.circular(15.0),
+      child: ConstrainedBox (
+        constraints: BoxConstraints(
+          maxHeight: 200.0,
+          maxWidth: 100.0
+        ),
+          child: ListView.builder(
+            itemCount: test.length, 
+            itemBuilder: (context, index) {
+              return Container (
+                height: 100,
+                color: Colors.white,
+                child: Center (
+                    child: Text(
+                      '${test[index]}',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+              );
+            }
+          )
+      ),
+     // ),
     );
   }
 }

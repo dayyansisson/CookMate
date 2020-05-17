@@ -11,7 +11,12 @@ import 'package:CookMate/backend/backend.dart';
 */
 
 class HomeController {
-  
+
+  // Constants
+  static const int FEATURED_INDEX = 0;
+  static const int FAVORITES_INDEX = 1;
+  static const int TODAY_INDEX = 2;
+
   //Singleton constuctor
   static final HomeController _homeController = HomeController._internal();
 
@@ -41,10 +46,10 @@ class HomeController {
   */
   Future<List<Recipe>> getRecipes(int currentTab) async {
     
-    if(currentTab == 0){
+    if(currentTab == FEATURED_INDEX){
       currentRecipeList = await DB.getFeaturedRecipes();
     }
-    else if(currentTab == 1){
+    else if(currentTab == FAVORITES_INDEX){
 
       List<Map<String, dynamic>> recipeIDs = await DB.getFavoriteRecipes();
 
@@ -56,7 +61,7 @@ class HomeController {
       await Future.wait(favoriteRecipes).then((value) => currentRecipeList = value);
 
     }
-    else if(currentTab == 2){
+    else if(currentTab == TODAY_INDEX){
       currentRecipeList = DB.getTodayRecipes();
     }
     return currentRecipeList;
@@ -66,13 +71,13 @@ class HomeController {
     This method returns the correct title of the tab on the home page
   */
   String getTitle(int currentTab){
-    if(currentTab == 0){
+    if(currentTab == FEATURED_INDEX){
       title = "Featured";
     }
-    else if(currentTab == 1){
+    else if(currentTab == FAVORITES_INDEX){
       title = "Favorites";
     }
-    else if(currentTab == 2){
+    else if(currentTab == TODAY_INDEX){
       title = "Today";
     }
     return title;
@@ -82,13 +87,13 @@ class HomeController {
     This method returns the correct header based on the current tab the user is on
   */
   String getHeader(int currentTab){
-    if(currentTab == 0){
+    if(currentTab == FEATURED_INDEX){
       headLine = "Featured Meals\nof the Week";
     }
-    else if(currentTab == 1){
+    else if(currentTab == FAVORITES_INDEX){
       headLine = "Your Favorites\nRecipes";
     }
-    else if(currentTab == 2){
+    else if(currentTab == TODAY_INDEX){
       headLine = "Today's Meals";
     }
     return headLine;
@@ -98,9 +103,9 @@ class HomeController {
     This method returns the correct header based on the current tab the user is on
   */
   String getSubheader(int currentTab){
-    if(currentTab == 0){
+    if(currentTab == FEATURED_INDEX){
       //checks to make sure there are at least two elements in the recipe list
-      body = "Trader Joes' Featured Recipes!";
+      body = "Check out Trader Joes' hand selected featured recipes!";
         
     }
     else if(currentTab == 1){

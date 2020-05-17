@@ -8,6 +8,7 @@ import 'package:CookMate/Controllers/SearchController.dart';
 
 
 class SearchBar extends StatefulWidget {
+
  // constructor with hint text 
   @override
   _SearchBarState createState() => _SearchBarState();
@@ -20,7 +21,8 @@ class _SearchBarState extends State<SearchBar>{
   DropDownSearch searchBar;
   final textController = TextEditingController();
 
-  clearText(SearchModel model) {
+  clearText() {
+    print('In clear');
     textController.clear();
   }
 
@@ -56,7 +58,7 @@ class _SearchBarState extends State<SearchBar>{
       maintainState: true,
       builder: (context) => Positioned(
          left: size.width / 12,
-         top: size.height + offset.dy + 5,
+         top: size.height + offset.dy,
         //width: size.width,
         child: Align(
           alignment: Alignment.topCenter,
@@ -81,6 +83,7 @@ class _SearchBarState extends State<SearchBar>{
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: TextField(
+                    controller: textController,
                     focusNode: _focusNode,
                     onChanged: (value) async {
                         print(value);
@@ -94,7 +97,7 @@ class _SearchBarState extends State<SearchBar>{
                           //print("First element" + model.inputList[0]);
                           changeList(model.inputList, model);
                         }
-                        searchBar = DropDownSearch(model.inputList, false);
+                        searchBar = DropDownSearch(model.inputList, clearText);
                         Overlay.of(context).setState((){});
                     },
                     style: TextStyle(color: StyleSheet.WHITE),
