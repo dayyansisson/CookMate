@@ -30,6 +30,7 @@ class _DriverState extends State<Driver> {
     return ChangeNotifierProvider<PageModel>(
       create: (_) => PageModel(),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body:  Consumer<PageModel>(
           builder: (context, model, _) {
             changePage(model);
@@ -40,7 +41,7 @@ class _DriverState extends State<Driver> {
                 HomePage(),
                 SearchPage(),
                 CatalogPage(),
-                // ShoppingListPage(),
+                ShoppingListPage(),
               ]
             );
           }

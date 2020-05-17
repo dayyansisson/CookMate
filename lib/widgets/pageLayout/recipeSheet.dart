@@ -63,6 +63,15 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     dragController.value = 1;
   }
 
+  @override
+  void dispose() {
+    
+    directionsScrollController.dispose();
+    dragController.dispose();
+
+    super.dispose();
+  }
+
   void directionsScrollListener () {
 
     if(directionsScrollController.position.outOfRange) {

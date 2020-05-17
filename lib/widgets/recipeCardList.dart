@@ -9,11 +9,18 @@ class RecipeCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    if(recipes == null) {
+      return Container();
+    }
+
     return FutureBuilder<List<Recipe>>(
       future: recipes,
       builder: (_, snapshot) {
         if(snapshot.hasData) {
           return listDisplay(snapshot.data);
+        } else if(snapshot.data == null) {
+          return Container();
         }
         return Center(
           child: CircularProgressIndicator()
@@ -26,6 +33,7 @@ class RecipeCardList extends StatelessWidget {
 
     return ListView.builder(
       itemCount: recipeList.length,
+      padding: EdgeInsets.only(top: 20),
       itemBuilder: (_, index) {
         return RecipeCard(recipeList[index]);
       }

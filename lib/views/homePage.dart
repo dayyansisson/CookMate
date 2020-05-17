@@ -5,6 +5,7 @@ import 'package:CookMate/widgets/pageLayout/pageSheet.dart';
 import 'package:CookMate/widgets/pageLayout/sheetTab.dart';
 import 'package:CookMate/widgets/recipeCardList.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 
@@ -23,7 +24,7 @@ class HomePage extends StatelessWidget {
           canExpandSheet: true,
           bodyContent: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: RecipeCardList(HomeController().getRecipes(HomeController.FEATURED_INDEX)),
+            child: RecipeCardList(HomeController().featuredRecipes),
           )
         ),
         SheetTab(   // Favorites
@@ -34,7 +35,14 @@ class HomePage extends StatelessWidget {
           canExpandSheet: true,
           bodyContent: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: RecipeCardList(HomeController().getRecipes(HomeController.FAVORITES_INDEX)),
+            child: ChangeNotifierProvider.value(
+              value: HomeController(),
+              child: Consumer<HomeController>(
+                builder: (context, controller, _) {
+                  return RecipeCardList(HomeController().favoriteRecipes);
+                },
+              )
+            ),
           )
         ),
         SheetTab(   // Today

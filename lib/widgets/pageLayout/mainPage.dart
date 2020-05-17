@@ -1,7 +1,6 @@
 import 'package:CookMate/provider/searchModel.dart';
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
-import 'package:CookMate/widgets/dropdownMenu/dropdownSearch.dart';
 import 'package:CookMate/widgets/pageLayout/background.dart';
 import 'package:CookMate/widgets/pageLayout/pageSheet.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +43,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+
     return ChangeNotifierProvider(
         create: (_) => TabNavigationModel(tabCount: widget.pageSheet.tabs.length),
         child: Stack(
@@ -171,10 +171,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return Container(
       width: 16,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
           Container(height: 2, color: StyleSheet.WHITE),
           Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-          Container(height: 2, color: StyleSheet.WHITE),
+          Container(height: 2, width: 10, color: StyleSheet.WHITE),
         ],
       ),
     );

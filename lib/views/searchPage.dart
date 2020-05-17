@@ -1,35 +1,77 @@
+import 'package:CookMate/controllers/searchController.dart';
 import 'package:CookMate/entities/query.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/pageLayout/mainPage.dart';
 import 'package:CookMate/widgets/pageLayout/pageSheet.dart';
 import 'package:CookMate/widgets/pageLayout/sheetTab.dart';
+import 'package:CookMate/widgets/recipeCardList.dart';
 import 'package:CookMate/widgets/searchBar.dart';
 import 'package:CookMate/widgets/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SearchPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+
     return MainPage(
       name: 'Search',
-      backgroundImage: StyleSheet.DEFAULT_RECIPE_IMAGE,
+      backgroundImage: 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/poached-egg-latkes.jpg',
       pageSheet: PageSheet([
         SheetTab(
+          name: 'Recipes', 
+          searchBar: SearchBar(SearchType.Recipe),
+          bodyContent: _buildRecipePage()
+        ),
+        SheetTab(
           name: 'Ingredients', 
-          searchBar: SearchBar(),
-          bodyContent: Column(
-            children: <Widget>[
-              _QueryList(
-                [
-                  Query(ingredient: 'Red Chili Flakes', resultCount: 4),
-                  Query(ingredient: 'Chicken', resultCount: 2),
-                  Query(ingredient: 'Other', resultCount: 7)
-                ]
-              )
-            ],
-          )
+          searchBar: SearchBar(SearchType.Ingredient),
+          bodyContent: _buildIngredientPage()
         )
       ]),
+    );
+  }
+
+  Widget _buildRecipePage() {
+
+    return ChangeNotifierProvider<SearchController>.value(
+      value: SearchController(),
+      child: Consumer<SearchController> (
+        builder: (context, controller, _) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: RecipeCardList(SearchController().recipeSearchResults),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildIngredientPage() {
+
+    return ChangeNotifierProvider<SearchController>.value(
+      value: SearchController(),
+      child: Consumer<SearchController> (
+        builder: (context, controller, _) {
+          List<String> ingredients = controller.currentIngredients;
+          List<Query> queries = List<Query>();
+          for(String ingredient in ingredients) {
+            queries.add(Query(ingredient: ingredient, resultCount: 0));
+          }
+          return Column(
+            children: <Widget>[
+              _QueryList(queries),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: RecipeCardList(SearchController().ingredientSearchResults),
+                ),
+              )
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -45,31 +87,6 @@ class _QueryList extends StatefulWidget {
 
 class __QueryListState extends State<_QueryList> {
 
-  static const Duration tagAnimationDuration = const Duration(milliseconds: 1000);
-
-  GlobalKey<AnimatedListState> _listKey;
-  
-  @override
-  void initState() { 
-
-    super.initState();
-    
-    _listKey = GlobalKey<AnimatedListState>();
-    delayAddItems();  // TODO remove
-  }
-
-  void delayAddItems() async {
-
-    await Future.delayed(Duration(seconds: 1));
-
-    setState(() {
-      print('here');
-      _listKey.currentState.insertItem(0, duration: tagAnimationDuration);
-      _listKey.currentState.insertItem(1, duration: tagAnimationDuration);
-      _listKey.currentState.insertItem(2, duration: tagAnimationDuration);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
 
@@ -78,44 +95,23 @@ class __QueryListState extends State<_QueryList> {
       height: 50,
       color: Colors.white,
       alignment: Alignment.center,
-      child: AnimatedList(
-        key: _listKey,
+      child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        //itemCount: widget.queries.length,
+        itemCount: widget.queries.length,
         shrinkWrap: true,
-        itemBuilder: (_, index, animation) {
-          return ScaleTransition(
-            scale: CurvedAnimation(parent: animation, curve: Curves.elasticOut),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              child: Tag(
-                query: widget.queries[index],
-                color: Colors.redAccent,
-                textColor: Colors.redAccent,
-                onPressed: () {
-                  setState(() {
-                    Widget tag = Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Tag(
-                        query: widget.queries[index],
-                        color: Colors.redAccent,
-                        textColor: Colors.redAccent
-                      )
-                    );
-                    widget.queries.removeAt(index);
-                    _listKey.currentState.removeItem(
-                      index,
-                      (context, animation) {
-                        return ScaleTransition(
-                          scale: CurvedAnimation(parent: animation, curve: Curves.fastOutSlowIn),
-                          child: tag
-                        );
-                      },
-                      duration: Duration(milliseconds: 250)
-                    );
-                  });
-                },
-              ),
+        itemBuilder: (_, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Tag(
+              query: widget.queries[index],
+              color: Colors.redAccent,
+              textColor: Colors.redAccent,
+              onPressed: () {
+                setState(() {
+                  SearchController().removeIngredientFromSearch(widget.queries[index].ingredient);
+                  widget.queries.removeAt(index);
+                });
+              },
             ),
           );
         },

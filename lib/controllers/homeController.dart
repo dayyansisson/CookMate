@@ -1,5 +1,6 @@
 import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/backend/backend.dart';
+import 'package:flutter/material.dart';
 
 /*
   This file lays out the catalog page controller. 
@@ -10,7 +11,7 @@ import 'package:CookMate/backend/backend.dart';
   2 - The Today Tab
 */
 
-class HomeController {
+class HomeController extends ChangeNotifier {
 
   // Constants
   static const int FEATURED_INDEX = 0;
@@ -20,64 +21,77 @@ class HomeController {
   //Singleton constuctor
   static final HomeController _homeController = HomeController._internal();
 
-  factory HomeController(){
-    return _homeController;
-  }
+  factory HomeController() => _homeController;
 
-  HomeController._internal();
+  HomeController._internal() {
+    
+    initRecipeLists();
+  }
   
   //Class Variables
   Future<String> imageURL; //Comes from Server Format: JSON This is for the background image
   //int currentTab; //Internal provided to the controller by the view
-  List<Recipe> currentRecipeList;
-  String headLine; //Server Format: JSON, This is the header for the home page
+  
+  Future<List<Recipe>> featuredRecipes;
+  Future<List<Recipe>> favoriteRecipes;
+
+  String headline; //Server Format: JSON, This is the header for the home page
   String body; //Server Format: JSON
   String title;
 
   Future<String> getImageURL() async {
-    if(currentRecipeList == null){
-      return "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/easy-bolognesey-recipe.jpg";
+
+    return "https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/easy-bolognesey-recipe.jpg";
+  }
+
+  void initRecipeLists() {
+
+    featuredRecipes = DB.getFeaturedRecipes();
+    updateFavoriteRecipes();
+  }
+
+  void updateFavoriteRecipes() async {
+
+    List<Map<String, dynamic>> recipeIDs = await DB.getFavoriteRecipes();
+    List<Future<Recipe>> futureRecipes = List<Future<Recipe>>(recipeIDs.length);
+    for (int i = 0; i < recipeIDs.length; i++) {
+      futureRecipes[i] = DB.getRecipe(recipeIDs[i]['recipe_id'].toString());
     }
-    return currentRecipeList[0].image;
+
+    favoriteRecipes = Future.wait(futureRecipes);
+    notifyListeners();
   }
 
   /*
     This method returns the displayed recipes 
   */
-  Future<List<Recipe>> getRecipes(int currentTab) async {
+  // Future<List<Recipe>> getRecipes(int currentTab) async {
+
+  //   Future<List<Recipe>> recipes;
     
-    if(currentTab == FEATURED_INDEX){
-      currentRecipeList = await DB.getFeaturedRecipes();
-    }
-    else if(currentTab == FAVORITES_INDEX){
+  //   if(currentTab == FEATURED_INDEX){
+  //     featuredRecipes = DB.getFeaturedRecipes();
+  //   } else if(currentTab == FAVORITES_INDEX) {
+  //     return favoriteRecipes;
+  //   } else if(currentTab == TODAY_INDEX){
+  //     featuredRecipes = DB.getTodayRecipes();
+  //   }
 
-      List<Map<String, dynamic>> recipeIDs = await DB.getFavoriteRecipes();
-
-      List<Future<Recipe>> favoriteRecipes = List<Future<Recipe>>(recipeIDs.length);
-      for (int i = 0; i < recipeIDs.length; i++) {
-       favoriteRecipes[i] = DB.getRecipe(recipeIDs[i]['recipe_id'].toString());
-      }
-
-      await Future.wait(favoriteRecipes).then((value) => currentRecipeList = value);
-
-    }
-    else if(currentTab == TODAY_INDEX){
-      currentRecipeList = DB.getTodayRecipes();
-    }
-    return currentRecipeList;
-  }
+  //   return recipes;
+  // }
 
   /*
     This method returns the correct title of the tab on the home page
   */
-  String getTitle(int currentTab){
-    if(currentTab == FEATURED_INDEX){
+  String getTitle(int currentTab) {
+
+    if(currentTab == FEATURED_INDEX) {
       title = "Featured";
     }
-    else if(currentTab == FAVORITES_INDEX){
+    else if(currentTab == FAVORITES_INDEX) {
       title = "Favorites";
     }
-    else if(currentTab == TODAY_INDEX){
+    else if(currentTab == TODAY_INDEX) {
       title = "Today";
     }
     return title;
@@ -88,15 +102,15 @@ class HomeController {
   */
   String getHeader(int currentTab){
     if(currentTab == FEATURED_INDEX){
-      headLine = "Featured Meals\nof the Week";
+      headline = "Featured Meals\nof the Week";
     }
     else if(currentTab == FAVORITES_INDEX){
-      headLine = "Your Favorites\nRecipes";
+      headline = "Your Favorites\nRecipes";
     }
     else if(currentTab == TODAY_INDEX){
-      headLine = "Today's Meals";
+      headline = "Today's Meals";
     }
-    return headLine;
+    return headline;
   }
 
   /*

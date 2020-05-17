@@ -66,10 +66,12 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
                     heightFactor: 0.9,
                     child: Container(color: StyleSheet.WHITE),
                   ),
-                  Column(children: <Widget>[
-                    _header(),
-                    _bodyWidgets(model.currentTab, model.previousTab)
-                  ]),
+                  Column(
+                    children: <Widget>[
+                      _header(),
+                      _bodyWidgets(model.currentTab, model.previousTab),
+                    ]
+                  ),
                 ],
               ));
         },
@@ -79,6 +81,23 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
 
   /* Getter for the header segment of the sheet */
   Widget _header() {
+
+    // Container(
+    //   decoration: BoxDecoration(
+    //     borderRadius: BorderRadius.only(
+    //       topLeft: Radius.circular(_SHEET_BORDER_RADIUS),
+    //       topRight: Radius.circular(_SHEET_BORDER_RADIUS)
+    //     ),
+    //     boxShadow: [
+    //       BoxShadow(
+    //         color: StyleSheet.BLACK.withOpacity(0.2),
+    //         blurRadius: 10,
+    //         offset: Offset(0, 3)
+    //       )
+    //     ]
+    //   ),
+    //   child:
+
     return Stack(
       alignment: Alignment.topLeft,
       children: <Widget>[
@@ -87,7 +106,7 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
             color: StyleSheet.WHITE,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(_SHEET_BORDER_RADIUS),
-              topRight: Radius.circular(_SHEET_BORDER_RADIUS)
+              topRight: Radius.circular(_SHEET_BORDER_RADIUS),
             ),
           ),
           height: _SHEET_BORDER_RADIUS + _NAVIGATION_SPACING,
@@ -121,13 +140,9 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
             switchOutCurve: BODY_CURVE,
             transitionBuilder: (child, animation) {
               double start = previousTab > tab ? 1 : -1;
-              Animation<Offset> offsetAnimation =
-                  Tween<Offset>(begin: Offset(start, 0), end: Offset(0, 0))
-                      .animate(animation);
+              Animation<Offset> offsetAnimation = Tween<Offset>(begin: Offset(start, 0), end: Offset(0, 0)).animate(animation);
               if (animation.isDismissed) {
-                offsetAnimation =
-                    Tween<Offset>(begin: Offset(-start, 0), end: Offset(0, 0))
-                        .animate(animation);
+                offsetAnimation = Tween<Offset>(begin: Offset(-start, 0), end: Offset(0, 0)).animate(animation);
               }
               return SlideTransition(position: offsetAnimation, child: child);
             },
