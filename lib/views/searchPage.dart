@@ -54,14 +54,9 @@ class SearchPage extends StatelessWidget {
       value: SearchController(),
       child: Consumer<SearchController> (
         builder: (context, controller, _) {
-          List<String> ingredients = controller.currentIngredients;
-          List<Query> queries = List<Query>();
-          for(String ingredient in ingredients) {
-            queries.add(Query(ingredient: ingredient, resultCount: 0));
-          }
           return Column(
             children: <Widget>[
-              _QueryList(queries),
+              _QueryList(controller.currentIngredients),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -78,7 +73,7 @@ class SearchPage extends StatelessWidget {
 
 class _QueryList extends StatefulWidget {
 
-  final List<Query> queries;
+  final List<String> queries;
   _QueryList(this.queries);
 
   @override
@@ -103,15 +98,14 @@ class __QueryListState extends State<_QueryList> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Tag(
-              query: widget.queries[index],
+              content: widget.queries[index],
               color: Colors.redAccent,
               textColor: Colors.redAccent,
-              onPressed: () {
-                setState(() {
-                  SearchController().removeIngredientFromSearch(widget.queries[index].ingredient);
-                  widget.queries.removeAt(index);
-                });
-              },
+              withCancelIcon: true,
+              onPressed: () => setState(() {
+                SearchController().removeIngredientFromSearch(widget.queries[index]);
+                widget.queries.removeAt(index);
+              })
             ),
           );
         },

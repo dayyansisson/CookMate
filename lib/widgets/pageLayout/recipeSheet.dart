@@ -20,7 +20,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   /* Layout Constants */
   static const double _SHEET_BORDER_RADIUS = 40;
-  static const double _TITLE_SIZE = 36;
+  static const double _TITLE_SIZE = 32;
   static const double _DESCRIPTION_SIZE = 20;
   static const double _INFO_SIZE = 15;
   static const double _LINE_SPACING = 1.2;
@@ -144,11 +144,12 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
           dragController.animateWith(SpringSimulation(_SPRING, dragController.value, 0, -1));
         } else if(details.primaryVelocity > 1000) {
           dragController.animateWith(SpringSimulation(_SPRING, dragController.value, 1, 1));
+          Provider.of<TabNavigationModel>(context, listen: false).expandSheet = true;
         }
 
         if(dragController.value == 0 && details.primaryVelocity < 10) {
-            Provider.of<TabNavigationModel>(context, listen: false).expandSheet = false;
-          } 
+          Provider.of<TabNavigationModel>(context, listen: false).expandSheet = false;
+        } 
       },
       child: Button(
         onPressed: null,
@@ -218,25 +219,6 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                     ),
                   ),
                 ),
-                // Transform.translate(
-                //   offset: Offset(0, -10),
-                //   child: AnimatedSwitcher(
-                //     duration: Duration(milliseconds: 400),
-                //     switchInCurve: Curves.easeInOut,
-                //     switchOutCurve: Curves.easeInOut,
-                //     transitionBuilder: (child, animation) {
-                //       return ScaleTransition(
-                //         scale: animation,
-                //         child: child,
-                //       );
-                //     },
-                //     child: _ExpandIcon(
-                //       Provider.of<TabNavigationModel>(context, listen: true).expandSheet
-                //       ? Icons.arrow_drop_down : Icons.arrow_right,
-                //       1 - dragController.value
-                //     ),
-                //   ),
-                // )
               ],
             ),
           )

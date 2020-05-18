@@ -1,3 +1,4 @@
+import 'package:CookMate/controllers/shoppingListController.dart';
 import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/entities/shoppingIngredient.dart';
 import 'package:CookMate/entities/shoppingListRecipe.dart';
@@ -7,6 +8,7 @@ import 'package:CookMate/widgets/pageLayout/mainPage.dart';
 import 'package:CookMate/widgets/pageLayout/pageSheet.dart';
 import 'package:CookMate/widgets/pageLayout/sheetTab.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ShoppingListPage extends StatelessWidget {
 
@@ -14,22 +16,22 @@ class ShoppingListPage extends StatelessWidget {
     ShoppingListRecipe(
       Recipe(title: 'Sriracha Furikake Tofu Fries'),
       [
-        ShoppingIngredient("TJ's Canola Oil Spray", purchased: false),
-        ShoppingIngredient("2 packages TJ's Sriracha Flavored Baked Tofu", purchased: false),
-        ShoppingIngredient("2 large TJ's Eggs, egg whites separated", purchased: false),
-        ShoppingIngredient("3/4 cup TJ's Panko Breadcrumbs", purchased: false),
-        ShoppingIngredient("1/4 cup TJ's Grated Parmesan Cheese", purchased: false),
-        ShoppingIngredient("1/4 cup TJ's Nori Komi Furikake", purchased: false),
+        ShoppingIngredient(ingredient: "TJ's Canola Oil Spray", purchased: false, recipeID: 0),
+        ShoppingIngredient(ingredient: "2 packages TJ's Sriracha Flavored Baked Tofu", purchased: false, recipeID: 0),
+        ShoppingIngredient(ingredient: "2 large TJ's Eggs, egg whites separated", purchased: true, recipeID: 0),
+        ShoppingIngredient(ingredient: "3/4 cup TJ's Panko Breadcrumbs", purchased: false, recipeID: 0),
+        ShoppingIngredient(ingredient: "1/4 cup TJ's Grated Parmesan Cheese", purchased: false, recipeID: 0),
+        ShoppingIngredient(ingredient: "1/4 cup TJ's Nori Komi Furikake", purchased: true, recipeID: 0),
       ],
     ),
     ShoppingListRecipe(
       Recipe(title: 'Orange Mojito Mocktail'),
       [
-        ShoppingIngredient("3 large TJ's Mint Leaves", purchased: false),
-        ShoppingIngredient("1/4 TJ's Lime, cut into wedges", purchased: false),
-        ShoppingIngredient("3/4 cup TJ's Organic Cold Pressed Orange Juice", purchased: false),
-        ShoppingIngredient("1/2 cup TJ's Sparkling Lime Water", purchased: false),
-        ShoppingIngredient("Ice (optional)", purchased: false),
+        ShoppingIngredient(ingredient: "3 large TJ's Mint Leaves", purchased: true, recipeID: 0),
+        ShoppingIngredient(ingredient: "1/4 TJ's Lime, cut into wedges", purchased: false, recipeID: 0),
+        ShoppingIngredient(ingredient: "3/4 cup TJ's Organic Cold Pressed Orange Juice", purchased: false, recipeID: 0),
+        ShoppingIngredient(ingredient: "1/2 cup TJ's Sparkling Lime Water", purchased: false, recipeID: 0),
+        ShoppingIngredient(ingredient: "Ice (optional)", purchased: false, recipeID: 0),
       ],
     ),
   ];
@@ -37,30 +39,51 @@ class ShoppingListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return MainPage(
-      name: 'Shopping List',
-      backgroundImage: 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/cranberry-orange-cornbread.jpg',
-      pageSheet: PageSheet([
-        SheetTab(
-          name: 'By Recipe', 
-          bodyContent: _buildByRecipe()
-        ),
-        SheetTab(
-          name: 'All Ingredients', 
-          bodyContent: null
-        ),
-      ]),
+    return ChangeNotifierProvider.value(
+      value: ShoppingListController(),
+      child: Consumer<ShoppingListController>(
+        builder: (context, controller, _) {
+          return MainPage(
+            name: 'Shopping List',
+            backgroundImage: 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/cranberry-orange-cornbread.jpg',
+            pageSheet: PageSheet([
+              SheetTab(
+                name: 'By Recipe', 
+                bodyContent: _buildByRecipe(controller.shoppingList)
+              ),
+              SheetTab(
+                name: 'All Ingredients', 
+                bodyContent: _buildAllIngredients(controller.shoppingList)
+              ),
+            ]),
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildByRecipe() {
+  Widget _buildAllIngredients(List<ShoppingListRecipe> sl) {
+
+    List<_IngredientDisplay> ingredients = List<_IngredientDisplay>();
+    for(ShoppingListRecipe shoppingRecipe in shoppingList) {
+      for(ShoppingIngredient ingredient in shoppingRecipe.getIngredients()) {
+        ingredients.add(_IngredientDisplay(ingredient, shoppingRecipe.recipe));
+      }
+    }
+
+    return ListView.builder(
+      itemCount: ingredients.length,
+      padding: EdgeInsets.symmetric(vertical: 20),
+      itemBuilder: (_, index) => ingredients[index]
+    );
+  }
+
+  Widget _buildByRecipe(List<ShoppingListRecipe> sl) {
 
     return ListView.builder(
       itemCount: shoppingList.length,
       padding: EdgeInsets.symmetric(vertical: 20),
-      itemBuilder: (_, index) {
-        return _buildRecipePartition(shoppingList[index]);
-      }
+      itemBuilder: (_, index) => _buildRecipePartition(shoppingList[index])
     );
   }
 
@@ -121,13 +144,10 @@ class ShoppingListPage extends StatelessWidget {
                     )
                   ],
                 )
-                
               ]
             ),
           ),
-          Column(
-            children: ingredients,
-          )
+          Column(children: ingredients)
         ],
       ),
     );

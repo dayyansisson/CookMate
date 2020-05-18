@@ -6,8 +6,8 @@ class Tag extends StatefulWidget {
 
   static const double DEFAULT_SIZE = 18;
 
-  final Query query;
   final String content;
+  final bool withCancelIcon;
 
   final double size;
   final double borderWidth;
@@ -19,18 +19,18 @@ class Tag extends StatefulWidget {
   final bool pop;
   final Function popCallback;
 
-  Tag({ this.content = "", 
-        this.size = DEFAULT_SIZE,
-        this.borderWidth = 0.075,
-        this.horizontalPadding = 0,
-        this.color = StyleSheet.WHITE,
-        this.textColor = StyleSheet.WHITE,
-        this.query,
-        this.onPressed,
-        this.pop = false,
-        this.popCallback
-      }
-    );
+  Tag({ 
+    this.content = "", 
+    this.size = DEFAULT_SIZE,
+    this.borderWidth = 0.075,
+    this.horizontalPadding = 0,
+    this.color = StyleSheet.WHITE,
+    this.textColor = StyleSheet.WHITE,
+    this.onPressed,
+    this.pop = false,
+    this.withCancelIcon = false,
+    this.popCallback
+  });
 
   @override
   _TagState createState() => _TagState();
@@ -49,8 +49,7 @@ class _TagState extends State<Tag> {
   @override
   Widget build(BuildContext context) {
 
-    bool hasQuery = widget.query != null;
-    String text = hasQuery ? widget.query.ingredient : widget.content;
+    String text = widget.content;
 
     return Container(
       child: Padding(
@@ -64,7 +63,6 @@ class _TagState extends State<Tag> {
                   widget.onPressed();
                   return;
                 }
-
                 if(widget.pop) {
                   setState(() {
                     // scale
@@ -105,10 +103,10 @@ class _TagState extends State<Tag> {
                 ),
               ),
             ),
-            hasQuery ? Positioned(
+            widget.withCancelIcon ? Positioned(
               height: 22,
-              right: -2,
-              top: -2,
+              right: -3,
+              top: -3,
               child: SizedBox(
                 width: 22,
                 child: Container(
@@ -118,15 +116,9 @@ class _TagState extends State<Tag> {
                     shape: BoxShape.circle
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(3),
+                    padding: const EdgeInsets.all(5),
                     child: FittedBox(
-                      child: Text(
-                        widget.query.resultCount.toString(),
-                        style: TextStyle(
-                          color: StyleSheet.WHITE,
-                          fontWeight: FontWeight.w400
-                        ),
-                      ),
+                      child: Icon(Icons.clear, color: StyleSheet.WHITE,),
                     ),
                   ),
                 ),

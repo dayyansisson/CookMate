@@ -109,7 +109,7 @@ class _RecipeCardState extends State<RecipeCard> {
                         widget.recipe.title,
                         style: TextStyle(
                           fontFamily: 'Hoefler',
-                          fontSize: 26,
+                          fontSize: 22,
                           color: StyleSheet.DEEP_GREY
                         ),
                       ),

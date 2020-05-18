@@ -53,27 +53,29 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    
     return Expanded(
       child: Consumer<TabNavigationModel>(
         builder: (context, model, _) {
           return GestureDetector(
-              onHorizontalDragEnd: (DragEndDetails details) => onHorizontalSwipe(details, model),
-              onVerticalDragEnd: (DragEndDetails details) => onVerticalSwipe(details, model),
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  FractionallySizedBox(
-                    heightFactor: 0.9,
-                    child: Container(color: StyleSheet.WHITE),
-                  ),
-                  Column(
-                    children: <Widget>[
-                      _header(),
-                      _bodyWidgets(model.currentTab, model.previousTab),
-                    ]
-                  ),
-                ],
-              ));
+            onHorizontalDragEnd: (DragEndDetails details) => onHorizontalSwipe(details, model),
+            onVerticalDragEnd: (DragEndDetails details) => onVerticalSwipe(details, model),
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: <Widget>[
+                FractionallySizedBox(
+                  heightFactor: 0.9,
+                  child: Container(color: StyleSheet.WHITE),
+                ),
+                Column(
+                  children: <Widget>[
+                    _header(),
+                    _bodyWidgets(model.currentTab, model.previousTab),
+                  ]
+                ),
+              ],
+            )
+          );
         },
       ),
     );
@@ -130,6 +132,7 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
   }
 
   Widget _bodyWidgets(int tab, int previousTab) {
+
     return Expanded(
       flex: tabBodyContents[tab] != null ? 1 : 0, // Only flex if there are any contents
       child: Stack(
@@ -154,6 +157,7 @@ class _PageSheetState extends State<PageSheet> with TickerProviderStateMixin {
   }
 
   void onHorizontalSwipe(DragEndDetails details, TabNavigationModel model) {
+
     if (details.primaryVelocity < 0) {
       model.currentTab++;
     } else if (details.primaryVelocity > 0) {
