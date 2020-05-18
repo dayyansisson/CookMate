@@ -52,6 +52,8 @@ class HomeController extends ChangeNotifier {
 
   void updateFavoriteRecipes() async {
 
+    featuredRecipes = DB.getFeaturedRecipes();
+
     List<Map<String, dynamic>> recipeIDs = await DB.getFavoriteRecipes();
     List<Future<Recipe>> futureRecipes = List<Future<Recipe>>(recipeIDs.length);
     for (int i = 0; i < recipeIDs.length; i++) {

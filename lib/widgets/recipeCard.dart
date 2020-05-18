@@ -30,12 +30,13 @@ class _RecipeCardState extends State<RecipeCard> {
   @override
   void initState() {
 
-    model = RecipePageModel(recipe: widget.recipe);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    model = RecipePageModel(recipe: widget.recipe);
 
     return ChangeNotifierProvider<RecipePageModel>.value(
       value: model,
