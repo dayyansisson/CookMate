@@ -25,8 +25,18 @@ class ShoppingListController extends ChangeNotifier{
 
   ShoppingListController._internal();
 
+  void retrieveSLfromDB() async {
+
+    print('here');
+    dynamic shoppingList = await DB.getShoppingList();
+    print('there');
+    print(shoppingList);
+  }
+
   //This method adds a recipe to the shopping list with the selected ingredients from it
   bool addRecipeToShoppingList(Recipe rec, List<ShoppingIngredient> ingr) {
+
+    retrieveSLfromDB();
 
     //TODO test that this always works
     //Check for null
