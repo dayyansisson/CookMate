@@ -490,7 +490,7 @@ abstract class DB {
   static Future<void> updateShoppingListItem(
       int recipeID, ShoppingIngredient ingr) async {
     await _db.update('cart', ingr.toMap(),
-        where: 'recipe_id = ? AND text = ?',
+        where: 'recipe_id = ? AND item = ?',
         whereArgs: [ingr.recipeID, ingr.ingredient]);
   }
 }
