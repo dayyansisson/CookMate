@@ -10,7 +10,8 @@ import 'package:flutter/services.dart' show rootBundle;
 
 /*
 TODOs:
-  - Need to implement shopping cart
+  - Need to add multiple categories
+  - Figure out a way to batch insert or better yet clone an existing db to user's phone
 */
 
 abstract class DB {
@@ -455,11 +456,6 @@ abstract class DB {
   static void addRecipeToShoppingList(
       int recipeID, List<ShoppingIngredient> ingr) {
     for (var item in ingr) {
-      // Map<String, dynamic> mapCartItem = {
-      //   "recipe_id": recipeID,
-      //   "purchased": item.purchased ? 1 : 0, // 0: false, 1: true
-      //   "item": item.ingredient
-      // };
       insertWithMap('cart', item.toMap());
     }
   }
@@ -485,8 +481,7 @@ abstract class DB {
     _db.delete('cart');
   }
 
-  // TODO: Change this to an update method that pulls new info from ShoppingIngredient entity
-  // Add two functions to the entity for changing purchased status
+  // An update method that pulls new info from ShoppingIngredient entity
   static Future<void> updateShoppingListItem(
       int recipeID, ShoppingIngredient ingr) async {
     await _db.update('cart', ingr.toMap(),
