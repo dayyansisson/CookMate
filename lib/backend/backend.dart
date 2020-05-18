@@ -464,6 +464,12 @@ abstract class DB {
     }
   }
 
+  // Return a List of ShoppingIngredients for a given recipe id
+  static Future<List<ShoppingIngredient>> getShoppingListByRecipe(int recipeID) {
+    List<Map<String, dynamic>> _results = await _db.query('cart', where: 'recipe_id = ?', whereArgs: [recipeID]);
+    return _results.map((items) => ShoppingIngredient.fromMap(items)).toList();
+  }
+
   //Returns a map of all shopping list items
   static Future<List<Map<String, dynamic>>> getShoppingList() {
     return _db.query('cart');
