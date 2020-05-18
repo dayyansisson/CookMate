@@ -18,19 +18,22 @@ class ShoppingIngredient extends Entity {
     @required this.recipeID,
   });
 
-  void markPurchased() async {
+  Future<void> markPurchased() async {
     
     if (purchased) {
       return;
     }
+    
     this.purchased = true;
     await DB.updateShoppingListItem(recipeID, this);
   }
 
-  void markNotPurchased() async {
+  Future<void> markNotPurchased() async {
+
     if (!purchased) {
       return;
     }
+
     this.purchased = false;
     await DB.updateShoppingListItem(recipeID, this);
   }

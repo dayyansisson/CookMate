@@ -452,20 +452,23 @@ abstract class DB {
     )
  */
   // Takes in recipeID and the ShoppingIngredient items and inserts
-  static void addRecipeToShoppingList(
-      int recipeID, List<ShoppingIngredient> ingr) {
+  static Future<void> addRecipeToShoppingList(int recipeID, List<ShoppingIngredient> ingr) async {
+
+    List<Future<int>> inserts = List<Future<int>>();
     for (var item in ingr) {
       // Map<String, dynamic> mapCartItem = {
       //   "recipe_id": recipeID,
       //   "purchased": item.purchased ? 1 : 0, // 0: false, 1: true
       //   "item": item.ingredient
       // };
-      insertWithMap('cart', item.toMap());
+      inserts.add(insertWithMap('cart', item.toMap()));
     }
+
+    await Future.wait(inserts);
   }
 
   // Return a List of ShoppingIngredients for a given recipe id
-  static Future<List<ShoppingIngredient>> getShoppingListByRecipe(int recipeID) {
+  static Future<List<ShoppingIngredient>> getShoppingListByRecipe(int recipeID) async {
     List<Map<String, dynamic>> _results = await _db.query('cart', where: 'recipe_id = ?', whereArgs: [recipeID]);
     return _results.map((items) => ShoppingIngredient.fromMap(items)).toList();
   }
@@ -476,13 +479,13 @@ abstract class DB {
   }
 
   //Removes all items matching the recipeID
-  static void removeRecipeFromShoppingList(int recipeID) {
-    _db.delete('cart', where: 'recipe_id = ?', whereArgs: [recipeID]);
+  static Future<void> removeRecipeFromShoppingList(int recipeID) async {
+    await _db.delete('cart', where: 'recipe_id = ?', whereArgs: [recipeID]);
   }
 
   // trunctuates table
-  static void clearAllFromShoppingList() {
-    _db.delete('cart');
+  static Future<void> clearAllFromShoppingList() async {
+    await _db.delete('cart');
   }
 
   // TODO: Change this to an update method that pulls new info from ShoppingIngredient entity

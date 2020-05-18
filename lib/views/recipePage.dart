@@ -22,6 +22,7 @@ class _RecipePageState extends State<RecipePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: StyleSheet.WHITE,
       body: Consumer<RecipePageModel>(
         builder: (context, recipe, loadingScreen) {

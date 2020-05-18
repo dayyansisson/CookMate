@@ -37,8 +37,8 @@ class _RecipeCardState extends State<RecipeCard> {
   @override
   Widget build(BuildContext context) {
 
-    return ChangeNotifierProvider<RecipePageModel>(
-      create: (_) => model,
+    return ChangeNotifierProvider<RecipePageModel>.value(
+      value: model,
       child: Button(
         onPressed: () => Navigator.push(context, MaterialPageRoute(
           builder: (context) {

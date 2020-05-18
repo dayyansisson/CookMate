@@ -10,59 +10,60 @@ import 'package:CookMate/widgets/pageLayout/sheetTab.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ShoppingListPage extends StatelessWidget {
+class ShoppingListPage extends StatefulWidget {
 
-  final List<ShoppingListRecipe> shoppingList = [
-    ShoppingListRecipe(
-      Recipe(title: 'Sriracha Furikake Tofu Fries'),
-      [
-        ShoppingIngredient(ingredient: "TJ's Canola Oil Spray", purchased: false, recipeID: 0),
-        ShoppingIngredient(ingredient: "2 packages TJ's Sriracha Flavored Baked Tofu", purchased: false, recipeID: 0),
-        ShoppingIngredient(ingredient: "2 large TJ's Eggs, egg whites separated", purchased: true, recipeID: 0),
-        ShoppingIngredient(ingredient: "3/4 cup TJ's Panko Breadcrumbs", purchased: false, recipeID: 0),
-        ShoppingIngredient(ingredient: "1/4 cup TJ's Grated Parmesan Cheese", purchased: false, recipeID: 0),
-        ShoppingIngredient(ingredient: "1/4 cup TJ's Nori Komi Furikake", purchased: true, recipeID: 0),
-      ],
-    ),
-    ShoppingListRecipe(
-      Recipe(title: 'Orange Mojito Mocktail'),
-      [
-        ShoppingIngredient(ingredient: "3 large TJ's Mint Leaves", purchased: true, recipeID: 0),
-        ShoppingIngredient(ingredient: "1/4 TJ's Lime, cut into wedges", purchased: false, recipeID: 0),
-        ShoppingIngredient(ingredient: "3/4 cup TJ's Organic Cold Pressed Orange Juice", purchased: false, recipeID: 0),
-        ShoppingIngredient(ingredient: "1/2 cup TJ's Sparkling Lime Water", purchased: false, recipeID: 0),
-        ShoppingIngredient(ingredient: "Ice (optional)", purchased: false, recipeID: 0),
-      ],
-    ),
-  ];
+  ShoppingListPage() {
+    ShoppingListController().refreshShoppingList();
+  }
+
+  @override
+  _ShoppingListPageState createState() => _ShoppingListPageState();
+}
+
+class _ShoppingListPageState extends State<ShoppingListPage> {
 
   @override
   Widget build(BuildContext context) {
 
     return ChangeNotifierProvider.value(
       value: ShoppingListController(),
-      child: Consumer<ShoppingListController>(
-        builder: (context, controller, _) {
-          return MainPage(
-            name: 'Shopping List',
-            backgroundImage: 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/cranberry-orange-cornbread.jpg',
-            pageSheet: PageSheet([
-              SheetTab(
-                name: 'By Recipe', 
-                bodyContent: _buildByRecipe(controller.shoppingList)
-              ),
-              SheetTab(
-                name: 'All Ingredients', 
-                bodyContent: _buildAllIngredients(controller.shoppingList)
-              ),
-            ]),
-          );
-        },
-      ),
+      child: MainPage(
+        name: 'Shopping List',
+        backgroundImage: 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/cranberry-orange-cornbread.jpg',
+        pageSheet: PageSheet([
+          SheetTab(
+            name: 'By Recipe', 
+            bodyContent: _BuildSLPage(byRecipe: true)
+          ),
+          SheetTab(
+            name: 'All Ingredients', 
+            bodyContent: _BuildSLPage()
+          ),
+        ]),
+      )
     );
   }
 
-  Widget _buildAllIngredients(List<ShoppingListRecipe> sl) {
+  Widget _buildPage(Future<List<ShoppingListRecipe>> sl, { bool byRecipe = false }) {
+
+    return FutureBuilder<List<ShoppingListRecipe>>(
+      future: sl,
+      builder: (_, snapshot) {
+        if(snapshot.hasData) {
+          return byRecipe ? _buildByRecipe(snapshot.data) : _buildAllIngredients(snapshot.data);
+        } else if(snapshot.data == null) {
+          return Container();
+        }
+        return Center(
+          child: CircularProgressIndicator()
+        );
+      },
+    );
+  }
+
+  Widget _buildAllIngredients(List<ShoppingListRecipe> shoppingList) {
+
+    print("_buildAllIngredients. Size(${shoppingList.length})");
 
     List<_IngredientDisplay> ingredients = List<_IngredientDisplay>();
     for(ShoppingListRecipe shoppingRecipe in shoppingList) {
@@ -78,7 +79,9 @@ class ShoppingListPage extends StatelessWidget {
     );
   }
 
-  Widget _buildByRecipe(List<ShoppingListRecipe> sl) {
+  Widget _buildByRecipe(List<ShoppingListRecipe> shoppingList) {
+
+    print("_buildByRecipe. Size(${shoppingList.length})");
 
     return ListView.builder(
       itemCount: shoppingList.length,
@@ -132,7 +135,135 @@ class ShoppingListPage extends StatelessWidget {
                     ),
                     Container(width: 20),
                     Button(
-                      onPressed: null,
+                      onPressed: () {
+                        ShoppingListController().removeRecipeFromList(shoppingRecipe.recipe);
+                      },
+                      child: Text(
+                        'CLEAR ALL',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.redAccent.withOpacity(0.75),
+                          fontSize: 12
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ]
+            ),
+          ),
+          Column(children: ingredients)
+        ],
+      ),
+    );
+  }
+}
+
+class _BuildSLPage extends StatelessWidget {
+
+  final bool byRecipe;
+  _BuildSLPage({ this.byRecipe = false });
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Consumer<ShoppingListController>(
+      builder: (context, controller, _) {
+        print('Rebuilding buildSL');
+        return FutureBuilder<List<ShoppingListRecipe>>(
+          future: controller.shoppingList,
+          builder: (_, snapshot) {
+            if(snapshot.hasData) {
+              return byRecipe ? _buildByRecipe(snapshot.data) : _buildAllIngredients(snapshot.data);
+            } else if(snapshot.data == null) {
+              return Container();
+            }
+            return Center(
+              child: CircularProgressIndicator()
+            );
+          },
+        );
+      }
+    );
+  }
+
+  Widget _buildAllIngredients(List<ShoppingListRecipe> shoppingList) {
+
+    print("_buildAllIngredients. Size(${shoppingList.length})");
+
+    List<_IngredientDisplay> ingredients = List<_IngredientDisplay>();
+    for(ShoppingListRecipe shoppingRecipe in shoppingList) {
+      for(ShoppingIngredient ingredient in shoppingRecipe.getIngredients()) {
+        ingredients.add(_IngredientDisplay(ingredient, shoppingRecipe.recipe));
+      }
+    }
+
+    return ListView.builder(
+      itemCount: ingredients.length,
+      padding: EdgeInsets.symmetric(vertical: 20),
+      itemBuilder: (_, index) => ingredients[index]
+    );
+  }
+
+  Widget _buildByRecipe(List<ShoppingListRecipe> shoppingList) {
+
+    print("_buildByRecipe. Size(${shoppingList.length})");
+
+    return ListView.builder(
+      itemCount: shoppingList.length,
+      padding: EdgeInsets.symmetric(vertical: 20),
+      itemBuilder: (_, index) => _buildRecipePartition(shoppingList[index])
+    );
+  }
+
+  Widget _buildRecipePartition(ShoppingListRecipe shoppingRecipe) {
+
+    List<_IngredientDisplay> ingredients = List<_IngredientDisplay>();
+    for(ShoppingIngredient ingredient in shoppingRecipe.getIngredients()) {
+      ingredients.add(_IngredientDisplay(ingredient, shoppingRecipe.recipe));
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget> [
+                Text(
+                  shoppingRecipe.recipe.title,
+                  style: TextStyle(
+                    color: StyleSheet.GREY,
+                    fontSize: 21,
+                    fontWeight: FontWeight.w600
+                  ),
+                ),
+                Container(height: 10),
+                Container(
+                  width: 100,
+                  child: Divider(
+                    color: StyleSheet.FADED_GREY,
+                    thickness: 1.25,
+                    height: 0,
+                  ),
+                ),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      '${shoppingRecipe.ing.length} ITEMS',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        color: StyleSheet.GREY,
+                        fontSize: 12
+                      ),
+                    ),
+                    Container(width: 20),
+                    Button(
+                      onPressed: () {
+                        ShoppingListController().removeRecipeFromList(shoppingRecipe.recipe);
+                      },
                       child: Text(
                         'CLEAR ALL',
                         style: TextStyle(
@@ -176,7 +307,13 @@ class _IngredientDisplay extends StatelessWidget {
                 color: StyleSheet.GREY,
                 initialValue: ingredient.purchased,
                 onTap: (bool purchased) { 
-                  //update controller
+                  if(purchased) {
+                    print('mark purchased');
+                    ShoppingListController().markPurchased(ingredient);
+                  } else {
+                    print('mark not purchased');
+                    ShoppingListController().markNotPurchased(ingredient);
+                  }
                 }
               ),
               Expanded(
