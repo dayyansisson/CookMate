@@ -465,7 +465,7 @@ abstract class DB {
   }
 
   // Return a List of ShoppingIngredients for a given recipe id
-  static Future<List<ShoppingIngredient>> getShoppingListByRecipe(int recipeID) {
+  static Future<List<ShoppingIngredient>> getShoppingListByRecipe(int recipeID) async {
     List<Map<String, dynamic>> _results = await _db.query('cart', where: 'recipe_id = ?', whereArgs: [recipeID]);
     return _results.map((items) => ShoppingIngredient.fromMap(items)).toList();
   }
