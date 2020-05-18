@@ -27,10 +27,16 @@ class ShoppingListController extends ChangeNotifier{
 
   void retrieveSLfromDB() async {
 
-    print('here');
-    dynamic shoppingList = await DB.getShoppingList();
-    print('there');
-    print(shoppingList);
+    List<Map<String, dynamic>> results = await DB.getShoppingList();
+    List<int> ids = List<int>();
+    
+    // Grab list of recipe ids
+    for(Map<String, dynamic> item in results) {
+      int id = item['recipe_id'];
+      if(!ids.contains(id)) {
+        ids.add(id);
+      }
+    }
   }
 
   //This method adds a recipe to the shopping list with the selected ingredients from it
