@@ -141,6 +141,11 @@ class ShoppingListController extends ChangeNotifier{
         return true;
       }
     }
+
+    //This method returns the list of ShoppingListRecipes to the view
+    Future<List<ShoppingListRecipe>> getShoppingList(){
+      
+    }
   }
 
   //This method gets the ingredients for a specific recipe
