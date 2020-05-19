@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
+
   /* Members */
   final String name;
   final String backgroundImage;
@@ -19,7 +20,8 @@ class MainPage extends StatefulWidget {
     @required this.backgroundImage,
     @required this.pageSheet,
     this.header,
-    this.subheader});
+    this.subheader
+  });
 
   /* Constants */
   static const double TITLE_FONT_SIZE = 36;
@@ -37,11 +39,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   /* Animation Constants */
   static const int _TITLE_SWITCH_DURATION = 650;
-  static const Curve _TITLE_CURVE =
-      const Interval(0.5, 1, curve: Curves.fastOutSlowIn);
 
   @override
   Widget build(BuildContext context) {
+
     return ChangeNotifierProvider(
         create: (_) => TabNavigationModel(tabCount: widget.pageSheet.tabs.length),
         child: Stack(
@@ -84,8 +85,21 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   builder: (context, model, _) => Column(children: <Widget>[
                     titleBuilder(context, model, padding: MainPage.TITLE_FONT_SIZE),
                     titleBuilder(context, model, subtitle: true, padding: 24)
-                  ])),
+                ])),
                 Padding(padding: const EdgeInsets.only(top: 24)),
+                Consumer<TabNavigationModel>( // Search bar
+                  builder: (context, model, _) { 
+                    if(widget.pageSheet.tabs[model.currentTab].searchBar == null) {
+                      return Container();
+                    }
+                    return Column(
+                      children: <Widget>[
+                        widget.pageSheet.tabs[model.currentTab].searchBar,
+                        Padding(padding: const EdgeInsets.only(top: 24)),
+                      ]
+                    );
+                  }
+                ),
                 widget.pageSheet,
               ],
             )
@@ -97,6 +111,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   bool _didExceedOneLine(int textLength, double textSize, double padding) => MediaQuery.of(context).size.width < (textLength * textSize) + (padding * 2);
 
   Widget titleBuilder(BuildContext context, TabNavigationModel model, { @required double padding, bool subtitle = false }) {
+
     String text = subtitle ? widget.pageSheet.tabs[model.currentTab].subheader : widget.pageSheet.tabs[model.currentTab].header;
     if (model.expandSheet) {
       text = "";
@@ -152,10 +167,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return Container(
       width: 16,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
           Container(height: 2, color: StyleSheet.WHITE),
           Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-          Container(height: 2, color: StyleSheet.WHITE),
+          Container(height: 2, width: 10, color: StyleSheet.WHITE),
         ],
       ),
     );

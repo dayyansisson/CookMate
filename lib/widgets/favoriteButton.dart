@@ -1,3 +1,4 @@
+import 'package:CookMate/controllers/homeController.dart';
 import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:flutter/material.dart';
@@ -49,17 +50,17 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         if(enabled == null) {
           return loadingPlaceholder;
         }
-
         return Button(
           onPressed: () {
             setState(() {
               enabled = !enabled;
+              if(enabled) {
+                recipe.favorite();
+              } else {
+                recipe.unfavorite();
+              }
+              HomeController().updateFavoriteRecipes();
             });
-            if(enabled) {
-              recipe.favorite();
-            } else {
-              recipe.unfavorite();
-            }
           },
           child: Container(
             width: widget.size,

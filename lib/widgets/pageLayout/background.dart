@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:CookMate/util/styleSheet.dart';
 import 'package:flutter/material.dart';
 
 class Background extends StatelessWidget {
@@ -15,12 +16,12 @@ class Background extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(_imageURL),
-          colorFilter: ColorFilter.mode(Colors.black87, BlendMode.overlay),
+          colorFilter: ColorFilter.mode(StyleSheet.BLACK.withOpacity(0.65), BlendMode.overlay),
           fit: BoxFit.fitHeight
         )
       ),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(color: Colors.transparent),
       ),
     );

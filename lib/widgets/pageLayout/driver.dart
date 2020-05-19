@@ -8,10 +8,21 @@ import 'package:CookMate/widgets/navBar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Driver extends StatelessWidget {
+class Driver extends StatefulWidget {
 
-  final PageController _controller;
-  Driver() : _controller = PageController();
+  @override
+  _DriverState createState() => _DriverState();
+}
+
+class _DriverState extends State<Driver> {
+
+  PageController _controller;
+
+  @override
+  void initState() { 
+    super.initState();
+    _controller = PageController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +30,7 @@ class Driver extends StatelessWidget {
     return ChangeNotifierProvider<PageModel>(
       create: (_) => PageModel(),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body:  Consumer<PageModel>(
           builder: (context, model, _) {
             changePage(model);
@@ -27,9 +39,9 @@ class Driver extends StatelessWidget {
               controller: _controller,
               children: <Widget>[
                 HomePage(),
-                // SearchPage(),
+                SearchPage(),
                 CatalogPage(),
-                // ShoppingListPage(),
+                ShoppingListPage(),
               ]
             );
           }
@@ -45,7 +57,7 @@ class Driver extends StatelessWidget {
     if(_controller.hasClients) {
       _controller.animateToPage(
         model.nextPage,
-        duration: Duration(milliseconds: 300),
+        duration: Duration(milliseconds: 500),
         curve: Curves.easeInOut
       );
     }

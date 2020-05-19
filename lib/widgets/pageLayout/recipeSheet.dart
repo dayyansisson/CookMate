@@ -6,6 +6,7 @@ import 'package:CookMate/widgets/checkbox.dart';
 import 'package:CookMate/widgets/marquee.dart';
 import 'package:CookMate/widgets/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
@@ -19,13 +20,15 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   /* Layout Constants */
   static const double _SHEET_BORDER_RADIUS = 40;
-  static const double _TITLE_SIZE = 36;
+  static const double _TITLE_SIZE = 32;
   static const double _DESCRIPTION_SIZE = 20;
   static const double _INFO_SIZE = 15;
   static const double _LINE_SPACING = 1.2;
   static const double _HEAD_SPACE = 70;
   static const double _BACKGROUND_FADE_FACTOR = 0.35;
   static const double _MIN_SHEET_HEIGHT = _SHEET_BORDER_RADIUS + _TITLE_SIZE + 14 + (_DESCRIPTION_SIZE * _LINE_SPACING * 3) + 40 + (_INFO_SIZE * 2) + _HEAD_SPACE;
+  static const double _SCROLL_EXPAND_SHEET_SENSITIVITY = 40;
+  static const SpringDescription _SPRING = const SpringDescription(mass: 13, stiffness: 1, damping: 2);
 
   /* Animation Controller */
   AnimationController dragController;
@@ -60,13 +63,22 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     dragController.value = 1;
   }
 
+  @override
+  void dispose() {
+    
+    directionsScrollController.dispose();
+    dragController.dispose();
+
+    super.dispose();
+  }
+
   void directionsScrollListener () {
 
     if(directionsScrollController.position.outOfRange) {
       TabNavigationModel model = Provider.of<TabNavigationModel>(context, listen: false);
-      if(directionsScrollController.offset < directionsScrollController.position.minScrollExtent - 80) {
+      if(directionsScrollController.offset < directionsScrollController.position.minScrollExtent - _SCROLL_EXPAND_SHEET_SENSITIVITY) {
         model.expandSheet = true;
-      } else if(directionsScrollController.offset > directionsScrollController.position.maxScrollExtent + 80){
+      } else if(directionsScrollController.offset > directionsScrollController.position.maxScrollExtent + _SCROLL_EXPAND_SHEET_SENSITIVITY){
         model.expandSheet = false;
       }
     }
@@ -120,13 +132,24 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
           dragController.value += (details.primaryDelta / (MediaQuery.of(context).size.height - _MIN_SHEET_HEIGHT));
         });
       },
-      onVerticalDragEnd: (details) {    // TODO account for user acceleration and velocity
+      onVerticalDragEnd: (details) {
         if(dragController.value > 0.5) {
           dragController.forward(from: dragController.value);
           Provider.of<TabNavigationModel>(context, listen: false).expandSheet = true;
         } else {
           dragController.reverse(from: dragController.value);
         }
+
+        if(details.primaryVelocity < -1000) {
+          dragController.animateWith(SpringSimulation(_SPRING, dragController.value, 0, -1));
+        } else if(details.primaryVelocity > 1000) {
+          dragController.animateWith(SpringSimulation(_SPRING, dragController.value, 1, 1));
+          Provider.of<TabNavigationModel>(context, listen: false).expandSheet = true;
+        }
+
+        if(dragController.value == 0 && details.primaryVelocity < 10) {
+          Provider.of<TabNavigationModel>(context, listen: false).expandSheet = false;
+        } 
       },
       child: Button(
         onPressed: null,
@@ -196,25 +219,6 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                     ),
                   ),
                 ),
-                Transform.translate(
-                  offset: Offset(0, -10),
-                  child: AnimatedSwitcher(
-                    duration: Duration(milliseconds: 400),
-                    switchInCurve: Curves.easeInOut,
-                    switchOutCurve: Curves.easeInOut,
-                    transitionBuilder: (child, animation) {
-                      return ScaleTransition(
-                        scale: animation,
-                        child: child,
-                      );
-                    },
-                    child: _ExpandIcon(
-                      Provider.of<TabNavigationModel>(context, listen: true).expandSheet
-                      ? Icons.arrow_drop_down : Icons.arrow_right,
-                      1 - dragController.value
-                    ),
-                  ),
-                )
               ],
             ),
           )
@@ -318,6 +322,13 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
         }
         return GestureDetector(
           onHorizontalDragEnd: (DragEndDetails details) => onHorizontalSwipe(details, model),
+          onVerticalDragEnd: (details) {
+            if(details.primaryVelocity > 10) {
+              model.expandSheet = true;
+            } else if(details.primaryVelocity < 10) {
+              model.expandSheet = false;
+            }
+          },
           child: ClipPath(
             clipper: _TabClipper(),
             child: BackdropFilter(

@@ -53,11 +53,13 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    //return child;
+
     return RawMaterialButton(
       constraints: BoxConstraints(),
       highlightColor: StyleSheet.TRANSPARENT,
       splashColor: splashColor,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       onPressed: onPressed,
       child: child
     );

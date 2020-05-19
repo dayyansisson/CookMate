@@ -1,10 +1,12 @@
 import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/backend/backend.dart';
+import 'package:flutter/material.dart';
 /*
   This file lays out the search page controller. 
 */
 
-class SearchController {
+class SearchController extends ChangeNotifier {
+
   //Singleton constuctor
   static final SearchController _searchController = SearchController._internal();
 
@@ -16,7 +18,8 @@ class SearchController {
 
   //Instance variables
   List<String> currentIngredients = List<String>();
-
+  Future<List<Recipe>> ingredientSearchResults;
+  Future<List<Recipe>> recipeSearchResults;
 
 /* 
   This method takes a substring from the view and makes a backend call to find the ingredients
@@ -25,71 +28,56 @@ class SearchController {
 */
 Future<List<String>> findIngredients(String substring) async {
   //Call to the backend to get a list of strings which are the ingredients that match the substring
-  List<String> ingredients = await DB.findIngredients(substring);
+    List<String> ingredients = await DB.findIngredients(substring);
 
-  if(ingredients == null){
-    // TODO something about finding null
+    if(ingredients == null) {
+      // TODO something about finding null
+    }
+    return ingredients;
   }
-  return ingredients;
-}
 
-  Future<List<Recipe>> addIngredientToSearch(String ing) async {
+  // Searches db by ingredients
+  Future<List<Recipe>> ingredientSearch() async {
+
+    print(currentIngredients);
+
+    //Call to backend to get the recipe IDs that match the list of ingredients
+    List<int> ingredientSearch = await DB.getRecipeWithIngredients(currentIngredients);
+    
+    if(ingredientSearch == null || ingredientSearch.length == 0){
+      //TODO handle null
+      print('No Items');
+    }
+
+    //Sorts the returned list by id frequency
+    ingredientSearch = _sortList(ingredientSearch);
+    
+    //Takes the list of recipe ids and returns a list of recipes from them
+    List<Future<Recipe>> futureResults = List<Future<Recipe>>();
+    for(int i = 0; i < ingredientSearch.length; i++){
+      futureResults.add(DB.getRecipe(ingredientSearch[i].toString()));
+    }
+    
+    return Future.wait(futureResults);
+  }
+
+  void addIngredientToSearch(String ing) async {
 
     //Adds the ingredient to the current search
     currentIngredients.add(ing);
-
-    //List of recipes that will be returned
-    List<Recipe> searchResults = List<Recipe>();
-    
-    //Call to backend to get the recipe IDs that match the list of ingredients
-    List<int> ingredientSearch = await DB.getRecipeWithIngredients(currentIngredients);
-    
-    if(ingredientSearch == null || ingredientSearch.length == 0){
-      //TODO handle null
-      print('null return');
-    }
-
-    //Sorts the returned list by id frequency
-    ingredientSearch = _sortList(ingredientSearch);
-    //Takes the list of recipe ids and returns a list of recipes from them
-    for(int i = 0; i < ingredientSearch.length; i++){
-      Recipe rec = await DB.getRecipe(ingredientSearch[i].toString());
-      searchResults.add(rec);
-    }
-    //searchResults = await _idToObject(ingredientSearch);
-    
-    return searchResults;
+    ingredientSearchResults = ingredientSearch();
+    notifyListeners();
   }
 
-  Future<List<Recipe>> removeIngredientsFromSearch(String ing) async {
-    //removes the ingredient from the current search
+  void removeIngredientFromSearch(String ing) async {
+
+    //Adds the ingredient to the current search
     currentIngredients.remove(ing);
-
-    //List of recipes that will be returned
-    List<Recipe> searchResults = List<Recipe>();
-    
-    //Call to backend to get the recipe IDs that match the list of ingredients
-    List<int> ingredientSearch = await DB.getRecipeWithIngredients(currentIngredients);
-    
-    if(ingredientSearch == null || ingredientSearch.length == 0){
-      //TODO handle null
-      print('null return');
-    }
-
-    //Sorts the returned list by id frequency
-    ingredientSearch = _sortList(ingredientSearch);
-    //Takes the list of recipe ids and returns a list of recipes from them
-    for(int i = 0; i < ingredientSearch.length; i++){
-      Recipe rec = await DB.getRecipe(ingredientSearch[i].toString());
-      searchResults.add(rec);
-    }
-    //searchResults = await _idToObject(ingredientSearch);
-    
-    return searchResults;
+    ingredientSearchResults = ingredientSearch();
+    notifyListeners();
   }
 
-  Future<List<Recipe>> getRecipesBySubstring(String rec) async {
-    List<Recipe> recipeResults = List<Recipe>();
+  Future<List<Recipe>> recipeSearch(String rec) async {
 
     //Call to the backend with the substring which returns a list of recipe titles that match
     List<int> initialSearch = await DB.findRecipe(rec);
@@ -100,11 +88,19 @@ Future<List<String>> findIngredients(String substring) async {
     }
 
     //Takes the list of recipe ids and returns a list of recipes from them
+    List<Future<Recipe>> futureResults = List<Future<Recipe>>();
     for(int i = 0; i < initialSearch.length; i++){
-      Recipe rec = await DB.getRecipe(initialSearch[i].toString());
-      recipeResults.add(rec);
+      futureResults.add(DB.getRecipe(initialSearch[i].toString()));
     }
-    return recipeResults;
+    
+    return Future.wait(futureResults);
+  }
+  
+
+  void getRecipesBySubstring(String rec) {
+
+    recipeSearchResults = recipeSearch(rec);
+    notifyListeners();
   }
 
   //This private method takes a list of ints with multiple same entries and returns them 

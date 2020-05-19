@@ -7,6 +7,7 @@ import 'package:CookMate/backend/backend.dart';
 */
 
 class ShoppingIngredient extends Entity {
+
   int recipeID;
   bool purchased;
   String ingredient;
@@ -17,15 +18,18 @@ class ShoppingIngredient extends Entity {
     @required this.recipeID,
   });
 
-  void markPurchased() async {
+  Future<void> markPurchased() async {
+    
     if (purchased) {
       return;
     }
+    
     this.purchased = true;
     await DB.updateShoppingListItem(recipeID, this);
   }
 
-  void markNotPurchased() async {
+  Future<void> markNotPurchased() async {
+
     if (!purchased) {
       return;
     }

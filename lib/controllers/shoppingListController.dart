@@ -3,11 +3,8 @@ import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/entities/shoppingIngredient.dart';
 import 'package:CookMate/entities/shoppingListRecipe.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../backend/backend.dart';
 import '../entities/recipe.dart';
-import '../entities/shoppingIngredient.dart';
-import '../entities/shoppingIngredient.dart';
 import '../entities/shoppingIngredient.dart';
 
 /*
@@ -23,135 +20,104 @@ class ShoppingListController extends ChangeNotifier{
     return _shoppingListController;
   }
 
-  //Instance list
-  List<ShoppingListRecipe> shoppingList = List<ShoppingListRecipe>();
-
   ShoppingListController._internal();
 
-  //Class Methods
+
+  //Instance list
+  Future<List<ShoppingListRecipe>> shoppingList;
+  void refreshShoppingList() => shoppingList = _loadShoppingList();
+
+  // Grabs shopping list from database
+  Future<List<ShoppingListRecipe>> _loadShoppingList() async {
+
+    List<Map<String, dynamic>> results = await DB.getShoppingList();
+    List<int> ids = List<int>();
+    
+    // Grab list of recipe ids
+    for(Map<String, dynamic> item in results) {
+      int id = item['recipe_id'];
+      if(!ids.contains(id)) {
+        ids.add(id);
+      }
+    }
+
+    List<Future<List<ShoppingIngredient>>> futureIngredients = List<Future<List<ShoppingIngredient>>>();
+    List<Future<Recipe>> futureRecipes = List<Future<Recipe>>();
+    for(int id in ids) {
+      futureIngredients.add(DB.getShoppingListByRecipe(id));
+      futureRecipes.add(DB.getRecipe(id.toString()));
+    }
+
+    List<List<ShoppingIngredient>> ingredients = await Future.wait(futureIngredients);
+    List<Recipe> recipes = await Future.wait(futureRecipes);
+
+    if(ingredients.length != recipes.length) {
+      print('THIS IS ABOUT TO BE A PROBLEM');
+    }
+
+    List<ShoppingListRecipe> slRecipes = List<ShoppingListRecipe>(recipes.length);
+    for(int i = 0; i < recipes.length; i++) {
+      ShoppingListRecipe slr = ShoppingListRecipe(recipes[i], ingredients[i]);
+      slRecipes[i] = slr;
+    }
+
+    print("Refreshed shopping list: Size(${slRecipes.length})");
+    return slRecipes;
+  }
 
   //This method adds a recipe to the shopping list with the selected ingredients from it
-  bool addRecipeToShoppingList(Recipe rec, List<ShoppingIngredient> ingr){
-    //TODO test that this always works
-    //Check for null
-    if(rec == null || ingr == null){
-      return false;
-    }
+  void addRecipeToShoppingList(Recipe rec, List<ShoppingIngredient> ingr) async {
 
-    if(!shoppingList.contains(ShoppingListRecipe(rec,ingr))){
-      //return false if already in the list
-      return false;
-    } else{
-      //Database call to update
-      DB.addRecipeToShoppingList(rec.id, ingr);
-
-      //Update Controller List
-      shoppingList.add(ShoppingListRecipe(rec, ingr));
-
-      //return true if added
-      notifyListeners();
-      return true;
-    }
+    await DB.addRecipeToShoppingList(rec.id, ingr);
+    refreshShoppingList();
+    notifyListeners();
   }
 
   //This method removes a specific recipe from the list
   //Returns true if successfully removed, false otherwise
-  bool removeRecipeFromList(Recipe rec){
-    //Check for null
-    if(rec == null){
-      return false;
-    }
+  void removeRecipeFromList(Recipe rec) async {
 
-    //Check if list contains the rec
-    if(!shoppingList.contains(ShoppingListRecipe.fromRec(rec))){
-      //if item is not present return false
-      return false;
-    } else{
-      //Remove from local list and DB
-      shoppingList.remove(ShoppingListRecipe.fromRec(rec));
-      DB.removeRecipeFromShoppingList(rec.id);
+    print("Initiated: removeRecipeFromList");
 
-      //Return true if successfully removed
-      notifyListeners();
-      return true;
-    }
+    await DB.removeRecipeFromShoppingList(rec.id);
+    refreshShoppingList();
+    notifyListeners();
+
+    print("Completed: removeRecipeFromList");
   }
 
   //This method clears all the recipes from the shopping list
-  clearAll(){
-    shoppingList.clear();
-    DB.clearAllFromShoppingList();
+  clearAll() async {
+
+    await DB.clearAllFromShoppingList();
+    refreshShoppingList();
     notifyListeners();
   }
 
   //This method marks a specific ingredient as purchased
   //Returns true if successful false otherwise
-  bool markPurchased(Recipe rec, ShoppingIngredient ing){
-    //Handle null
-    if(rec == null || ing == null){
-      return false;
-    }
+  Future<void> markPurchased(ShoppingIngredient ing) async {
     
-    //Check if list contains the rec
-    if(!shoppingList.contains(ShoppingListRecipe.fromRec(rec))){
-      //if item is not present return false
-      return false;
-    } else{
-      //Mark as purchased in list and update DB
-      List<ShoppingIngredient> ingredients = getShoppingIngredients(rec);
-      
-      //Checks if the ingredient has already been marked as purchased
-      if(purchased(ingredients, ing)){
-        return false;
-      }
-      else{
-        ingredients[ingredients.indexOf(ing)].markPurchased();
-
-        //Return true if sucessful
-        notifyListeners();
-        return true;
-      }
+    //Handle null
+    if(ing == null){
+      return;
     }
+
+    await ing.markPurchased();
+    refreshShoppingList();
+    notifyListeners();
   }
 
   //This method marks an ingredient as unpurchased
-  bool markNotPurchased(Recipe rec, ShoppingIngredient ing){
+  Future<void> markNotPurchased(ShoppingIngredient ing) async {
+    
     //Handle null
-    if(rec == null || ing == null){
-      return false;
+    if(ing == null){
+      return;
     }
     
-    //Check if list contains the rec
-    if(!shoppingList.contains(ShoppingListRecipe.fromRec(rec))){
-      //if item is not present return false
-      return false;
-    } else{
-      //Mark as purchased in list and update DB
-      List<ShoppingIngredient> ingredients = getShoppingIngredients(rec);
-      
-      //Checks if the ingredient has already been marked as purchased
-      if(!purchased(ingredients, ing)){
-        return false;
-      }
-      else{
-        ingredients[ingredients.indexOf(ing)].markNotPurchased();
-
-        //Return true if sucessful
-        notifyListeners();
-        return true;
-      }
-    }
-
-    //This method returns the list of ShoppingListRecipes to the view
-    Future<List<ShoppingListRecipe>> getShoppingList(){
-      
-    }
+    await ing.markNotPurchased();
+    refreshShoppingList();
+    notifyListeners();
   }
-
-  //This method gets the ingredients for a specific recipe
-  List<ShoppingIngredient> getShoppingIngredients(Recipe rec) => shoppingList[shoppingList.indexOf(ShoppingListRecipe.fromRec(rec))].getIngredients();
-
-  //This method checks if an ingredient has been purchased
-  bool purchased(List<ShoppingIngredient> ingredients, ShoppingIngredient ing) => ingredients[ingredients.indexOf(ing)].purchased;
 }
-
