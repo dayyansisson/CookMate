@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+
     return MainPage(
       name: 'Home',
       backgroundImage: StyleSheet.DEFAULT_RECIPE_IMAGE,

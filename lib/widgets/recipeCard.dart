@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:CookMate/entities/recipe.dart';
+import 'package:CookMate/provider/recipeBank.dart';
 import 'package:CookMate/provider/recipeModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/views/recipePage.dart';
@@ -25,25 +26,24 @@ class RecipeCard extends StatefulWidget {
 
 class _RecipeCardState extends State<RecipeCard> {
 
-  RecipePageModel model;
+  RecipeModel model;
 
   @override
   void initState() {
 
+    model = RecipeModelBank().getModel(widget.recipe);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    model = RecipePageModel(recipe: widget.recipe);
-
-    return ChangeNotifierProvider<RecipePageModel>.value(
+    return ChangeNotifierProvider<RecipeModel>.value(
       value: model,
       child: Button(
         onPressed: () => Navigator.push(context, MaterialPageRoute(
           builder: (context) {
-            return ChangeNotifierProvider<RecipePageModel>.value(
+            return ChangeNotifierProvider<RecipeModel>.value(
               value: model,
               child: RecipePage()
             );

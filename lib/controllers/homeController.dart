@@ -1,5 +1,6 @@
 import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/backend/backend.dart';
+import 'package:CookMate/provider/recipeModel.dart';
 import 'package:flutter/material.dart';
 
 /*
@@ -30,7 +31,6 @@ class HomeController extends ChangeNotifier {
   
   //Class Variables
   Future<String> imageURL; //Comes from Server Format: JSON This is for the background image
-  //int currentTab; //Internal provided to the controller by the view
   
   Future<List<Recipe>> featuredRecipes;
   Future<List<Recipe>> favoriteRecipes;
@@ -51,8 +51,6 @@ class HomeController extends ChangeNotifier {
   }
 
   void updateFavoriteRecipes() async {
-
-    featuredRecipes = DB.getFeaturedRecipes();
 
     List<Map<String, dynamic>> recipeIDs = await DB.getFavoriteRecipes();
     List<Future<Recipe>> futureRecipes = List<Future<Recipe>>(recipeIDs.length);

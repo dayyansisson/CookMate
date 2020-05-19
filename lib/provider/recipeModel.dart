@@ -2,25 +2,21 @@ import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/entities/shoppingIngredient.dart';
 import 'package:flutter/material.dart';
 
-class RecipePageModel extends ChangeNotifier {
+class RecipeModel extends ChangeNotifier {
+  
   bool _readyForDisplay;
 
   Recipe _recipe;
-  Future<Recipe> _futureRecipe;
   List<ShoppingIngredient> _shoppingIngredients;
 
-  RecipePageModel({Recipe recipe, Future<Recipe> futureRecipe})
+  RecipeModel(Recipe recipe)
       : _recipe = recipe,
-        _futureRecipe = futureRecipe,
         _readyForDisplay = false,
         _shoppingIngredients = List<ShoppingIngredient>();
 
   bool get isReadyForDisplay => _readyForDisplay;
 
   void loadRecipeForDisplay() async {
-    if (_futureRecipe != null) {
-      _recipe = await _futureRecipe;
-    }
 
     List<Future> preloads = [
       _recipe.getIngredients(),

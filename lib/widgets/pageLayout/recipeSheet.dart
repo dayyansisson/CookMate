@@ -35,7 +35,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   Animation<double> dragPosition;
   ScrollController directionsScrollController;
 
-  RecipePageModel recipe;
+  RecipeModel recipe;
 
   @override
   void initState() { 
@@ -43,7 +43,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     super.initState();
 
     // Init. recipe
-    recipe = Provider.of<RecipePageModel>(context, listen: false);
+    recipe = Provider.of<RecipeModel>(context, listen: false);
 
     // Init controllers
     directionsScrollController = ScrollController()..addListener(directionsScrollListener);

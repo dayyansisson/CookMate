@@ -43,120 +43,6 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
       )
     );
   }
-
-  Widget _buildPage(Future<List<ShoppingListRecipe>> sl, { bool byRecipe = false }) {
-
-    return FutureBuilder<List<ShoppingListRecipe>>(
-      future: sl,
-      builder: (_, snapshot) {
-        if(snapshot.hasData) {
-          return byRecipe ? _buildByRecipe(snapshot.data) : _buildAllIngredients(snapshot.data);
-        } else if(snapshot.data == null) {
-          return Container();
-        }
-        return Center(
-          child: CircularProgressIndicator()
-        );
-      },
-    );
-  }
-
-  Widget _buildAllIngredients(List<ShoppingListRecipe> shoppingList) {
-
-    print("_buildAllIngredients. Size(${shoppingList.length})");
-
-    List<_IngredientDisplay> ingredients = List<_IngredientDisplay>();
-    for(ShoppingListRecipe shoppingRecipe in shoppingList) {
-      for(ShoppingIngredient ingredient in shoppingRecipe.getIngredients()) {
-        ingredients.add(_IngredientDisplay(ingredient, shoppingRecipe.recipe));
-      }
-    }
-
-    return ListView.builder(
-      itemCount: ingredients.length,
-      padding: EdgeInsets.symmetric(vertical: 20),
-      itemBuilder: (_, index) => ingredients[index]
-    );
-  }
-
-  Widget _buildByRecipe(List<ShoppingListRecipe> shoppingList) {
-
-    print("_buildByRecipe. Size(${shoppingList.length})");
-
-    return ListView.builder(
-      itemCount: shoppingList.length,
-      padding: EdgeInsets.symmetric(vertical: 20),
-      itemBuilder: (_, index) => _buildRecipePartition(shoppingList[index])
-    );
-  }
-
-  Widget _buildRecipePartition(ShoppingListRecipe shoppingRecipe) {
-
-    List<_IngredientDisplay> ingredients = List<_IngredientDisplay>();
-    for(ShoppingIngredient ingredient in shoppingRecipe.getIngredients()) {
-      ingredients.add(_IngredientDisplay(ingredient, shoppingRecipe.recipe));
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget> [
-                Text(
-                  shoppingRecipe.recipe.title,
-                  style: TextStyle(
-                    color: StyleSheet.GREY,
-                    fontSize: 21,
-                    fontWeight: FontWeight.w600
-                  ),
-                ),
-                Container(height: 10),
-                Container(
-                  width: 100,
-                  child: Divider(
-                    color: StyleSheet.FADED_GREY,
-                    thickness: 1.25,
-                    height: 0,
-                  ),
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      '${shoppingRecipe.ing.length} ITEMS',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: StyleSheet.GREY,
-                        fontSize: 12
-                      ),
-                    ),
-                    Container(width: 20),
-                    Button(
-                      onPressed: () {
-                        ShoppingListController().removeRecipeFromList(shoppingRecipe.recipe);
-                      },
-                      child: Text(
-                        'CLEAR ALL',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.redAccent.withOpacity(0.75),
-                          fontSize: 12
-                        ),
-                      ),
-                    )
-                  ],
-                )
-              ]
-            ),
-          ),
-          Column(children: ingredients)
-        ],
-      ),
-    );
-  }
 }
 
 class _BuildSLPage extends StatelessWidget {
@@ -169,7 +55,6 @@ class _BuildSLPage extends StatelessWidget {
 
     return Consumer<ShoppingListController>(
       builder: (context, controller, _) {
-        print('Rebuilding buildSL');
         return FutureBuilder<List<ShoppingListRecipe>>(
           future: controller.shoppingList,
           builder: (_, snapshot) {
@@ -189,8 +74,6 @@ class _BuildSLPage extends StatelessWidget {
 
   Widget _buildAllIngredients(List<ShoppingListRecipe> shoppingList) {
 
-    print("_buildAllIngredients. Size(${shoppingList.length})");
-
     List<_IngredientDisplay> ingredients = List<_IngredientDisplay>();
     for(ShoppingListRecipe shoppingRecipe in shoppingList) {
       for(ShoppingIngredient ingredient in shoppingRecipe.getIngredients()) {
@@ -206,8 +89,6 @@ class _BuildSLPage extends StatelessWidget {
   }
 
   Widget _buildByRecipe(List<ShoppingListRecipe> shoppingList) {
-
-    print("_buildByRecipe. Size(${shoppingList.length})");
 
     return ListView.builder(
       itemCount: shoppingList.length,
@@ -308,10 +189,8 @@ class _IngredientDisplay extends StatelessWidget {
                 initialValue: ingredient.purchased,
                 onTap: (bool purchased) { 
                   if(purchased) {
-                    print('mark purchased');
                     ShoppingListController().markPurchased(ingredient);
                   } else {
-                    print('mark not purchased');
                     ShoppingListController().markNotPurchased(ingredient);
                   }
                 }

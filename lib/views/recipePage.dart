@@ -21,10 +21,11 @@ class _RecipePageState extends State<RecipePage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: StyleSheet.WHITE,
-      body: Consumer<RecipePageModel>(
+      body: Consumer<RecipeModel>(
         builder: (context, recipe, loadingScreen) {
           if (recipe.isReadyForDisplay) {
             return buildPage(recipe);
@@ -41,7 +42,8 @@ class _RecipePageState extends State<RecipePage> {
     );
   }
 
-  Widget buildPage(RecipePageModel model) {
+  Widget buildPage(RecipeModel model) {
+
     return Stack(
       children: <Widget>[
         ShaderMask(
