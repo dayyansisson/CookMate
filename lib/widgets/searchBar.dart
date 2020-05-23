@@ -122,8 +122,8 @@ class _SearchBarState extends State<SearchBar> {
                     borderSide: BorderSide(color: Colors.grey),
                     borderRadius: BorderRadius.circular(25.7),
                   ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.transparent),
                     borderRadius: BorderRadius.circular(25.7),
                   ),
                 ),
