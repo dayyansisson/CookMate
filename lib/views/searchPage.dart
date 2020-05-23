@@ -15,21 +15,29 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return MainPage(
-      name: 'Search',
-      backgroundImage: 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/poached-egg-latkes.jpg',
-      pageSheet: PageSheet([
-        SheetTab(
-          name: 'Recipes', 
-          searchBar: SearchBar(SearchType.Recipe),
-          bodyContent: _buildRecipePage()
-        ),
-        SheetTab(
-          name: 'Ingredients', 
-          searchBar: SearchBar(SearchType.Ingredient),
-          bodyContent: _buildIngredientPage()
-        )
-      ]),
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: MainPage(
+        name: 'Search',
+        backgroundImage: 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/poached-egg-latkes.jpg',
+        pageSheet: PageSheet([
+          SheetTab(
+            name: 'Recipes', 
+            searchBar: SearchBar(SearchType.Recipe),
+            bodyContent: _buildRecipePage()
+          ),
+          SheetTab(
+            name: 'Ingredients', 
+            searchBar: SearchBar(SearchType.Ingredient),
+            bodyContent: _buildIngredientPage()
+          )
+        ]),
+      ),
     );
   }
 
