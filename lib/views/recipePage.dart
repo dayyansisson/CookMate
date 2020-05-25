@@ -6,6 +6,7 @@ import 'package:CookMate/util/cookMateIcons.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/favoriteButton.dart';
 import 'package:CookMate/widgets/pageLayout/recipeSheet.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -58,7 +59,7 @@ class _RecipePageState extends State<RecipePage> {
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(model.imageURL), 
+                image: CachedNetworkImageProvider(model.imageURL), 
                 fit: BoxFit.cover
               )
             ),

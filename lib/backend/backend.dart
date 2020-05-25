@@ -130,7 +130,7 @@ abstract class DB {
 
   static Future<void> addRecipesFromFile() async {
     print("Trying to read json file of recipes and add them to db.");
-    String jsonRecipes = await rootBundle.loadString('assets/new_recipes.json');
+    String jsonRecipes = await rootBundle.loadString('assets/recipes.json');
     Map<String, dynamic> data = json.decode(jsonRecipes);
     data.forEach((k, v) {
       var newRecipe = Recipe(
