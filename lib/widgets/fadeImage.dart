@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class FadeImage extends StatelessWidget {
 
@@ -10,7 +11,7 @@ class FadeImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeInImage(
       placeholder: MemoryImage(kTransparentImage),
-      image: NetworkImage(url),
+      image: CachedNetworkImageProvider(url),
       fit: BoxFit.cover,
       fadeInCurve: Curves.fastOutSlowIn,
     );

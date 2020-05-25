@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:CookMate/util/styleSheet.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class Background extends StatelessWidget {
@@ -15,7 +16,7 @@ class Background extends StatelessWidget {
       height: MediaQuery.of(context).size.height / 2,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: NetworkImage(_imageURL),
+          image: CachedNetworkImageProvider(_imageURL),
           colorFilter: ColorFilter.mode(StyleSheet.BLACK.withOpacity(0.65), BlendMode.overlay),
           fit: BoxFit.fitHeight
         )
