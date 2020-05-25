@@ -76,7 +76,7 @@ class DrawerMenu extends StatelessWidget {
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.w600
                 ),
               ),
