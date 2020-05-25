@@ -1,5 +1,6 @@
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
+import 'package:CookMate/widgets/menuButton.dart';
 import 'package:CookMate/widgets/pageLayout/background.dart';
 import 'package:CookMate/widgets/pageLayout/pageSheet.dart';
 import 'package:flutter/material.dart';
@@ -66,8 +67,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 Padding(
                   // Top Bar
                   padding: const EdgeInsets.only(
-                    top: _TOP_BAR_EDGE_PADDING,
-                    right: _TOP_BAR_EDGE_PADDING,
+                    top: _TOP_BAR_EDGE_PADDING / 3,
+                    right: _TOP_BAR_EDGE_PADDING / 2,
                     left: _TOP_BAR_EDGE_PADDING),
                   child: Row(children: <Widget>[
                     Text(
@@ -78,7 +79,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                           fontSize: _PAGE_NAME_FONT_SIZE),
                     ),
                     Spacer(),
-                    snackbar,
+                    MenuButton(),
                   ]),
                 ),
                 Consumer<TabNavigationModel>( // Titles
@@ -162,20 +163,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     );
   }
 
-  // TODO: Replace with actual Menu widget
-  Widget get snackbar {
-    return Container(
-      width: 16,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          Container(height: 2, color: StyleSheet.WHITE),
-          Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-          Container(height: 2, width: 10, color: StyleSheet.WHITE),
-        ],
-      ),
-    );
-  }
 }
 
 class _HeaderTitle extends StatelessWidget {
