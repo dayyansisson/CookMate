@@ -48,7 +48,8 @@ class _DriverState extends State<Driver> {
           }
         ),
         backgroundColor: StyleSheet.WHITE,
-        endDrawer: DrawerMenu(),
+        drawer: DrawerMenu(),
+        endDrawer: DrawerMenu(endDrawer: true),
       ),
     );
   }

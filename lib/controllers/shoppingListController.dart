@@ -52,7 +52,7 @@ class ShoppingListController extends ChangeNotifier{
     List<Recipe> recipes = await Future.wait(futureRecipes);
 
     if(ingredients.length != recipes.length) {
-      print('THIS IS ABOUT TO BE A PROBLEM');
+      print('Shopping List Controller: THIS IS ABOUT TO BE A PROBLEM');
     }
 
     List<ShoppingListRecipe> slRecipes = List<ShoppingListRecipe>(recipes.length);
@@ -61,7 +61,6 @@ class ShoppingListController extends ChangeNotifier{
       slRecipes[i] = slr;
     }
 
-    print("Refreshed shopping list: Size(${slRecipes.length})");
     return slRecipes;
   }
 
@@ -77,13 +76,9 @@ class ShoppingListController extends ChangeNotifier{
   //Returns true if successfully removed, false otherwise
   void removeRecipeFromList(Recipe rec) async {
 
-    print("Initiated: removeRecipeFromList");
-
     await DB.removeRecipeFromShoppingList(rec.id);
     refreshShoppingList();
     notifyListeners();
-
-    print("Completed: removeRecipeFromList");
   }
 
   //This method clears all the recipes from the shopping list

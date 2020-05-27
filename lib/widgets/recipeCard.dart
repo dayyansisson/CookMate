@@ -29,14 +29,9 @@ class _RecipeCardState extends State<RecipeCard> {
   RecipeModel model;
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
 
     model = RecipeModelBank().getModel(widget.recipe);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
 
     return ChangeNotifierProvider<RecipeModel>.value(
       value: model,

@@ -71,12 +71,15 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     right: _TOP_BAR_EDGE_PADDING / 2,
                     left: _TOP_BAR_EDGE_PADDING),
                   child: Row(children: <Widget>[
-                    Text(
-                      widget.name.toUpperCase(),
-                      style: TextStyle(
-                          color: StyleSheet.WHITE,
-                          fontWeight: FontWeight.bold,
-                          fontSize: _PAGE_NAME_FONT_SIZE),
+                    Button(
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                      child: Text(
+                        widget.name.toUpperCase(),
+                        style: TextStyle(
+                            color: StyleSheet.WHITE,
+                            fontWeight: FontWeight.bold,
+                            fontSize: _PAGE_NAME_FONT_SIZE),
+                      ),
                     ),
                     Spacer(),
                     MenuButton(),
