@@ -3,7 +3,6 @@ import 'package:CookMate/entities/shoppingIngredient.dart';
 import 'package:flutter/material.dart';
 
 class RecipeModel extends ChangeNotifier {
-  
   bool _readyForDisplay;
 
   Recipe _recipe;
@@ -17,7 +16,6 @@ class RecipeModel extends ChangeNotifier {
   bool get isReadyForDisplay => _readyForDisplay;
 
   void loadRecipeForDisplay() async {
-
     List<Future> preloads = [
       _recipe.getIngredients(),
       _recipe.getSteps(),
@@ -70,7 +68,9 @@ class RecipeModel extends ChangeNotifier {
   }
 
   void _loadFavorite() async {
-    await _recipe.isFavorite();
+    print("dayyan1");
+    _recipe.favorite = await _recipe.isFavorite();
+    // await _recipe.isFavorite();
     notifyListeners();
   }
 

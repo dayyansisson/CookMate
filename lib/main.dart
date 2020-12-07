@@ -1,8 +1,9 @@
-import 'package:CookMate/backend/backend.dart';
+// import 'package:CookMate/backend/backend.dart';
 import 'package:CookMate/playground.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'backend/backend2.dart';
 
 void main() async {
   // Initializes flutter properly while waiting to bulid db

@@ -25,16 +25,25 @@ dependencies:
   transparent_image: ^1.0.0
   cached_network_image: ^2.2.0+1 
   # TODO: CACHED NETWROK IMAGE Add a temp image everywhere the app did not get a chance to cache the image so we can use the app in background mode
-
+  hive: ^1.4.4+1
+  hive_flutter: ^0.3.1
+  path_provider: ^1.6.24
+  fuzzy: ^0.2.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  hive_generator: ^0.8.2
+  build_runner: ^1.10.0
+  
 
 # The following section is specific to Flutter.
 flutter:
   uses-material-design: true
   assets:
+    - assets/categories.json
     - assets/recipes.json
+    - assets/titles.json
+    - assets/ingredients.json
   fonts:
     - family: CookmateIcons 
       fonts:

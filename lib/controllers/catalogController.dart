@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:CookMate/enums/category.dart';
-import 'package:CookMate/backend/backend.dart';
+import 'package:CookMate/backend/backend2.dart';
 import 'package:CookMate/entities/recipe.dart';
 
 /*
@@ -15,7 +15,6 @@ import 'package:CookMate/entities/recipe.dart';
 */
 
 class CatalogController {
-
   /* Constants */
   static const int APPETIZERS = 0;
   static const int BEVERAGE = 1;
@@ -26,9 +25,10 @@ class CatalogController {
   static const int NUMBER_OF_CATEGORIES = 6;
 
   //Singleton constuctor
-  static final CatalogController _catalogController = CatalogController._internal();
+  static final CatalogController _catalogController =
+      CatalogController._internal();
 
-  factory CatalogController(){
+  factory CatalogController() {
     return _catalogController;
   }
 
@@ -41,15 +41,26 @@ class CatalogController {
   //DB _backend;
 
   String getTitle(int currentTab) {
-
     String title;
-    switch(currentTab) {
-      case APPETIZERS: title = 'Appetizers'; break;
-      case BEVERAGE: title = 'Beverage'; break;
-      case BREAKFAST: title = 'Breakfast'; break;
-      case LUNCH: title = 'Lunch'; break;
-      case DINNER: title = 'Dinner'; break;
-      case DESSERTS: title = 'Desserts'; break;
+    switch (currentTab) {
+      case APPETIZERS:
+        title = 'Appetizers';
+        break;
+      case BEVERAGE:
+        title = 'Beverage';
+        break;
+      case BREAKFAST:
+        title = 'Breakfast';
+        break;
+      case LUNCH:
+        title = 'Lunch';
+        break;
+      case DINNER:
+        title = 'Dinner';
+        break;
+      case DESSERTS:
+        title = 'Desserts';
+        break;
     }
 
     return title;
@@ -58,31 +69,27 @@ class CatalogController {
   //Get recipe method
   //Call this method when the view updates, this updates the displayed recipes and the image that is displayed
   Future<List<Recipe>> getRecipes(int currentTab) async {
-    //Based on current tab make call 
-    if(currentTab == 0){
+    //Based on current tab make call
+    if (currentTab == 0) {
       currentRecipeList = await DB.getRecipesByCategory(Category.appetizers);
-    }
-    else if (currentTab == 1){
+    } else if (currentTab == 1) {
       currentRecipeList = await DB.getRecipesByCategory(Category.beverages);
-    }
-    else if(currentTab == 2){
+    } else if (currentTab == 2) {
       currentRecipeList = await DB.getRecipesByCategory(Category.breakfast);
-    }
-    else if(currentTab == 3){
+    } else if (currentTab == 3) {
       currentRecipeList = await DB.getRecipesByCategory(Category.lunch);
-    }
-    else if(currentTab == 4){
+    } else if (currentTab == 4) {
       currentRecipeList = await DB.getRecipesByCategory(Category.dinner);
-    }
-    else if(currentTab == 5){
+    } else if (currentTab == 5) {
       currentRecipeList = await DB.getRecipesByCategory(Category.desserts);
     }
     return currentRecipeList;
   }
 
   //This method returns the background image url from a randomly selected recipe in the current recipe list
-  String getImageURL(){
-    imageURL = currentRecipeList[Random().nextInt(currentRecipeList.length-1)].image;
+  String getImageURL() {
+    imageURL =
+        currentRecipeList[Random().nextInt(currentRecipeList.length - 1)].image;
     return imageURL;
   }
 }
