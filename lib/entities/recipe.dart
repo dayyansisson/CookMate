@@ -119,11 +119,11 @@ class Recipe extends Entity {
   }
 
   // Returns a Recipe object from a map
-  static Recipe fromHive(LinkedHashMap<String, dynamic> map) {
-    print("id");
-    print(map['id']);
-    print("title");
-    print(map['title']);
+  static Recipe fromHive(LinkedHashMap<dynamic, dynamic> map) {
+    // print("id");
+    // print(map['id']);
+    // print("title");
+    // print(map['title']);
     List<String> tags = List<String>();
     map['tags'].forEach((_, v) => tags.add(v));
     List<String> steps = List<String>();

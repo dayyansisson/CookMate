@@ -22,7 +22,6 @@ class _RecipePageState extends State<RecipePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: StyleSheet.WHITE,
@@ -44,7 +43,6 @@ class _RecipePageState extends State<RecipePage> {
   }
 
   Widget buildPage(RecipeModel model) {
-
     return Stack(
       children: <Widget>[
         ShaderMask(
@@ -58,27 +56,24 @@ class _RecipePageState extends State<RecipePage> {
           blendMode: BlendMode.hardLight,
           child: Container(
             decoration: BoxDecoration(
-              image: DecorationImage(
-                image: CachedNetworkImageProvider(model.imageURL), 
-                fit: BoxFit.cover
-              )
-            ),
+                image: DecorationImage(
+                    image: CachedNetworkImageProvider(model.imageURL),
+                    fit: BoxFit.cover)),
           ),
         ),
         Stack(
           alignment: Alignment.topLeft,
           children: <Widget>[
             ChangeNotifierProvider(
-              create: (_) => TabNavigationModel(tabCount: 2, expandSheet: true),
-              child: RecipeSheet()
-            ),
+                create: (_) =>
+                    TabNavigationModel(tabCount: 2, expandSheet: true),
+                child: RecipeSheet()),
             Padding(
               // Top Bar
               padding: const EdgeInsets.only(
-                top: _TOP_BAR_EDGE_PADDING,
-                right: _TOP_BAR_EDGE_PADDING,
-                left: _TOP_BAR_EDGE_PADDING
-              ),
+                  top: _TOP_BAR_EDGE_PADDING,
+                  right: _TOP_BAR_EDGE_PADDING,
+                  left: _TOP_BAR_EDGE_PADDING),
               child: Container(
                 height: 40,
                 child: Row(
@@ -101,11 +96,8 @@ class _RecipePageState extends State<RecipePage> {
                       ]),
                       Spacer(),
                       roundedBackground([
-                        ShoppingBagIcon(
-                          () => ShoppingListController().addRecipeToShoppingList(
-                            model.recipe, model.shoppingIngredients
-                          )
-                        ),
+                        ShoppingBagIcon(() => ShoppingListController()
+                            .addRecipeToShoppingList(model.recipe)),
                         FavoriteButton()
                       ]),
                     ]),
@@ -139,7 +131,6 @@ class _RecipePageState extends State<RecipePage> {
 }
 
 class ShoppingBagIcon extends StatefulWidget {
-
   final Function onTap;
   ShoppingBagIcon(this.onTap);
 
@@ -203,12 +194,8 @@ class _ShoppingBagIconState extends State<ShoppingBagIcon>
           backgroundColor: Colors.redAccent,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20)
-              )
-            ),
-          )
-        );
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        ));
       },
       child: Icon(
         CookMateIcon.bag_icon,

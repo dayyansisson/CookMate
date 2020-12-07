@@ -1,13 +1,12 @@
 import 'package:CookMate/entities/entity.dart';
 import 'package:flutter/material.dart';
-import 'package:CookMate/backend/backend.dart';
+import 'package:CookMate/backend/backend2.dart';
 
 /*
   This file lays out the shopping ingredient class. 
 */
 
 class ShoppingIngredient extends Entity {
-
   int recipeID;
   bool purchased;
   String ingredient;
@@ -19,23 +18,23 @@ class ShoppingIngredient extends Entity {
   });
 
   Future<void> markPurchased() async {
-    
     if (purchased) {
       return;
     }
-    
+
     this.purchased = true;
-    await DB.updateShoppingListItem(recipeID, this);
+    await DB.setPurchased(recipeID, ingredient, true);
+    // await DB.updateShoppingListItem(recipeID, this);
   }
 
   Future<void> markNotPurchased() async {
-
     if (!purchased) {
       return;
     }
 
     this.purchased = false;
-    await DB.updateShoppingListItem(recipeID, this);
+    await DB.setPurchased(recipeID, ingredient, false);
+    // await DB.updateShoppingListItem(recipeID, this);
   }
 
   // Returns a JSON version

@@ -68,7 +68,6 @@ class RecipeModel extends ChangeNotifier {
   }
 
   void _loadFavorite() async {
-    print("dayyan1");
     _recipe.favorite = await _recipe.isFavorite();
     // await _recipe.isFavorite();
     notifyListeners();

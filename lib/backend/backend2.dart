@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:CookMate/entities/shoppingIngredient.dart';
@@ -7,6 +8,9 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 import '../entities/recipe.dart';
+import '../entities/shoppingIngredient.dart';
+import '../entities/shoppingIngredient.dart';
+import '../entities/shoppingIngredient.dart';
 import '../enums/category.dart';
 
 abstract class DB {
@@ -16,7 +20,8 @@ abstract class DB {
   static Box ingredients;
   static Box favorites;
   static Box featured;
-  static Box cart;
+  static Box shoppingList;
+  static Box shoppingListItem;
 
   static Future<void> init() async {
     // Setup Hive:
@@ -30,7 +35,8 @@ abstract class DB {
     ingredients = await Hive.openBox('ingredients');
     favorites = await Hive.openBox('favorites');
     featured = await Hive.openBox('featured');
-    cart = await Hive.openBox('cart');
+    shoppingList = await Hive.openBox('shoppingList');
+    shoppingListItem = await Hive.openBox('shoppingList');
 
     // Insert Hive Data
     insertHiveData();
@@ -82,8 +88,8 @@ abstract class DB {
   static Future<bool> isRecipeAFavorite(int recipeID) async {
     // var favorites = await Hive.openBox('favorites');
     var found = favorites.containsKey(recipeID);
-    print("Looking for recipe $recipeID");
-    print("Was found: $found");
+    // print("Looking for recipe $recipeID");
+    // print("Was found: $found");
     return found;
   }
 
@@ -1432,72 +1438,62 @@ abstract class DB {
     return searchResults;
   }
 
-  // TODO: Cart functionality is missing
-  static getShoppingList() {}
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    CART
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+  static List<LinkedHashMap> getShoppingList() {
+    // List<int> allShoppingItems = List<int>();
+    List<LinkedHashMap> cart = List<LinkedHashMap>();
+    shoppingList.toMap().forEach((recipeID, data) async {
+      print("$recipeID : $data");
+      cart.add(data);
+    });
+    return cart;
+  }
 
   static Future<List<ShoppingIngredient>> getShoppingListByRecipe(int id) {}
 
-  static addRecipeToShoppingList(int id, List<ShoppingIngredient> ingr) {}
+  static void addRecipeToShoppingList(int recipeID) async {
+    Recipe rec = await getRecipeWithID(recipeID);
+    List<String> ing = rec.ingredients;
+    Map<String, dynamic> data = {};
+    for (int i = 0; i < ing.length; i++) {
+      data['$i'] = {'title': ing[i], 'purchased': false, 'recipe_id': recipeID};
+    }
+    // print("Inserting $recipeID with value: $data");
+    shoppingList.put(recipeID, data);
+  }
 
-  static removeRecipeFromShoppingList(int id) {}
+  static removeRecipeFromShoppingList(int recipeID) async {
+    // print("Trying to remove shopping list recipe id $recipeID");
+    if (shoppingList.containsKey(recipeID)) {
+      await shoppingList.delete(recipeID);
+      // print("Succesfully deleted $recipeID from cart.");
+    }
+  }
 
-  static clearAllFromShoppingList() {}
+  static clearAllFromShoppingList() async {
+    // clear all shoppingList
+    await shoppingList.clear();
+  }
 
-//   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//     CART
-//   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//   CREATE TABLE "cart" (
-//       "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-//       "recipe_id"	INTEGER NOT NULL,
-//       "item"	TEXT NOT NULL,
-//       "purchased"	INTEGER DEFAULT 0,
-//       FOREIGN KEY("recipe_id") REFERENCES "recipe"("id") ON DELETE CASCADE
-//     )
-//  */
-//   // Takes in recipeID and the ShoppingIngredient items and inserts
-//   static Future<void> addRecipeToShoppingList(int recipeID, List<ShoppingIngredient> ingr) async {
-
-//     List<Future<int>> inserts = List<Future<int>>();
-//     for (var item in ingr) {
-//       // Map<String, dynamic> mapCartItem = {
-//       //   "recipe_id": recipeID,
-//       //   "purchased": item.purchased ? 1 : 0, // 0: false, 1: true
-//       //   "item": item.ingredient
-//       // };
-//       inserts.add(insertWithMap('cart', item.toMap()));
-//     }
-
-//     await Future.wait(inserts);
-//   }
-
-//   // Return a List of ShoppingIngredients for a given recipe id
-//   static Future<List<ShoppingIngredient>> getShoppingListByRecipe(int recipeID) async {
-//     List<Map<String, dynamic>> _results = await _db.query('cart', where: 'recipe_id = ?', whereArgs: [recipeID]);
-//     return _results.map((items) => ShoppingIngredient.fromMap(items)).toList();
-//   }
-
-//   //Returns a map of all shopping list items
-//   static Future<List<Map<String, dynamic>>> getShoppingList() {
-//     return _db.query('cart');
-//   }
-
-//   //Removes all items matching the recipeID
-//   static Future<void> removeRecipeFromShoppingList(int recipeID) async {
-//     await _db.delete('cart', where: 'recipe_id = ?', whereArgs: [recipeID]);
-//   }
-
-//   // trunctuates table
-//   static Future<void> clearAllFromShoppingList() async {
-//     await _db.delete('cart');
-//   }
-
-//   // TODO: Change this to an update method that pulls new info from ShoppingIngredient entity
-//   // Add two functions to the entity for changing purchased status
-//   static Future<void> updateShoppingListItem(
-//       int recipeID, ShoppingIngredient ingr) async {
-//     await _db.update('cart', ingr.toMap(),
-//         where: 'recipe_id = ? AND item = ?',
-//         whereArgs: [ingr.recipeID, ingr.ingredient]);
-//   }
-// }
+  static void setPurchased(
+      int recipeID, String ingredient, bool wasPurchased) async {
+    // In the shoppingList find the recipeID
+    // Find the ingredient and change it to wasPurchased value.
+    // print("Updating purchased value.");
+    // print("Setting purchased value to $wasPurchased");
+    if (shoppingList.containsKey(recipeID)) {
+      LinkedHashMap shoppingListItem = await shoppingList.get(recipeID);
+      print("shoppingListItem: $shoppingListItem");
+      shoppingListItem.forEach((key, value) {
+        if (value['title'] == ingredient) {
+          value['purchased'] = wasPurchased;
+        }
+      });
+    }
+  }
 }

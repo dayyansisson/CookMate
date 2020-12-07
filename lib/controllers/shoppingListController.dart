@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:core';
 import 'package:CookMate/entities/recipe.dart';
 import 'package:CookMate/entities/shoppingIngredient.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../backend/backend2.dart';
 import '../entities/recipe.dart';
 import '../entities/shoppingIngredient.dart';
+import '../entities/shoppingListRecipe.dart';
 
 /*
   This file lays out the shopping list page controller. 
@@ -28,47 +30,34 @@ class ShoppingListController extends ChangeNotifier {
 
   // Grabs shopping list from database
   Future<List<ShoppingListRecipe>> _loadShoppingList() async {
-    List<Map<String, dynamic>> results = await DB.getShoppingList();
-    List<int> ids = List<int>();
+    List<LinkedHashMap> cart = DB.getShoppingList();
 
-    // Grab list of recipe ids
-    for (Map<String, dynamic> item in results) {
-      int id = item['recipe_id'];
-      if (!ids.contains(id)) {
-        ids.add(id);
-      }
-    }
+    List<ShoppingListRecipe> slRecipes = List<ShoppingListRecipe>();
 
-    List<Future<List<ShoppingIngredient>>> futureIngredients =
-        List<Future<List<ShoppingIngredient>>>();
-    List<Future<Recipe>> futureRecipes = List<Future<Recipe>>();
-    for (int id in ids) {
-      futureIngredients.add(DB.getShoppingListByRecipe(id));
-      futureRecipes.add(DB.getRecipeWithID(id));
-    }
+    cart.forEach((ingredient) async {
+      int recipeID;
+      List<ShoppingIngredient> slIng = List<ShoppingIngredient>();
 
-    List<List<ShoppingIngredient>> ingredients =
-        await Future.wait(futureIngredients);
-    List<Recipe> recipes = await Future.wait(futureRecipes);
+      ingredient.forEach((ing, ingInfo) {
+        recipeID = ingInfo['recipe_id'];
 
-    if (ingredients.length != recipes.length) {
-      print('Shopping List Controller: THIS IS ABOUT TO BE A PROBLEM');
-    }
-
-    List<ShoppingListRecipe> slRecipes =
-        List<ShoppingListRecipe>(recipes.length);
-    for (int i = 0; i < recipes.length; i++) {
-      ShoppingListRecipe slr = ShoppingListRecipe(recipes[i], ingredients[i]);
-      slRecipes[i] = slr;
-    }
+        var ing = ShoppingIngredient(
+          ingredient: ingInfo['title'],
+          purchased: ingInfo['purchased'],
+          recipeID: recipeID,
+        );
+        slIng.add(ing);
+      });
+      var sl = ShoppingListRecipe(await DB.getRecipeWithID(recipeID), slIng);
+      slRecipes.add(sl);
+    });
 
     return slRecipes;
   }
 
   //This method adds a recipe to the shopping list with the selected ingredients from it
-  void addRecipeToShoppingList(
-      Recipe rec, List<ShoppingIngredient> ingr) async {
-    await DB.addRecipeToShoppingList(rec.id, ingr);
+  void addRecipeToShoppingList(Recipe rec) {
+    DB.addRecipeToShoppingList(rec.id);
     refreshShoppingList();
     notifyListeners();
   }
