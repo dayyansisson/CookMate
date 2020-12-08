@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class RecipeCard extends StatefulWidget {
-
   final Recipe recipe;
   RecipeCard(this.recipe);
 
@@ -25,25 +24,18 @@ class RecipeCard extends StatefulWidget {
 }
 
 class _RecipeCardState extends State<RecipeCard> {
-
   RecipeModel model;
 
   @override
   Widget build(BuildContext context) {
-
     model = RecipeModelBank().getModel(widget.recipe);
 
     return ChangeNotifierProvider<RecipeModel>.value(
       value: model,
       child: Button(
-        onPressed: () => Navigator.push(context, MaterialPageRoute(
-          builder: (context) {
-            return ChangeNotifierProvider<RecipeModel>.value(
-              value: model,
-              child: RecipePage()
-            );
-          }
-        )),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ChangeNotifierProvider<RecipeModel>.value(value: model, child: RecipePage());
+        })),
         child: Padding(
           padding: const EdgeInsets.only(bottom: 30),
           child: Column(
@@ -55,15 +47,11 @@ class _RecipeCardState extends State<RecipeCard> {
                   ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                     child: AspectRatio(
-                      aspectRatio: 3/2,
+                      aspectRatio: 3 / 2,
                       child: FadeImage(widget.recipe.image),
                     ),
                   ),
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Container(child: FavoriteButton())
-                  )
+                  Positioned(top: 10, right: 10, child: Container(child: FavoriteButton()))
                 ],
               ),
               Transform.translate(
@@ -74,7 +62,7 @@ class _RecipeCardState extends State<RecipeCard> {
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: Container(
-                        width: 150, 
+                        width: 150,
                         height: 40,
                         decoration: BoxDecoration(
                           color: Colors.white60,
@@ -83,10 +71,7 @@ class _RecipeCardState extends State<RecipeCard> {
                         child: Center(
                           child: Text(
                             widget.recipe.category.toUpperCase(),
-                            style: TextStyle(
-                              color: StyleSheet.BLACK.withOpacity(0.3),
-                              fontSize: 12
-                            ),
+                            style: TextStyle(color: StyleSheet.BLACK.withOpacity(0.3), fontSize: 12),
                           ),
                         ),
                       ),
@@ -95,19 +80,13 @@ class _RecipeCardState extends State<RecipeCard> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget> [
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
                     Transform.translate(
                       offset: Offset(0, -8),
                       child: Marquee(
                         widget.recipe.title,
-                        style: TextStyle(
-                          fontFamily: 'Hoefler',
-                          fontSize: 22,
-                          color: StyleSheet.DEEP_GREY
-                        ),
+                        style: TextStyle(fontFamily: 'Hoefler', fontSize: 22, color: StyleSheet.DEEP_GREY),
                       ),
                     ),
                     Row(
@@ -118,11 +97,8 @@ class _RecipeCardState extends State<RecipeCard> {
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
                         Text(
-                          widget.recipe.cookTime ?? '',   // TODO make prep+cook
-                          style: TextStyle(
-                            color: StyleSheet.GREY,
-                            fontWeight: FontWeight.w300
-                          ),
+                          widget.recipe.cookTime ?? '', // TODO make prep+cook
+                          style: TextStyle(color: StyleSheet.GREY, fontWeight: FontWeight.w300),
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 12)),
                         Text(
@@ -132,16 +108,11 @@ class _RecipeCardState extends State<RecipeCard> {
                         Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
                         Text(
                           widget.recipe.servings ?? '',
-                          style: TextStyle(
-                            color: StyleSheet.GREY,
-                            fontWeight: FontWeight.w300
-                          ),
+                          style: TextStyle(color: StyleSheet.GREY, fontWeight: FontWeight.w300),
                         ),
                       ],
                     ),
-                  ]
-                )
-              ),
+                  ])),
             ],
           ),
         ),
