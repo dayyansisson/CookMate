@@ -9,8 +9,6 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 
 import '../entities/recipe.dart';
 import '../entities/shoppingIngredient.dart';
-import '../entities/shoppingIngredient.dart';
-import '../entities/shoppingIngredient.dart';
 import '../enums/category.dart';
 
 abstract class DB {
@@ -39,10 +37,10 @@ abstract class DB {
     shoppingListItem = await Hive.openBox('shoppingList');
 
     // Insert Hive Data
-    insertHiveData();
+    await insertHiveData();
   }
 
-  static void insertHiveData() async {
+  static Future<void> insertHiveData() async {
     // Recipes
     String jsonRecipes = await rootBundle.loadString('assets/recipes.json');
     recipes.putAll(json.decode(jsonRecipes));
@@ -55,6 +53,7 @@ abstract class DB {
     // Categories With Recipes
     String jsonCats = await rootBundle.loadString('assets/categories.json');
     categories.putAll(json.decode(jsonCats));
+    return;
   }
 
   /*
