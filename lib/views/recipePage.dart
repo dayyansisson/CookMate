@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:CookMate/controllers/ShoppingListController.dart';
 import 'package:CookMate/provider/recipeModel.dart';
@@ -43,6 +44,7 @@ class _RecipePageState extends State<RecipePage> {
   }
 
   Widget buildPage(RecipeModel model) {
+    double topBarPadding = max(0, _TOP_BAR_EDGE_PADDING - MediaQuery.of(context).padding.top);
     return Stack(
       children: <Widget>[
         ShaderMask(
@@ -62,30 +64,32 @@ class _RecipePageState extends State<RecipePage> {
           alignment: Alignment.topLeft,
           children: <Widget>[
             ChangeNotifierProvider(create: (_) => TabNavigationModel(tabCount: 2, expandSheet: true), child: RecipeSheet()),
-            Padding(
-              // Top Bar
-              padding: const EdgeInsets.only(top: _TOP_BAR_EDGE_PADDING, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
-              child: Container(
-                height: 40,
-                child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
-                  roundedBackground([
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Button(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          "BACK",
-                          style: TextStyle(color: StyleSheet.WHITE, fontWeight: FontWeight.bold, fontSize: _PAGE_NAME_FONT_SIZE),
+            SafeArea(
+              child: Padding(
+                // Top Bar
+                padding: EdgeInsets.only(top: topBarPadding, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
+                child: Container(
+                  height: 40,
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
+                    roundedBackground([
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Button(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            "BACK",
+                            style: TextStyle(color: StyleSheet.WHITE, fontWeight: FontWeight.bold, fontSize: _PAGE_NAME_FONT_SIZE),
+                          ),
                         ),
                       ),
-                    ),
+                    ]),
+                    Spacer(),
+                    roundedBackground([
+                      ShoppingBagIcon(() => ShoppingListController().addRecipeToShoppingList(model.recipe)),
+                      FavoriteButton(),
+                    ]),
                   ]),
-                  Spacer(),
-                  roundedBackground([
-                    ShoppingBagIcon(() => ShoppingListController().addRecipeToShoppingList(model.recipe)),
-                    FavoriteButton(),
-                  ]),
-                ]),
+                ),
               ),
             ),
           ],
@@ -98,19 +102,20 @@ class _RecipePageState extends State<RecipePage> {
     return ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(15)),
       child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            height: 100,
-            alignment: Alignment.center,
-            color: StyleSheet.DEEP_GREY.withOpacity(0.5),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: widgets,
-              ),
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          height: 100,
+          alignment: Alignment.center,
+          color: StyleSheet.DEEP_GREY.withOpacity(0.5),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: widgets,
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

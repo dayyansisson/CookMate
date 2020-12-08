@@ -82,7 +82,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     return Container(
       color: StyleSheet.BLACK.withOpacity((1 - dragController.value) * _BACKGROUND_FADE_FACTOR),
       child: Padding(
-        padding: const EdgeInsets.only(top: _HEAD_SPACE),
+        padding: EdgeInsets.only(top: _HEAD_SPACE + MediaQuery.of(context).padding.top),
         child: Stack(
           children: <Widget>[
             Positioned(
@@ -245,11 +245,9 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
       return Container();
     }
 
-    print('\nTOP: ${recipe.category}');
-
     List<Widget> row = List<Widget>();
     row.add(Container(width: 15));
-    //row.add(Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: Tag(content: recipe.category)));
+    row.add(Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: Tag(content: recipe.category)));
     for (String tag in recipe.tags) {
       row.add(
         Padding(
@@ -359,13 +357,15 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                             onTap: (bool purchased) => setState(() => recipe.shoppingIngredients[index].purchased = purchased),
                           )),
                       Container(width: _TabClipper.TAB_RADIUS / 3),
-                      Opacity(
-                        opacity: recipe.shoppingIngredients[index].purchased ? 0.3 : 1,
-                        child: Container(
-                          width: textWidth,
-                          child: Text(
-                            recipe.shoppingIngredients[index].ingredient,
-                            style: TextStyle(color: StyleSheet.WHITE, fontWeight: FontWeight.w300, fontSize: 20, decoration: recipe.shoppingIngredients[index].purchased ? TextDecoration.lineThrough : TextDecoration.none),
+                      Flexible(
+                        child: Opacity(
+                          opacity: recipe.shoppingIngredients[index].purchased ? 0.3 : 1,
+                          child: Container(
+                            width: textWidth,
+                            child: Text(
+                              recipe.shoppingIngredients[index].ingredient,
+                              style: TextStyle(color: StyleSheet.WHITE, fontWeight: FontWeight.w300, fontSize: 20, decoration: recipe.shoppingIngredients[index].purchased ? TextDecoration.lineThrough : TextDecoration.none),
+                            ),
                           ),
                         ),
                       )
@@ -406,8 +406,7 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                             ),
                           )),
                       Container(width: _TabClipper.TAB_RADIUS / 3),
-                      Container(
-                        width: textWidth,
+                      Flexible(
                         child: Text(
                           recipe.steps[index],
                           style: TextStyle(

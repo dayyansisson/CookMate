@@ -135,7 +135,7 @@ class Recipe extends Entity {
       title: map['title'],
       description: map['description'],
       image: map['image'],
-      category: map['category'][0] ?? "",
+      category: map['category']['0'] ?? "",
       prepTime: map['prep_time'],
       cookTime: map['cook_time'],
       servings: map['serves'],
