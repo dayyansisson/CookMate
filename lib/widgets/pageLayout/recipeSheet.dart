@@ -15,7 +15,8 @@ class RecipeSheet extends StatefulWidget {
   _RecipeSheetState createState() => _RecipeSheetState();
 }
 
-class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStateMixin {
+class _RecipeSheetState extends State<RecipeSheet>
+    with SingleTickerProviderStateMixin {
   /* Layout Constants */
   static const double _SHEET_BORDER_RADIUS = 40;
   static const double _TITLE_SIZE = 32;
@@ -24,9 +25,16 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   static const double _LINE_SPACING = 1.2;
   static const double _HEAD_SPACE = 70;
   static const double _BACKGROUND_FADE_FACTOR = 0.35;
-  static const double _MIN_SHEET_HEIGHT = _SHEET_BORDER_RADIUS + _TITLE_SIZE + 14 + (_DESCRIPTION_SIZE * _LINE_SPACING * 3) + 40 + (_INFO_SIZE * 2) + _HEAD_SPACE;
+  static const double _MIN_SHEET_HEIGHT = _SHEET_BORDER_RADIUS +
+      _TITLE_SIZE +
+      14 +
+      (_DESCRIPTION_SIZE * _LINE_SPACING * 3) +
+      40 +
+      (_INFO_SIZE * 2) +
+      _HEAD_SPACE;
   static const double _SCROLL_EXPAND_SHEET_SENSITIVITY = 40;
-  static const SpringDescription _SPRING = const SpringDescription(mass: 13, stiffness: 1, damping: 2);
+  static const SpringDescription _SPRING =
+      const SpringDescription(mass: 13, stiffness: 1, damping: 2);
 
   /* Animation Controller */
   AnimationController dragController;
@@ -43,7 +51,8 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     recipe = Provider.of<RecipeModel>(context, listen: false);
 
     // Init controllers
-    directionsScrollController = ScrollController()..addListener(directionsScrollListener);
+    directionsScrollController = ScrollController()
+      ..addListener(directionsScrollListener);
 
     dragController = AnimationController(
       vsync: this,
@@ -68,10 +77,15 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
   void directionsScrollListener() {
     if (directionsScrollController.position.outOfRange) {
-      TabNavigationModel model = Provider.of<TabNavigationModel>(context, listen: false);
-      if (directionsScrollController.offset < directionsScrollController.position.minScrollExtent - _SCROLL_EXPAND_SHEET_SENSITIVITY) {
+      TabNavigationModel model =
+          Provider.of<TabNavigationModel>(context, listen: false);
+      if (directionsScrollController.offset <
+          directionsScrollController.position.minScrollExtent -
+              _SCROLL_EXPAND_SHEET_SENSITIVITY) {
         model.expandSheet = true;
-      } else if (directionsScrollController.offset > directionsScrollController.position.maxScrollExtent + _SCROLL_EXPAND_SHEET_SENSITIVITY) {
+      } else if (directionsScrollController.offset >
+          directionsScrollController.position.maxScrollExtent +
+              _SCROLL_EXPAND_SHEET_SENSITIVITY) {
         model.expandSheet = false;
       }
     }
@@ -80,18 +94,23 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: StyleSheet.BLACK.withOpacity((1 - dragController.value) * _BACKGROUND_FADE_FACTOR),
+      color: StyleSheet.BLACK
+          .withOpacity((1 - dragController.value) * _BACKGROUND_FADE_FACTOR),
       child: Padding(
-        padding: EdgeInsets.only(top: _HEAD_SPACE + MediaQuery.of(context).padding.top),
+        padding: EdgeInsets.only(
+            top: _HEAD_SPACE + MediaQuery.of(context).padding.top),
         child: Stack(
           children: <Widget>[
             Positioned(
               width: MediaQuery.of(context).size.width,
-              top: (MediaQuery.of(context).size.height - _MIN_SHEET_HEIGHT) * dragPosition.value,
+              top: (MediaQuery.of(context).size.height - _MIN_SHEET_HEIGHT) *
+                  dragPosition.value,
               child: Container(
                 height: MediaQuery.of(context).size.height,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(_SHEET_BORDER_RADIUS), topRight: Radius.circular(_SHEET_BORDER_RADIUS)),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(_SHEET_BORDER_RADIUS),
+                      topRight: Radius.circular(_SHEET_BORDER_RADIUS)),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
                     child: Container(
@@ -115,26 +134,32 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
     return GestureDetector(
       onVerticalDragUpdate: (details) {
         setState(() {
-          dragController.value += (details.primaryDelta / (MediaQuery.of(context).size.height - _MIN_SHEET_HEIGHT));
+          dragController.value += (details.primaryDelta /
+              (MediaQuery.of(context).size.height - _MIN_SHEET_HEIGHT));
         });
       },
       onVerticalDragEnd: (details) {
         if (dragController.value > 0.5) {
           dragController.forward(from: dragController.value);
-          Provider.of<TabNavigationModel>(context, listen: false).expandSheet = true;
+          Provider.of<TabNavigationModel>(context, listen: false).expandSheet =
+              true;
         } else {
           dragController.reverse(from: dragController.value);
         }
 
         if (details.primaryVelocity < -1000) {
-          dragController.animateWith(SpringSimulation(_SPRING, dragController.value, 0, -1));
+          dragController.animateWith(
+              SpringSimulation(_SPRING, dragController.value, 0, -1));
         } else if (details.primaryVelocity > 1000) {
-          dragController.animateWith(SpringSimulation(_SPRING, dragController.value, 1, 1));
-          Provider.of<TabNavigationModel>(context, listen: false).expandSheet = true;
+          dragController.animateWith(
+              SpringSimulation(_SPRING, dragController.value, 1, 1));
+          Provider.of<TabNavigationModel>(context, listen: false).expandSheet =
+              true;
         }
 
         if (dragController.value == 0 && details.primaryVelocity < 10) {
-          Provider.of<TabNavigationModel>(context, listen: false).expandSheet = false;
+          Provider.of<TabNavigationModel>(context, listen: false).expandSheet =
+              false;
         }
       },
       child: Button(
@@ -166,7 +191,10 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
       children: <Widget>[
         Container(
           // Rounded edges
-          decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(_SHEET_BORDER_RADIUS), topRight: Radius.circular(_SHEET_BORDER_RADIUS))),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(_SHEET_BORDER_RADIUS),
+                  topRight: Radius.circular(_SHEET_BORDER_RADIUS))),
           height: _SHEET_BORDER_RADIUS + _TITLE_SIZE,
         ),
         Positioned(
@@ -174,14 +202,18 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
           child: Container(
             width: 40,
             height: 6,
-            decoration: BoxDecoration(color: StyleSheet.WHITE.withOpacity(0.1), borderRadius: BorderRadius.all(Radius.circular(_SHEET_BORDER_RADIUS))),
+            decoration: BoxDecoration(
+                color: StyleSheet.WHITE.withOpacity(0.1),
+                borderRadius:
+                    BorderRadius.all(Radius.circular(_SHEET_BORDER_RADIUS))),
           ),
         ),
         Positioned(
             top: _SHEET_BORDER_RADIUS,
             left: _SHEET_BORDER_RADIUS,
             child: Container(
-              width: MediaQuery.of(context).size.width - (2 * _SHEET_BORDER_RADIUS),
+              width: MediaQuery.of(context).size.width -
+                  (2 * _SHEET_BORDER_RADIUS),
               height: _TITLE_SIZE,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -210,17 +242,26 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
         recipe.description,
         maxLines: 3,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontSize: _DESCRIPTION_SIZE, height: _LINE_SPACING, color: StyleSheet.WHITE, fontWeight: FontWeight.w300),
+        style: TextStyle(
+            fontSize: _DESCRIPTION_SIZE,
+            height: _LINE_SPACING,
+            color: StyleSheet.WHITE,
+            fontWeight: FontWeight.w300),
       ),
     );
   }
 
   Widget get _horizontalInfoBar {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: _SHEET_BORDER_RADIUS, vertical: 20),
+      padding:
+          EdgeInsets.symmetric(horizontal: _SHEET_BORDER_RADIUS, vertical: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[_basicInfo("Prep", recipe.prepTime), _basicInfo("Cook", recipe.cookTime), _basicInfo("Serves", recipe.servings)],
+        children: <Widget>[
+          _basicInfo("Prep", recipe.prepTime),
+          _basicInfo("Cook", recipe.cookTime),
+          _basicInfo("Serves", recipe.servings)
+        ],
       ),
     );
   }
@@ -235,7 +276,10 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
       ),
       Text(
         data.toUpperCase(),
-        style: TextStyle(color: StyleSheet.WHITE, fontSize: _INFO_SIZE - 1, fontWeight: FontWeight.w300),
+        style: TextStyle(
+            color: StyleSheet.WHITE,
+            fontSize: _INFO_SIZE - 1,
+            fontWeight: FontWeight.w300),
       ),
     ]);
   }
@@ -247,12 +291,14 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
 
     List<Widget> row = List<Widget>();
     row.add(Container(width: 15));
-    row.add(Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: Tag(content: recipe.category)));
+    row.add(Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        child: Tag(content: recipe.category)));
     for (String tag in recipe.tags) {
       row.add(
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
-          child: Tag(content: tag),
+          child: tag == '' ? Container() : Tag(content: tag),
         ),
       );
     }
@@ -279,7 +325,8 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
           contents = directionsList;
         }
         return GestureDetector(
-          onHorizontalDragEnd: (DragEndDetails details) => onHorizontalSwipe(details, model),
+          onHorizontalDragEnd: (DragEndDetails details) =>
+              onHorizontalSwipe(details, model),
           onVerticalDragEnd: (details) {
             if (details.primaryVelocity > 10) {
               model.expandSheet = true;
@@ -311,15 +358,20 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                         child: Transform.translate(
                           offset: Offset(-_TabClipper.TAB_RADIUS / 2, -5),
                           child: Container(
-                              width: screenWidth - (2 * _TabClipper.tabSpacing(screenWidth)),
+                              width: screenWidth -
+                                  (2 * _TabClipper.tabSpacing(screenWidth)),
                               child: ShaderMask(
                                   // TODO FIX THE SHADER AMOUNT
                                   shaderCallback: (rect) {
                                     return const LinearGradient(
                                       begin: Alignment(0, -1),
                                       end: Alignment(0, -0.92),
-                                      colors: [Colors.transparent, Colors.black],
-                                    ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.black
+                                      ],
+                                    ).createShader(Rect.fromLTRB(
+                                        0, 0, rect.width, rect.height));
                                   },
                                   blendMode: BlendMode.dstIn,
                                   child: contents)),
@@ -335,7 +387,8 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   }
 
   Widget get ingredientsList {
-    final double textWidth = MediaQuery.of(context).size.width - (_TabClipper.TAB_RADIUS * 10 / 3);
+    final double textWidth =
+        MediaQuery.of(context).size.width - (_TabClipper.TAB_RADIUS * 10 / 3);
 
     return Column(
       children: <Widget>[
@@ -353,18 +406,30 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
                           width: _TabClipper.TAB_RADIUS,
                           alignment: Alignment.center,
                           child: Checkoff(
-                            initialValue: recipe.shoppingIngredients[index].purchased,
-                            onTap: (bool purchased) => setState(() => recipe.shoppingIngredients[index].purchased = purchased),
+                            initialValue:
+                                recipe.shoppingIngredients[index].purchased,
+                            onTap: (bool purchased) => setState(() => recipe
+                                .shoppingIngredients[index]
+                                .purchased = purchased),
                           )),
                       Container(width: _TabClipper.TAB_RADIUS / 3),
                       Flexible(
                         child: Opacity(
-                          opacity: recipe.shoppingIngredients[index].purchased ? 0.3 : 1,
+                          opacity: recipe.shoppingIngredients[index].purchased
+                              ? 0.3
+                              : 1,
                           child: Container(
                             width: textWidth,
                             child: Text(
                               recipe.shoppingIngredients[index].ingredient,
-                              style: TextStyle(color: StyleSheet.WHITE, fontWeight: FontWeight.w300, fontSize: 20, decoration: recipe.shoppingIngredients[index].purchased ? TextDecoration.lineThrough : TextDecoration.none),
+                              style: TextStyle(
+                                  color: StyleSheet.WHITE,
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 20,
+                                  decoration: recipe
+                                          .shoppingIngredients[index].purchased
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none),
                             ),
                           ),
                         ),
@@ -380,7 +445,8 @@ class _RecipeSheetState extends State<RecipeSheet> with SingleTickerProviderStat
   }
 
   Widget get directionsList {
-    final double textWidth = MediaQuery.of(context).size.width - (_TabClipper.TAB_RADIUS * 10 / 3);
+    final double textWidth =
+        MediaQuery.of(context).size.width - (_TabClipper.TAB_RADIUS * 10 / 3);
 
     return Column(
       children: <Widget>[
@@ -500,15 +566,19 @@ class _TabClipper extends CustomClipper<Path> {
   static const double TAB_SIZE_FACTOR = 0.85;
 
   static double tabSize(double screenWidth) => screenWidth * TAB_SIZE_FACTOR;
-  static double tabSpacing(double screenWidth) => (screenWidth - tabSize(screenWidth)) / 2;
+  static double tabSpacing(double screenWidth) =>
+      (screenWidth - tabSize(screenWidth)) / 2;
 
   @override
   Path getClip(Size size) {
     double width = tabSize(size.width);
 
     final path = Path()
-      ..addRRect(RRect.fromRectAndRadius(Rect.fromLTWH((size.width - width) / 2, 0, width, size.height), const Radius.circular(TAB_RADIUS)))
-      ..addRect(Rect.fromLTWH(0, TAB_HEIGHT, size.width, size.height - TAB_HEIGHT))
+      ..addRRect(RRect.fromRectAndRadius(
+          Rect.fromLTWH((size.width - width) / 2, 0, width, size.height),
+          const Radius.circular(TAB_RADIUS)))
+      ..addRect(
+          Rect.fromLTWH(0, TAB_HEIGHT, size.width, size.height - TAB_HEIGHT))
       ..close();
     return path;
   }
@@ -520,7 +590,8 @@ class _TabClipper extends CustomClipper<Path> {
 class _ExpandIcon extends StatelessWidget {
   final IconData icon;
   final double iconOpacity;
-  _ExpandIcon(this.icon, this.iconOpacity) : super(key: ValueKey<IconData>(icon));
+  _ExpandIcon(this.icon, this.iconOpacity)
+      : super(key: ValueKey<IconData>(icon));
 
   @override
   Widget build(BuildContext context) {
@@ -546,13 +617,15 @@ class _ExpandableWidget extends StatefulWidget {
   final Duration duration;
   final Curve curve;
 
-  _ExpandableWidget({@required this.children, @required this.duration, @required this.curve});
+  _ExpandableWidget(
+      {@required this.children, @required this.duration, @required this.curve});
 
   @override
   __ExpandableWidgetState createState() => __ExpandableWidgetState();
 }
 
-class __ExpandableWidgetState extends State<_ExpandableWidget> with TickerProviderStateMixin {
+class __ExpandableWidgetState extends State<_ExpandableWidget>
+    with TickerProviderStateMixin {
   AnimationController _controller;
   Animation<double> _heightFactor;
   bool _expanded;
@@ -562,7 +635,8 @@ class __ExpandableWidgetState extends State<_ExpandableWidget> with TickerProvid
     super.initState();
 
     _expanded = true;
-    _controller = AnimationController(vsync: this, duration: widget.duration)..addListener(() => setState(() {}));
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..addListener(() => setState(() {}));
     _controller.value = 1;
   }
 
@@ -573,8 +647,10 @@ class __ExpandableWidgetState extends State<_ExpandableWidget> with TickerProvid
 
     _expanded = setExpand;
 
-    Animation animation = CurvedAnimation(parent: _controller, curve: widget.curve);
-    _heightFactor = Tween<double>(begin: 0, end: 1).animate(animation)..addListener(() => setState(() {}));
+    Animation animation =
+        CurvedAnimation(parent: _controller, curve: widget.curve);
+    _heightFactor = Tween<double>(begin: 0, end: 1).animate(animation)
+      ..addListener(() => setState(() {}));
     if (setExpand) {
       _controller.forward(from: _controller.value);
     } else {
@@ -594,7 +670,9 @@ class __ExpandableWidgetState extends State<_ExpandableWidget> with TickerProvid
       return ClipRect(
         child: Align(
           heightFactor: _heightFactor == null ? 1 : _heightFactor.value,
-          child: Opacity(opacity: _heightFactor == null ? 1 : _heightFactor.value, child: Column(children: widget.children)),
+          child: Opacity(
+              opacity: _heightFactor == null ? 1 : _heightFactor.value,
+              child: Column(children: widget.children)),
         ),
       );
     });
