@@ -32,18 +32,19 @@ class _DriverState extends State<Driver> {
         body: Consumer<PageModel>(builder: (context, model, _) {
           changePage(model);
           return PageView(
-              physics: NeverScrollableScrollPhysics(),
-              controller: _controller,
-              children: <Widget>[
-                HomePage(),
-                SearchPage(),
-                CatalogPage(),
-                ShoppingListPage(),
-              ]);
+            physics: NeverScrollableScrollPhysics(),
+            controller: _controller,
+            children: <Widget>[
+              HomePage(),
+              SearchPage(),
+              CatalogPage(),
+              ShoppingListPage(),
+            ],
+          );
         }),
         backgroundColor: StyleSheet.WHITE,
-        drawer: DrawerMenu(),
         endDrawer: DrawerMenu(endDrawer: true),
+        bottomNavigationBar: NavBar(),
       ),
     );
   }
@@ -55,8 +56,7 @@ class _DriverState extends State<Driver> {
       //   duration: Duration(milliseconds: 500),
       //   curve: Curves.easeInOut
       // );
-      _controller.animateToPage(model.nextPage,
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+      _controller.animateToPage(model.nextPage, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
   }
 }

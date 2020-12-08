@@ -116,8 +116,7 @@ abstract class DB {
  */
   static Future<List<Recipe>> getRecipesByCategory(Category category) async {
     // Pull all recipes ids with given category.
-    List<dynamic> recipesWithGivenCategory =
-        categories.get(catToString(category));
+    List<dynamic> recipesWithGivenCategory = categories.get(catToString(category));
     // Grab a recipe object from the given list of ids.
     List<Recipe> results = List<Recipe>();
     recipesWithGivenCategory.forEach((recipeID) async {
@@ -938,8 +937,7 @@ abstract class DB {
   }
 
 // Returns all recipes that have given ingredients
-  static Future<List<String>> getRecipesWithIngredients(
-      List<String> ing) async {
+  static Future<List<String>> getRecipesWithIngredients(List<String> ing) async {
     List<String> results = List<String>();
     for (var ingredient in ing) {
       if (ingredients.containsKey(ingredient)) {
@@ -1480,8 +1478,7 @@ abstract class DB {
     await shoppingList.clear();
   }
 
-  static void setPurchased(
-      int recipeID, String ingredient, bool wasPurchased) async {
+  static void setPurchased(int recipeID, String ingredient, bool wasPurchased) async {
     // In the shoppingList find the recipeID
     // Find the ingredient and change it to wasPurchased value.
     // print("Updating purchased value.");

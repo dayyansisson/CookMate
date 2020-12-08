@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:CookMate/provider/tabNavigationModel.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:CookMate/widgets/menuButton.dart';
@@ -7,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
-
   /* Members */
   final String name;
   final String backgroundImage;
@@ -16,13 +17,7 @@ class MainPage extends StatefulWidget {
   final String subheader;
 
   /* Constructor */
-  MainPage({
-    @required this.name,
-    @required this.backgroundImage,
-    @required this.pageSheet,
-    this.header,
-    this.subheader
-  });
+  MainPage({@required this.name, @required this.backgroundImage, @required this.pageSheet, this.header, this.subheader});
 
   /* Constants */
   static const double TITLE_FONT_SIZE = 36;
@@ -43,7 +38,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
+    double topPadding = (_TOP_BAR_EDGE_PADDING / 3) - MediaQuery.of(context).padding.top;
     return ChangeNotifierProvider(
         create: (_) => TabNavigationModel(tabCount: widget.pageSheet.tabs.length),
         child: Stack(
@@ -53,69 +48,63 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               builder: (context, model, _) {
                 String url = widget.pageSheet.tabs[model.currentTab].backgroundImage;
                 url ??= widget.backgroundImage;
-                
+
                 return AnimatedSwitcher(
-                    duration: const Duration(milliseconds: _TITLE_SWITCH_DURATION),
-                    switchInCurve: Curves.fastOutSlowIn,
-                    switchOutCurve: Curves.fastOutSlowIn,
-                    child: Background(url));
+                  duration: const Duration(milliseconds: _TITLE_SWITCH_DURATION),
+                  switchInCurve: Curves.fastOutSlowIn,
+                  switchOutCurve: Curves.fastOutSlowIn,
+                  child: Background(url),
+                );
               },
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  // Top Bar
-                  padding: const EdgeInsets.only(
-                    top: _TOP_BAR_EDGE_PADDING / 3,
-                    right: _TOP_BAR_EDGE_PADDING / 2,
-                    left: _TOP_BAR_EDGE_PADDING),
-                  child: Row(children: <Widget>[
-                    Button(
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                      child: Text(
-                        widget.name.toUpperCase(),
-                        style: TextStyle(
-                            color: StyleSheet.WHITE,
-                            fontWeight: FontWeight.bold,
-                            fontSize: _PAGE_NAME_FONT_SIZE),
-                      ),
+                SafeArea(
+                  child: Padding(
+                    // Top Bar
+                    padding: EdgeInsets.only(
+                      top: max(0, topPadding),
+                      right: _TOP_BAR_EDGE_PADDING / 2,
+                      left: _TOP_BAR_EDGE_PADDING,
                     ),
-                    Spacer(),
-                    MenuButton(),
-                  ]),
+                    child: Row(children: <Widget>[
+                      Button(
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                        child: Text(
+                          widget.name.toUpperCase(),
+                          style: TextStyle(color: StyleSheet.WHITE, fontWeight: FontWeight.bold, fontSize: _PAGE_NAME_FONT_SIZE),
+                        ),
+                      ),
+                      Spacer(),
+                      MenuButton(),
+                    ]),
+                  ),
                 ),
-                Consumer<TabNavigationModel>( // Titles
-                  builder: (context, model, _) => Column(children: <Widget>[
-                    titleBuilder(context, model, padding: MainPage.TITLE_FONT_SIZE),
-                    titleBuilder(context, model, subtitle: true, padding: 24)
-                ])),
+                Consumer<TabNavigationModel>(
+                    // Titles
+                    builder: (context, model, _) => Column(children: <Widget>[titleBuilder(context, model, padding: MainPage.TITLE_FONT_SIZE), titleBuilder(context, model, subtitle: true, padding: 24)])),
                 Padding(padding: const EdgeInsets.only(top: 24)),
-                Consumer<TabNavigationModel>( // Search bar
-                  builder: (context, model, _) { 
-                    if(widget.pageSheet.tabs[model.currentTab].searchBar == null) {
-                      return Container();
-                    }
-                    return Column(
-                      children: <Widget>[
-                        widget.pageSheet.tabs[model.currentTab].searchBar,
-                        Padding(padding: const EdgeInsets.only(top: 24)),
-                      ]
-                    );
+                Consumer<TabNavigationModel>(// Search bar
+                    builder: (context, model, _) {
+                  if (widget.pageSheet.tabs[model.currentTab].searchBar == null) {
+                    return Container();
                   }
-                ),
+                  return Column(children: <Widget>[
+                    widget.pageSheet.tabs[model.currentTab].searchBar,
+                    Padding(padding: const EdgeInsets.only(top: 24)),
+                  ]);
+                }),
                 widget.pageSheet,
               ],
             )
           ],
-        )
-      );
+        ));
   }
 
   bool _didExceedOneLine(int textLength, double textSize, double padding) => MediaQuery.of(context).size.width < (textLength * textSize) + (padding * 2);
 
-  Widget titleBuilder(BuildContext context, TabNavigationModel model, { @required double padding, bool subtitle = false }) {
-
+  Widget titleBuilder(BuildContext context, TabNavigationModel model, {@required double padding, bool subtitle = false}) {
     String text = subtitle ? widget.pageSheet.tabs[model.currentTab].subheader : widget.pageSheet.tabs[model.currentTab].header;
     if (model.expandSheet) {
       text = "";
@@ -134,60 +123,59 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 500),
       height: text == "" ? 0 : widgetHeight,
       child: Padding(
-          padding: EdgeInsets.only(
-            top: padding,
-            right: _TOP_BAR_EDGE_PADDING,
-            left: _TOP_BAR_EDGE_PADDING,
-          ),
-          child: AnimatedSwitcher(
-              duration: Duration(milliseconds: _TITLE_SWITCH_DURATION),
-              switchInCurve: Curves.easeInOutCubic,
-              switchOutCurve: Curves.easeInOutCubic,
-              transitionBuilder: (child, animation) {
-                
-                double direction = model.previousTab < model.currentTab ? -1 : 1;
-                if(animation.isDismissed) {
-                  direction *= -1;
-                }
-                Animation<Offset> slide = Tween<Offset>(begin: Offset(direction, 0), end: Offset(0, 0)).animate(animation);
+        padding: EdgeInsets.only(
+          top: padding,
+          right: _TOP_BAR_EDGE_PADDING,
+          left: _TOP_BAR_EDGE_PADDING,
+        ),
+        child: AnimatedSwitcher(
+          duration: Duration(milliseconds: _TITLE_SWITCH_DURATION),
+          switchInCurve: Curves.easeInOutCubic,
+          switchOutCurve: Curves.easeInOutCubic,
+          transitionBuilder: (child, animation) {
+            double direction = model.previousTab < model.currentTab ? -1 : 1;
+            if (animation.isDismissed) {
+              direction *= -1;
+            }
+            Animation<Offset> slide = Tween<Offset>(begin: Offset(direction, 0), end: Offset(0, 0)).animate(animation);
 
-                return SlideTransition(
-                    position: slide,
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    )
-                  );
-              },
-              child: _HeaderTitle(
-                text: text,
-                subtitle: subtitle,
-              ))),
+            return SlideTransition(
+                position: slide,
+                child: FadeTransition(
+                  opacity: animation,
+                  child: child,
+                ));
+          },
+          child: _HeaderTitle(
+            text: text,
+            subtitle: subtitle,
+          ),
+        ),
+      ),
     );
   }
-
 }
 
 class _HeaderTitle extends StatelessWidget {
   final String text;
   final bool subtitle;
 
-  _HeaderTitle({@required this.text, this.subtitle = false})
-      : super(key: ValueKey<String>(text));
+  _HeaderTitle({@required this.text, this.subtitle = false}) : super(key: ValueKey<String>(text));
 
   @override
   Widget build(BuildContext context) {
     if (subtitle) {
       return Container(
-      alignment: Alignment.centerLeft,
+        alignment: Alignment.centerLeft,
         child: Text(
           text,
           style: TextStyle(
-              color: StyleSheet.WHITE,
-              fontSize: MainPage.SUBTITLE_FONT_SIZE,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w300,
-              height: MainPage.SUBTITLE_LINE_HEIGHT),
+            color: StyleSheet.WHITE,
+            fontSize: MainPage.SUBTITLE_FONT_SIZE,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w300,
+            height: MainPage.SUBTITLE_LINE_HEIGHT,
+          ),
         ),
       );
     }

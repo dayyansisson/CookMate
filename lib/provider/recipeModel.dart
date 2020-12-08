@@ -20,10 +20,12 @@ class RecipeModel extends ChangeNotifier {
       _recipe.getIngredients(),
       _recipe.getSteps(),
       _recipe.getTags(),
-      _recipe.isFavorite()
+      _recipe.isFavorite(),
     ];
 
     await Future.wait(preloads);
+
+    print(_recipe.tags);
 
     _shoppingIngredients = List<ShoppingIngredient>(_recipe.ingredients.length);
     for (int i = 0; i < _recipe.ingredients.length; i++) {

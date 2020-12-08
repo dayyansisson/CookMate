@@ -1,9 +1,7 @@
-import 'package:CookMate/entities/query.dart';
 import 'package:CookMate/util/styleSheet.dart';
 import 'package:flutter/material.dart';
 
-class Tag extends StatefulWidget {
-
+class Tag extends StatelessWidget {
   static const double DEFAULT_SIZE = 18;
 
   final String content;
@@ -19,8 +17,8 @@ class Tag extends StatefulWidget {
   final bool pop;
   final Function popCallback;
 
-  Tag({ 
-    this.content = "", 
+  Tag({
+    @required this.content,
     this.size = DEFAULT_SIZE,
     this.borderWidth = 0.075,
     this.horizontalPadding = 0,
@@ -29,101 +27,76 @@ class Tag extends StatefulWidget {
     this.onPressed,
     this.pop = false,
     this.withCancelIcon = false,
-    this.popCallback
+    this.popCallback,
   });
 
   @override
-  _TagState createState() => _TagState();
-}
-
-class _TagState extends State<Tag> {
-
-  double scale;
-
-  @override
-  void initState() { 
-    super.initState();
-     scale = 1; // TODO animate scale
-  }
-
-  @override
   Widget build(BuildContext context) {
-
-    String text = widget.content;
-
     return Container(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
         child: Stack(
           overflow: Overflow.visible,
           children: <Widget>[
             Button(
-              onPressed: () { 
-                if(widget.onPressed != null) {
-                  widget.onPressed();
+              onPressed: () {
+                if (onPressed != null) {
+                  onPressed();
                   return;
                 }
-                if(widget.pop) {
-                  setState(() {
-                    // scale
-                    if(widget.popCallback != null) {
-                      widget.popCallback();
-                    }
-                  });
+                if (pop) {
+                  if (popCallback != null) {
+                    popCallback();
+                  }
                 }
               },
               child: Transform.scale(
-                scale: scale,
+                scale: 1,
                 child: Container(
-                  height: widget.size * 2,
+                  height: size * 2,
                   decoration: BoxDecoration(
-                    color: widget.color.withOpacity(0.1),
-                    border: Border.all(
-                      color: widget.color.withOpacity(0.75),
-                      width: widget.size * widget.borderWidth,
-                    ),
-                    borderRadius: BorderRadius.circular(widget.size)
-                  ),
+                      color: color.withOpacity(0.1),
+                      border: Border.all(
+                        color: color.withOpacity(0.75),
+                        width: size * borderWidth,
+                      ),
+                      borderRadius: BorderRadius.circular(size)),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: widget.size / 2,
-                      vertical: widget.size * (2/5)
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: size / 2, vertical: size * (2 / 5)),
                     child: FittedBox(
                       fit: BoxFit.fitHeight,
                       child: Text(
-                        text.toLowerCase(),
-                        style: TextStyle(
-                          color: widget.textColor,
-                          fontWeight: FontWeight.w400
-                        ),
+                        content.toLowerCase(),
+                        style: TextStyle(color: textColor, fontWeight: FontWeight.w400),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-            widget.withCancelIcon ? Positioned(
-              height: 22,
-              right: -3,
-              top: -3,
-              child: SizedBox(
-                width: 22,
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    shape: BoxShape.circle
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: FittedBox(
-                      child: Icon(Icons.clear, color: StyleSheet.WHITE,),
+            withCancelIcon
+                ? Positioned(
+                    height: 22,
+                    right: -3,
+                    top: -3,
+                    child: SizedBox(
+                      width: 22,
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: FittedBox(
+                            child: Icon(
+                              Icons.clear,
+                              color: StyleSheet.WHITE,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ) : Container(),
+                  )
+                : Container(),
           ],
         ),
       ),

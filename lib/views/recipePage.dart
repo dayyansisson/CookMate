@@ -55,52 +55,37 @@ class _RecipePageState extends State<RecipePage> {
           },
           blendMode: BlendMode.hardLight,
           child: Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: CachedNetworkImageProvider(model.imageURL),
-                    fit: BoxFit.cover)),
+            decoration: BoxDecoration(image: DecorationImage(image: CachedNetworkImageProvider(model.imageURL), fit: BoxFit.cover)),
           ),
         ),
         Stack(
           alignment: Alignment.topLeft,
           children: <Widget>[
-            ChangeNotifierProvider(
-                create: (_) =>
-                    TabNavigationModel(tabCount: 2, expandSheet: true),
-                child: RecipeSheet()),
+            ChangeNotifierProvider(create: (_) => TabNavigationModel(tabCount: 2, expandSheet: true), child: RecipeSheet()),
             Padding(
               // Top Bar
-              padding: const EdgeInsets.only(
-                  top: _TOP_BAR_EDGE_PADDING,
-                  right: _TOP_BAR_EDGE_PADDING,
-                  left: _TOP_BAR_EDGE_PADDING),
+              padding: const EdgeInsets.only(top: _TOP_BAR_EDGE_PADDING, right: _TOP_BAR_EDGE_PADDING, left: _TOP_BAR_EDGE_PADDING),
               child: Container(
                 height: 40,
-                child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      roundedBackground([
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Button(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(
-                              "BACK",
-                              style: TextStyle(
-                                  color: StyleSheet.WHITE,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: _PAGE_NAME_FONT_SIZE),
-                            ),
-                          ),
+                child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
+                  roundedBackground([
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Button(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          "BACK",
+                          style: TextStyle(color: StyleSheet.WHITE, fontWeight: FontWeight.bold, fontSize: _PAGE_NAME_FONT_SIZE),
                         ),
-                      ]),
-                      Spacer(),
-                      roundedBackground([
-                        ShoppingBagIcon(() => ShoppingListController()
-                            .addRecipeToShoppingList(model.recipe)),
-                        FavoriteButton()
-                      ]),
-                    ]),
+                      ),
+                    ),
+                  ]),
+                  Spacer(),
+                  roundedBackground([
+                    ShoppingBagIcon(() => ShoppingListController().addRecipeToShoppingList(model.recipe)),
+                    FavoriteButton(),
+                  ]),
+                ]),
               ),
             ),
           ],
@@ -138,8 +123,7 @@ class ShoppingBagIcon extends StatefulWidget {
   _ShoppingBagIconState createState() => _ShoppingBagIconState();
 }
 
-class _ShoppingBagIconState extends State<ShoppingBagIcon>
-    with TickerProviderStateMixin {
+class _ShoppingBagIconState extends State<ShoppingBagIcon> with TickerProviderStateMixin {
   /* Constants */
   static const double DEFAULT_SIZE = 24;
 
@@ -150,18 +134,13 @@ class _ShoppingBagIconState extends State<ShoppingBagIcon>
   void initState() {
     super.initState();
 
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 100));
   }
 
   void bounce() {
-    bounceAnimation = Tween<double>(begin: DEFAULT_SIZE, end: DEFAULT_SIZE / 2)
-        .animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut))
-          ..addListener(() => setState(() {}));
+    bounceAnimation = Tween<double>(begin: DEFAULT_SIZE, end: DEFAULT_SIZE / 2).animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut))..addListener(() => setState(() {}));
 
-    controller
-        .forward(from: controller.value)
-        .whenComplete(() => controller.reverse());
+    controller.forward(from: controller.value).whenComplete(() => controller.reverse());
   }
 
   @override
@@ -179,9 +158,7 @@ class _ShoppingBagIconState extends State<ShoppingBagIcon>
                 Icon(
                   CookMateIcon.bag_icon,
                   color: StyleSheet.WHITE,
-                  size: bounceAnimation != null
-                      ? bounceAnimation.value
-                      : DEFAULT_SIZE,
+                  size: bounceAnimation != null ? bounceAnimation.value : DEFAULT_SIZE,
                 ),
                 Container(width: 20),
                 Text(
@@ -192,9 +169,7 @@ class _ShoppingBagIconState extends State<ShoppingBagIcon>
             ),
           ),
           backgroundColor: Colors.redAccent,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         ));
       },
       child: Icon(
