@@ -11,10 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SearchPage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -25,31 +23,23 @@ class SearchPage extends StatelessWidget {
       child: MainPage(
         name: 'Search',
         backgroundImage: 'https://www.traderjoes.com/TJ_CMS_Content/Images/Recipe/poached-egg-latkes.jpg',
-        pageSheet: PageSheet([
-          SheetTab(
-            name: 'Recipes', 
-            searchBar: SearchBar(SearchType.Recipe),
-            bodyContent: _buildRecipePage()
-          ),
-          SheetTab(
-            name: 'Ingredients', 
-            searchBar: SearchBar(SearchType.Ingredient),
-            bodyContent: _buildIngredientPage()
-          )
-        ]),
+        pageSheet:
+            PageSheet([SheetTab(name: 'Recipes', searchBar: SearchBar(SearchType.Recipe), bodyContent: _buildRecipePage()), SheetTab(name: 'Ingredients', searchBar: SearchBar(SearchType.Ingredient), bodyContent: _buildIngredientPage())]),
       ),
     );
   }
 
   Widget _buildRecipePage() {
-
     return ChangeNotifierProvider<SearchController>.value(
       value: SearchController(),
-      child: Consumer<SearchController> (
+      child: Consumer<SearchController>(
         builder: (context, controller, _) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: RecipeCardList(SearchController().recipeSearchResults),
+            child: RecipeCardList(
+              SearchController().recipeSearchResults,
+              emptyMessage: 'No recipes found.',
+            ),
           );
         },
       ),
@@ -57,10 +47,9 @@ class SearchPage extends StatelessWidget {
   }
 
   Widget _buildIngredientPage() {
-
     return ChangeNotifierProvider<SearchController>.value(
       value: SearchController(),
-      child: Consumer<SearchController> (
+      child: Consumer<SearchController>(
         builder: (context, controller, _) {
           return Column(
             children: <Widget>[
@@ -68,7 +57,10 @@ class SearchPage extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: RecipeCardList(SearchController().ingredientSearchResults),
+                  child: RecipeCardList(
+                    SearchController().ingredientSearchResults,
+                    emptyMessage: 'No recipes found.',
+                  ),
                 ),
               )
             ],
@@ -80,7 +72,6 @@ class SearchPage extends StatelessWidget {
 }
 
 class _QueryList extends StatefulWidget {
-
   final List<String> queries;
   _QueryList(this.queries);
 
@@ -89,10 +80,8 @@ class _QueryList extends StatefulWidget {
 }
 
 class __QueryListState extends State<_QueryList> {
-
   @override
   Widget build(BuildContext context) {
-
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 50,
@@ -110,10 +99,11 @@ class __QueryListState extends State<_QueryList> {
               color: Colors.redAccent,
               textColor: Colors.redAccent,
               withCancelIcon: true,
-              onPressed: () => setState(() {
-                SearchController().removeIngredientFromSearch(widget.queries[index]);
-                widget.queries.removeAt(index);
-              })
+              onPressed: () => setState(
+                () {
+                  SearchController().removeIngredientFromSearch(widget.queries[index]);
+                },
+              ),
             ),
           );
         },
